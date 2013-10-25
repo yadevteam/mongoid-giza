@@ -8,7 +8,7 @@ describe Mongoid::Giza::Attribute do
 
     it "should be set on creation" do
       name = "attribute"
-      attribute = Mongoid::Giza::Attribute.new(name, "type")
+      attribute = Mongoid::Giza::Attribute.new(name, :uint)
       expect(attribute.name).to eql(name)
     end
   end
@@ -19,14 +19,18 @@ describe Mongoid::Giza::Attribute do
     end
 
     it "should be set on creation" do
-      type = "type"
+      type = :uint
       attribute = Mongoid::Giza::Attribute.new("attribute", type)
       expect(attribute.type).to eql(type)
+    end
+
+    it "should be a valid type" do
+      expect { Mongoid::Giza::Attribute.new("attribute", :type) }.to raise_error(TypeError)
     end
   end
 
   it "should accept a block" do
-    attribute = Mongoid::Giza::Attribute.new("attribute", "type") { }
+    attribute = Mongoid::Giza::Attribute.new("attribute", :uint) { }
     expect(attribute.block).to be_a(Proc)
   end
 end
