@@ -20,7 +20,7 @@ describe Mongoid::Giza::Index do
 
   describe "klass" do
     it "should be mandatory" do
-      expect { Mongoid::Giza::Index.new }.to raise_error(ArgumentError, "wrong number of arguments (0 for 1..2)")
+      expect { Mongoid::Giza::Index.new }.to raise_error(ArgumentError)
     end
 
     it "should be set on creation" do
@@ -33,7 +33,7 @@ describe Mongoid::Giza::Index do
     let(:name) { "field" }
 
     it "should require a name" do
-      expect { index.field }.to raise_error(ArgumentError, "wrong number of arguments (0 for 1)")
+      expect { index.field }.to raise_error(ArgumentError)
     end
 
     it "should create a new Field" do
@@ -58,7 +58,7 @@ describe Mongoid::Giza::Index do
     let(:type) { :uint }
 
     it "should require a name" do
-      expect { index.attribute }.to raise_error(ArgumentError, "wrong number of arguments (0 for 1..2)")
+      expect { index.attribute }.to raise_error(ArgumentError)
     end
 
     it "should accept a type" do

@@ -3,7 +3,7 @@ require "spec_helper"
 describe Mongoid::Giza::Attribute do
   describe "name" do
     it "should be mandatory" do
-      expect { Mongoid::Giza::Attribute.new }.to raise_error(ArgumentError, "wrong number of arguments (0 for 2)")
+      expect { Mongoid::Giza::Attribute.new }.to raise_error(ArgumentError)
     end
 
     it "should be set on creation" do
@@ -15,7 +15,7 @@ describe Mongoid::Giza::Attribute do
 
   describe "type" do
     it "should be mandatory" do
-      expect { Mongoid::Giza::Attribute.new("attribute") }.to raise_error(ArgumentError, "wrong number of arguments (1 for 2)")
+      expect { Mongoid::Giza::Attribute.new("attribute") }.to raise_error(ArgumentError)
     end
 
     it "should be set on creation" do
