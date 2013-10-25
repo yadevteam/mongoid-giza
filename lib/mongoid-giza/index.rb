@@ -3,7 +3,23 @@ module Mongoid
     class Index
       class << self;
         def types_map
-          {String => :string}
+          {
+            Regexp => :string,
+            String => :string,
+            Symbol => :string,
+            Boolean => :bool,
+            Integer => :bigint,
+            Date => :timestamp,
+            DateTime => :timestamp,
+            Time => :timestamp,
+            BigDecimal => :float,
+            Float => :float,
+            Array => :multi,
+            Range => :multi,
+            Hash => :json,
+            Moped::BSON::ObjectId => :string,
+            ActiveSupport::TimeWithZone => :timestamp,
+          }
         end
       end
 
