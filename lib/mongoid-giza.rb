@@ -1,4 +1,4 @@
-require "mongoid/giza/version"
+require "mongoid-giza/version"
 
 module Mongoid
   module Giza
