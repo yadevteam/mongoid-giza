@@ -1,9 +1,10 @@
 module Mongoid
   module Giza
     class Index
-      attr_accessor :fields, :attributes
+      attr_accessor :klass, :fields, :attributes
 
-      def initialize
+      def initialize(klass)
+        @klass = klass
         @fields = []
         @attributes = []
       end

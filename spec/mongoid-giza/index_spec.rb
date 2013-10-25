@@ -1,7 +1,8 @@
 require "spec_helper"
 
 describe Mongoid::Giza::Index do
-  let(:index) { Mongoid::Giza::Index.new }
+  let(:klass) { double("klass") }
+  let(:index) { Mongoid::Giza::Index.new(klass) }
 
   it "should have a list of fields" do
     expect(index.fields).to be_a_kind_of(Array)
@@ -9,6 +10,16 @@ describe Mongoid::Giza::Index do
 
   it "should have a list of attributes" do
     expect(index.attributes).to be_a_kind_of(Array)
+  end
+
+  describe "klass" do
+    it "should be mandatory" do
+      expect { Mongoid::Giza::Index.new }.to raise_error(ArgumentError, "wrong number of arguments (0 for 1)")
+    end
+
+    it "should be set on creation" do
+      expect(index.klass).to be(klass)
+    end
   end
 
   describe "field" do
