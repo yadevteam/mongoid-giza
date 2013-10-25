@@ -1,6 +1,6 @@
 # Mongoid::Giza
 
-TODO: Write a gem description
+Mongoid layer for the Sphinx fulltext search server that supports block fields and dynamic indexes
 
 ## Installation
 
