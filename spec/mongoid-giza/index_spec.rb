@@ -12,9 +12,15 @@ describe Mongoid::Giza::Index do
     expect(index.attributes).to be_a_kind_of(Array)
   end
 
+  it "should accept a settings hash" do
+    settings = {setting1: 1, setting2: 2}
+    index = Mongoid::Giza::Index.new(klass, settings)
+    expect(index.settings).to be(settings)
+  end
+
   describe "klass" do
     it "should be mandatory" do
-      expect { Mongoid::Giza::Index.new }.to raise_error(ArgumentError, "wrong number of arguments (0 for 1)")
+      expect { Mongoid::Giza::Index.new }.to raise_error(ArgumentError, "wrong number of arguments (0 for 1..2)")
     end
 
     it "should be set on creation" do

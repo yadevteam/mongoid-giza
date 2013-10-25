@@ -23,10 +23,11 @@ module Mongoid
         end
       end
 
-      attr_accessor :klass, :fields, :attributes
+      attr_accessor :klass, :settings, :fields, :attributes
 
-      def initialize(klass)
+      def initialize(klass, settings={})
         @klass = klass
+        @settings = settings
         @fields = []
         @attributes = []
       end
