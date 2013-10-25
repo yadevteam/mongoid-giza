@@ -6,4 +6,8 @@ describe Mongoid::Giza::Index do
   it "should have a list of fields" do
     expect(index.fields).to be_a_kind_of(Array)
   end
+
+  it "should have a list of attributes" do
+    expect(index.attributes).to be_a_kind_of(Array)
+  end
 end
