@@ -1,4 +1,4 @@
-# Mongoid::Giza
+# Mongoid-Giza
 
 Mongoid layer for the Sphinx fulltext search server that supports block fields and dynamic indexes
 
