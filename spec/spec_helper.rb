@@ -10,6 +10,19 @@ Coveralls.wear!
 require "mongoid-rspec"
 require "mongoid-giza"
 
+MONGOID_CONFIG = {
+  sessions: {
+    default: {
+      database: "mongoid_giza_test",
+      hosts: [ "localhost:27017" ]
+    }
+  }
+}
+
+Mongoid.configure do |config|
+  config.load_configuration(MONGOID_CONFIG)
+end
+
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.run_all_when_everything_filtered = true
