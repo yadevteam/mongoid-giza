@@ -82,7 +82,7 @@ describe Mongoid::Giza::Index do
         end
         fields
       end
-      expect(Mongoid::Giza::Attribute).to receive(:new).with(name, index.class.types_map[type], nil)
+      expect(Mongoid::Giza::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP[type], nil)
       index.attribute(name)
     end
 
@@ -92,7 +92,7 @@ describe Mongoid::Giza::Index do
         allow(fields).to receive(:[]).with(name) { nil }
         fields
       end
-      expect(Mongoid::Giza::Attribute).to receive(:new).with(name, index.class.types_map.values.first, nil)
+      expect(Mongoid::Giza::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, nil)
       index.attribute(name)
     end
 
@@ -106,7 +106,7 @@ describe Mongoid::Giza::Index do
         end
         fields
       end
-      expect(Mongoid::Giza::Attribute).to receive(:new).with(name, index.class.types_map.values.first, nil)
+      expect(Mongoid::Giza::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, nil)
       index.attribute(name)
     end
   end

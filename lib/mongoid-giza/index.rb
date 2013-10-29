@@ -2,30 +2,26 @@ module Mongoid
   module Giza
     # Represents a Sphinx index
     class Index
-      class << self;
 
-        # Returns a hash in which each key is a class accepted by +Mongoid+
-        # and its value is a compatible Sphix attribute type
-        def types_map
-          {
-            Regexp => :string,
-            String => :string,
-            Symbol => :string,
-            Boolean => :bool,
-            Integer => :bigint,
-            Date => :timestamp,
-            DateTime => :timestamp,
-            Time => :timestamp,
-            BigDecimal => :float,
-            Float => :float,
-            Array => :multi,
-            Range => :multi,
-            Hash => :json,
-            Moped::BSON::ObjectId => :string,
-            ActiveSupport::TimeWithZone => :timestamp,
-          }
-        end
-      end
+      # Hash in which each key is a class accepted by +Mongoid+
+      # and its value is a compatible Sphix attribute type
+      TYPES_MAP = {
+        Regexp => :string,
+        String => :string,
+        Symbol => :string,
+        Boolean => :bool,
+        Integer => :bigint,
+        Date => :timestamp,
+        DateTime => :timestamp,
+        Time => :timestamp,
+        BigDecimal => :float,
+        Float => :float,
+        Array => :multi,
+        Range => :multi,
+        Hash => :json,
+        Moped::BSON::ObjectId => :string,
+        ActiveSupport::TimeWithZone => :timestamp,
+      }
 
       attr_accessor :klass, :settings, :fields, :attributes
 
@@ -72,8 +68,8 @@ module Mongoid
       def attribute(name, type=nil, &block)
         if type.nil?
           field = @klass.fields[name.to_s]
-          type = field.nil? ? self.class.types_map.values.first :
-            self.class.types_map[field.type] || self.class.types_map.values.first
+          type = field.nil? ? Mongoid::Giza::Index::TYPES_MAP.values.first :
+            Mongoid::Giza::Index::TYPES_MAP[field.type] || Mongoid::Giza::Index::TYPES_MAP.values.first
         end
         @attributes << Mongoid::Giza::Attribute.new(name, type, block)
       end
