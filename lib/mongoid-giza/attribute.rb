@@ -2,14 +2,12 @@ module Mongoid
   module Giza
     # Represents an Sphinx index attribute
     class Attribute
-      class << self;
 
-        # Defines the array of currently supported Sphix attribute types
-        def types
-          [:uint, :bool, :bigint, :timestamp, :str2ordinal,
-            :float, :multi, :string, :json, :str2wordcount]
-        end
-      end
+      # Defines the array of currently supported Sphix attribute types
+      TYPES = [
+        :uint, :bool, :bigint, :timestamp, :str2ordinal,
+        :float, :multi, :string, :json, :str2wordcount
+      ]
 
       attr_accessor :name, :type, :block
 
@@ -26,7 +24,7 @@ module Mongoid
         raise TypeError,
           "attribute type not supported. " \
           "It must be one of the following: " \
-          "#{self.class.types.join(", ")}" unless self.class.types.include? type
+          "#{Mongoid::Giza::Attribute::TYPES.join(", ")}" unless Mongoid::Giza::Attribute::TYPES.include? type
         @name = name
         @type = type
         @block = block
