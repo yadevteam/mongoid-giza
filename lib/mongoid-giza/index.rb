@@ -49,7 +49,7 @@ module Mongoid
       #   * [ +Symbol+ +name+ ] the name of the field
       #   * [ +Proc+ +block+ ] an optional block to be evaluated
       def field(name, &block)
-        @fields << Mongoid::Giza::Field.new(name, block)
+        @fields << Mongoid::Giza::Index::Field.new(name, block)
       end
 
       # Adds an attribute to the index with the corresponding name.
@@ -71,7 +71,7 @@ module Mongoid
           type = field.nil? ? Mongoid::Giza::Index::TYPES_MAP.values.first :
             Mongoid::Giza::Index::TYPES_MAP[field.type] || Mongoid::Giza::Index::TYPES_MAP.values.first
         end
-        @attributes << Mongoid::Giza::Attribute.new(name, type, block)
+        @attributes << Mongoid::Giza::Index::Attribute.new(name, type, block)
       end
     end
   end
