@@ -1,4 +1,4 @@
-module Mongoid
+module Mongoid # :nodoc:
   module Giza
     # Represents a Sphinx index
     class Index
