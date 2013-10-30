@@ -1,7 +1,11 @@
 require "spec_helper"
 
 describe Mongoid::Giza::Index do
-  let(:klass) { double("klass") }
+  let(:klass) do
+    klass = double("klass")
+    allow(klass).to receive(:name) { "Klass" }
+    klass
+  end
   let(:index) { Mongoid::Giza::Index.new(klass) }
 
   it "should have a list of fields" do
@@ -108,6 +112,18 @@ describe Mongoid::Giza::Index do
       end
       expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, nil)
       index.attribute(name)
+    end
+  end
+
+  describe "name" do
+    it "should be the class name by default" do
+      allow(klass).to receive(:name) { "Klass" }
+      expect(index.name).to eql(:Klass)
+    end
+
+    it "should define a new name when supplied" do
+      index.name("Index")
+      expect(index.name).to eql(:Index)
     end
   end
 end

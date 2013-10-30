@@ -35,6 +35,7 @@ module Mongoid # :nodoc:
       def initialize(klass, settings={})
         @klass = klass
         @settings = settings
+        @name = @klass.name.to_sym
         @fields = []
         @attributes = []
       end
@@ -72,6 +73,13 @@ module Mongoid # :nodoc:
             Mongoid::Giza::Index::TYPES_MAP[field.type] || Mongoid::Giza::Index::TYPES_MAP.values.first
         end
         @attributes << Mongoid::Giza::Index::Attribute.new(name, type, block)
+      end
+
+      def name(n=nil)
+        if !n.nil?
+          @name = n.to_sym
+        end
+        @name
       end
     end
   end
