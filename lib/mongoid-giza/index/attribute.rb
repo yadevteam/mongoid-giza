@@ -1,9 +1,10 @@
 module Mongoid # :nodoc:
   module Giza
     class Index
+      ##
       # Represents an Sphinx index attribute
       class Attribute
-
+        ##
         # Defines the array of currently supported Sphix attribute types
         TYPES = [
           :uint, :bool, :bigint, :timestamp, :str2ordinal,
@@ -11,7 +12,7 @@ module Mongoid # :nodoc:
         ]
 
         attr_accessor :name, :type, :block
-
+        ##
         # Creates a new attribute with name, type and an optional block
         #
         # If a block is given then it will be evaluated for each instance of the class being indexed

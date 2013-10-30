@@ -5,6 +5,7 @@ require "mongoid-giza/index/field"
 require "mongoid-giza/index/attribute"
 
 module Mongoid # :nodoc:
+  ##
   # Module that should be included in a Mongoid::Document in order to
   # index fields of documents of this class
   #
@@ -24,7 +25,7 @@ module Mongoid # :nodoc:
     extend ActiveSupport::Concern
 
     module ClassMethods
-
+      ##
       # Class method that defines a index relative to the current model's documents
       #
       # Parameters::
