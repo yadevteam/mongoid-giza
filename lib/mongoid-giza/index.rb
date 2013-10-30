@@ -75,10 +75,17 @@ module Mongoid # :nodoc:
         end
         @attributes << Mongoid::Giza::Index::Attribute.new(name, type, block)
       end
-
-      def name(n=nil)
-        if !n.nil?
-          @name = n.to_sym
+      ##
+      # Retrieves and optionally sets the index name
+      #
+      # Parameters::
+      #   * [ +Symbol+ +new_name+ ] an optional new name for the index
+      #
+      # Return value::
+      #   The name of the index
+      def name(new_name=nil)
+        if !new_name.nil?
+          @name = new_name.to_sym
         end
         @name
       end
