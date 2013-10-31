@@ -1,6 +1,7 @@
 require "mongoid"
 require "mongoid-giza/version"
 require "mongoid-giza/index"
+require "mongoid-giza/instance"
 require "mongoid-giza/index/field"
 require "mongoid-giza/index/attribute"
 
@@ -36,6 +37,7 @@ module Mongoid # :nodoc:
       def search_index(&block)
         index = Index.new
         index.instance_eval(&block)
+        Mongoid::Giza::Instance.indexes[index.name] = index
         index
       end
     end
