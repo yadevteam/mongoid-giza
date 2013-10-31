@@ -1,6 +1,6 @@
 require "yaml"
 
-module Mongoid
+module Mongoid # :nodoc:
   module Giza
     ##
     # Holds the configuration of the module
