@@ -1,6 +1,6 @@
 require "yaml"
 
-module Mongoid # :nodoc:
+module Mongoid
   module Giza
     ##
     # Holds the configuration of the module
@@ -11,8 +11,7 @@ module Mongoid # :nodoc:
         # Loads a YAML file with settings defined.
         # Settings that are not recognized are ignored
         #
-        # Parameters::
-        #   * [ +String+ +path+ ] path to the YAML file which contains the settings defined
+        # @param path [String] path to the YAML file which contains the settings defined
         def load(path)
           YAML.load(File.open(path).read).each do |setting, value|
             method_name = "#{setting}="

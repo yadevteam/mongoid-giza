@@ -6,21 +6,22 @@ require "mongoid-giza/index/attribute"
 require "mongoid-giza/instance"
 require "mongoid-giza/version"
 
-module Mongoid # :nodoc:
+module Mongoid
   ##
   # Module that should be included in a Mongoid::Document in order to
   # index fields of documents of this class
   #
-  # Examples::
-  #  Creating a simple index with a fulltext search field (named :+fts+) and an attribute (named :+attr+)
-  #   class C
+  # @example Creating a simple index with a full-text field (named fts) and an attribute (named attr)
+  #   class Person
   #     include Mongoid::Document
   #     include Mongoid::Giza
-  #     field :fts
-  #     field :attr, type: Integer
+  #
+  #     field :name
+  #     field :age, type: Integer
+  #
   #     search_index do
-  #       field :fts
-  #       attribute :attr
+  #       field :name
+  #       attribute :age
   #     end
   #   end
   module Giza
@@ -30,11 +31,9 @@ module Mongoid # :nodoc:
       ##
       # Class method that defines a index relative to the current model's documents
       #
-      # Parameters::
-      #   * [ +Proc+ +block+ ] a block that will be evaluated on a +Mongoid+::+Giza+::+Index+
+      # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
       #
-      # Return value::
-      #   The new index
+      # @return [Mongoid::Giza::Index] the new index
       def search_index(&block)
         index = Index.new
         index.instance_eval(&block)

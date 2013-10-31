@@ -1,5 +1,5 @@
-module Mongoid # :nodoc:
+module Mongoid
   module Giza
-    VERSION = "0.0.1" # :nodoc:
+    VERSION = "0.0.1"
   end
 end

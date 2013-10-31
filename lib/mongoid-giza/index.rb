@@ -1,4 +1,4 @@
-module Mongoid # :nodoc:
+module Mongoid
   module Giza
     ##
     # Represents a Sphinx index
@@ -30,9 +30,8 @@ module Mongoid # :nodoc:
       #
       # Note that no validations are made on class, so classes that behave like Mongoid::Document should be fine.
       #
-      # Parameters::
-      #   * [ Class klass ] the class whose objects will be indexed
-      #   * [ Hash settings ] an optional settings hash to be forwarded to Riddle
+      # @param klass [Class] the class whose objects will be indexed
+      # @param settings [Hash] an optional settings hash to be forwarded to Riddle
       def initialize(klass, settings={})
         @klass = klass
         @settings = settings
@@ -41,15 +40,14 @@ module Mongoid # :nodoc:
         @attributes = []
       end
       ##
-      # Adds a fulltext search field to the index with the corresponding name.
+      # Adds a full-text field to the index with the corresponding name
       #
       # If a block is given then it will be evaluated for each instance of the class being indexed
       # and the resulting string will be the field value.
       # Otherwise the field value will be the value of the corresponding object field
       #
-      # Parameters::
-      #   * [ +Symbol+ +name+ ] the name of the field
-      #   * [ +Proc+ +block+ ] an optional block to be evaluated
+      # @param name [Symbol] the name of the field
+      # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
       def field(name, &block)
         @fields << Mongoid::Giza::Index::Field.new(name, block)
       end
@@ -57,16 +55,15 @@ module Mongoid # :nodoc:
       # Adds an attribute to the index with the corresponding name.
       #
       # If a type is not given then it will try to fetch the type of the corresponding class field,
-      # falling back to +:string+
+      # falling back to :string
       #
       # If a block is given then it will be evaluated for each instance of the class being indexed
       # and the resulting value will be the attribute value.
       # Otherwise the attribute value will be the value of the corresponding object field
       #
-      # Parameters::
-      #   * [ +Symbol+ +name+ ] the name of the attribute
-      #   * [ +Symbol+ +type+ ] an optional attribute type
-      #   * [ +Proc+ +block+ ] an optional block to be evaluated
+      # @param name [Symbol] the name of the attribute
+      # @param type [Symbol] an optional attribute type
+      # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
       def attribute(name, type=nil, &block)
         if type.nil?
           field = @klass.fields[name.to_s]
@@ -78,11 +75,9 @@ module Mongoid # :nodoc:
       ##
       # Retrieves and optionally sets the index name
       #
-      # Parameters::
-      #   * [ +Symbol+ +new_name+ ] an optional new name for the index
+      # @param new_name [Symbol, String] an optional new name for the index
       #
-      # Return value::
-      #   The name of the index
+      # @return [Symbol] The name of the index
       def name(new_name=nil)
         if !new_name.nil?
           @name = new_name.to_sym
