@@ -1,9 +1,10 @@
 require "mongoid"
-require "mongoid-giza/version"
+require "mongoid-giza/config"
 require "mongoid-giza/index"
-require "mongoid-giza/instance"
 require "mongoid-giza/index/field"
 require "mongoid-giza/index/attribute"
+require "mongoid-giza/instance"
+require "mongoid-giza/version"
 
 module Mongoid # :nodoc:
   ##
