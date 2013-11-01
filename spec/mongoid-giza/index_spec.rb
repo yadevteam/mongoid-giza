@@ -6,6 +6,7 @@ describe Mongoid::Giza::Index do
     allow(klass).to receive(:name) { "Klass" }
     klass
   end
+
   let(:index) { Mongoid::Giza::Index.new(klass) }
 
   it "should have a list of fields" do
@@ -34,6 +35,7 @@ describe Mongoid::Giza::Index do
 
   describe "field" do
     let(:field) { double("field") }
+
     let(:name) { "field" }
 
     it "should require a name" do
@@ -59,6 +61,7 @@ describe Mongoid::Giza::Index do
 
   describe "attribute" do
     let(:name) { "attribute" }
+
     let(:type) { :uint }
 
     it "should require a name" do

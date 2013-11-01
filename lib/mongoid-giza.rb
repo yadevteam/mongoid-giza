@@ -36,7 +36,7 @@ module Mongoid
       #
       # @return [Mongoid::Giza::Index] the new index
       def search_index(&block)
-        index = Index.new
+        index = Index.new(self)
         index.instance_eval(&block)
         Mongoid::Giza::Instance.indexes[index.name] = index
         index
