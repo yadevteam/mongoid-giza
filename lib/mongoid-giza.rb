@@ -4,6 +4,7 @@ require "mongoid-giza/index"
 require "mongoid-giza/index/field"
 require "mongoid-giza/index/attribute"
 require "mongoid-giza/instance"
+require "mongoid-giza/search"
 require "mongoid-giza/version"
 
 module Mongoid
