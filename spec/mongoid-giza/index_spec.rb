@@ -43,12 +43,17 @@ describe Mongoid::Giza::Index do
     end
 
     it "should create a new Field" do
-      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, nil)
+      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, false, nil)
       index.field(name)
     end
 
+    it "should accept :attribute as an option" do
+      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, true, nil)
+      index.field(name, attribute: true)
+    end
+
     it "should accept a block" do
-      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, kind_of(Proc))
+      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, false, kind_of(Proc))
       index.field(name) { }
     end
 

@@ -4,7 +4,7 @@ module Mongoid
       ##
       # Represents a Sphinx index {http://sphinxsearch.com/docs/current.html#fields full-text field}
       class Field
-        attr_accessor :name, :block
+        attr_accessor :name, :attribute, :block
         ##
         # Creates a full-text field with a name and an optional block
         #
@@ -13,9 +13,12 @@ module Mongoid
         # Otherwise the field value will be the value of the corresponding object field
         #
         # @param name [Symbol] the name of the field
+        # @param attribute [TrueClass, FalseClass] whether this field will also be stored as an string attribute
+        #   (see {http://sphinxsearch.com/docs/current.html#conf-xmlpipe-field-string})
         # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
-        def initialize(name, &block)
+        def initialize(name, attribute=false, &block)
           @name = name
+          @attribute = attribute
           @block = block
         end
       end

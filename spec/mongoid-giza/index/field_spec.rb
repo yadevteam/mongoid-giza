@@ -13,6 +13,11 @@ describe Mongoid::Giza::Index::Field do
     end
   end
 
+  it "should accept string attribute" do
+    field = Mongoid::Giza::Index::Field.new("field", true)
+    expect(field.attribute).to eql(true)
+  end
+
   it "should accept a block" do
     field = Mongoid::Giza::Index::Field.new("field") { }
     expect(field.block).to be_a(Proc)
