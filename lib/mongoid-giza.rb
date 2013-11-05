@@ -25,6 +25,14 @@ module Mongoid
   #       attribute :age
   #     end
   #   end
+  #
+  # @example Searching the previously defined index for people named John between 18 and 59 years old
+  #   results = Person.search do
+  #     fulltext "john"
+  #     with age: 18..59
+  #   end
+  #
+  #   results[:Person].first # => First object that matched
   module Giza
     extend ActiveSupport::Concern
 
