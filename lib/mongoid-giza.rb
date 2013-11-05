@@ -33,13 +33,29 @@ module Mongoid
       # Class method that defines a index relative to the current model's documents
       #
       # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
-      #
-      # @return [Mongoid::Giza::Index] the new index
       def search_index(&block)
         index = Index.new(self)
         index.instance_eval(&block)
         Mongoid::Giza::Instance.indexes[index.name] = index
-        index
+        (@sphinx_indexes ||= []) << index.name
+      end
+      ##
+      # Class method that implements a search DSL using a {Mongoid::Giza::Search} object.
+      # The search will run on indexes defined on the class unless it's overwritten using {Mongoid::Giza::Search#indexes=}
+      #
+      # @param block [Proc] a block that will be evaluated on a {Mongoid::Giza::Search}
+      #
+      # @return [Hash, Array] a Riddle result hash containing an additional key with the name of the class
+      #   if only one {Mongoid::Giza::Search#fulltext} query was defined.
+      #   If two or more were defined then returns an Array containing results Hashes as described above,
+      #   one element for each {Mongoid::Giza::Search#fulltext} query
+      def search(&block)
+        search = Mongoid::Giza::Search.new(Mongoid::Giza::Config.host, Mongoid::Giza::Config.port)
+        search.indexes = @sphinx_indexes.join(" ")
+        search.instance_eval(&block)
+        results = search.run
+        results.each { |result| result[self.name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
+        results.length > 1 ? results : results.first
       end
     end
   end
