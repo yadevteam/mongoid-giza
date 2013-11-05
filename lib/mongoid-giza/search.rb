@@ -5,22 +5,18 @@ module Mongoid
     ##
     # Executes queries on Sphinx
     class Search
+      attr_accessor :indexes
       attr_reader :client
       ##
       # Creates a new search
       #
       # @param host [String] the host address of sphinxd
       # @param port [Fixnum] the TCP port of sphinxd
-      def initialize(host, port)
+      # @param indexes [String] an optional string define the indexes that the search will run on.
+      #   Defaults to "*" which means all indexes
+      def initialize(host, port, indexes="*")
         @client = Riddle::Client.new(host, port)
-      end
-      ##
-      # Retrieves the indexes in which this search will be performed on.
-      # "*" is the default, which means all indexes
-      #
-      # @return [String] a string of all indexes separated by spaces
-      def indexes
-        @indexes ||= "*"
+        @indexes = indexes || "*"
       end
       ##
       # Sets the search criteria on full-text fields
