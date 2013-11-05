@@ -72,11 +72,6 @@ describe Mongoid::Giza::Search do
       expect(client).to receive(:run) { [1, 2] }
       expect(search.run).to eql([1, 2])
     end
-
-    it "should return a single result if only one query is present" do
-      allow(client).to receive(:run) { [{result: true}] }
-      expect(search.run).to be_a_kind_of(Hash)
-    end
   end
 
   describe "riddle methods mapping" do

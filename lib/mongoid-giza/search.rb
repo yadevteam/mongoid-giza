@@ -53,11 +53,9 @@ module Mongoid
       ##
       # Executes the configured queries
       #
-      # @return [Hash, Array] if only one query was defined with {#fulltext} then it will return a Hash as specified by Riddle::Response.
-      #   If multiples queries were defined it will return an arrays of Hashes as specified by Riddle::Response
+      # @return [Array] an Array of Hashes as specified by Riddle::Response
       def run
-        results = @client.run
-        results.length > 1 ? results : results.first
+        @client.run
       end
       ##
       # Checks for methods on Riddle::Client
