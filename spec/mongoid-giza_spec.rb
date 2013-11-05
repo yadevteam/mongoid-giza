@@ -71,8 +71,8 @@ describe Mongoid::Giza do
 
   describe "search" do
     before do
-      allow(Mongoid::Giza::Config).to receive(:host) { "localhost" }
-      allow(Mongoid::Giza::Config).to receive(:port) { 9132 }
+      allow(Mongoid::Giza::Configuration.instance.searchd).to receive(:address) { "localhost" }
+      allow(Mongoid::Giza::Configuration.instance.searchd).to receive(:port) { 9132 }
     end
 
     it "should create a search" do

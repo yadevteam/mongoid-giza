@@ -1,5 +1,5 @@
 require "mongoid"
-require "mongoid-giza/config"
+require "mongoid-giza/configuration"
 require "mongoid-giza/index"
 require "mongoid-giza/index/field"
 require "mongoid-giza/index/attribute"
@@ -58,7 +58,8 @@ module Mongoid
       #   If two or more were defined then returns an Array containing results Hashes as described above,
       #   one element for each {Mongoid::Giza::Search#fulltext} query
       def search(&block)
-        search = Mongoid::Giza::Search.new(Mongoid::Giza::Config.host, Mongoid::Giza::Config.port)
+        config = Mongoid::Giza::Configuration.instance
+        search = Mongoid::Giza::Search.new(config.searchd.address, config.searchd.port)
         search.indexes = @sphinx_indexes.join(" ")
         search.instance_eval(&block)
         results = search.run
