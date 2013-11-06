@@ -52,7 +52,7 @@ module Mongoid
       # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
       def field(name, options={}, &block)
         attribute = options[:attribute].nil? ? false : true
-        @fields << Mongoid::Giza::Index::Field.new(name, attribute, block)
+        @fields << Mongoid::Giza::Index::Field.new(name, attribute, &block)
       end
       ##
       # Adds an attribute to the index with the corresponding name.
@@ -73,7 +73,7 @@ module Mongoid
           type = field.nil? ? Mongoid::Giza::Index::TYPES_MAP.values.first :
             Mongoid::Giza::Index::TYPES_MAP[field.type] || Mongoid::Giza::Index::TYPES_MAP.values.first
         end
-        @attributes << Mongoid::Giza::Index::Attribute.new(name, type, block)
+        @attributes << Mongoid::Giza::Index::Attribute.new(name, type, &block)
       end
       ##
       # Retrieves and optionally sets the index name

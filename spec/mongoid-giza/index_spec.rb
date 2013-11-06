@@ -43,18 +43,13 @@ describe Mongoid::Giza::Index do
     end
 
     it "should create a new Field" do
-      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, false, nil)
+      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, false)
       index.field(name)
     end
 
     it "should accept :attribute as an option" do
-      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, true, nil)
+      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, true)
       index.field(name, attribute: true)
-    end
-
-    it "should accept a block" do
-      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, false, kind_of(Proc))
-      index.field(name) { }
     end
 
     it "should add the new field to the list of fields" do
@@ -74,13 +69,8 @@ describe Mongoid::Giza::Index do
     end
 
     it "should accept a type" do
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, type, nil)
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, type)
       index.attribute(name, type)
-    end
-
-    it "should accept a block" do
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, type, kind_of(Proc))
-      index.attribute(name, type) { }
     end
 
     it "should automatically define the type when it is not supplied" do
@@ -94,7 +84,7 @@ describe Mongoid::Giza::Index do
         end
         fields
       end
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP[type], nil)
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP[type])
       index.attribute(name)
     end
 
@@ -104,7 +94,7 @@ describe Mongoid::Giza::Index do
         allow(fields).to receive(:[]).with(name) { nil }
         fields
       end
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, nil)
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
       index.attribute(name)
     end
 
@@ -118,7 +108,7 @@ describe Mongoid::Giza::Index do
         end
         fields
       end
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, nil)
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
       index.attribute(name)
     end
   end
