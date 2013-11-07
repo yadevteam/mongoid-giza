@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "mongoid", ">= 3.1"
   spec.add_runtime_dependency "riddle", ">= 1.5"
+  spec.add_runtime_dependency "builder", ">= 3.0"
 end

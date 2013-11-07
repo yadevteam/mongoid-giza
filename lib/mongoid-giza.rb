@@ -6,6 +6,7 @@ require "mongoid-giza/index/attribute"
 require "mongoid-giza/instance"
 require "mongoid-giza/search"
 require "mongoid-giza/version"
+require "mongoid-giza/xml_pipe2"
 
 module Mongoid
   ##
