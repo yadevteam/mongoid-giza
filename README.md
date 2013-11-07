@@ -1,4 +1,4 @@
-# Mongoid-Giza [![Build Status](https://travis-ci.org/yadevteam/mongoid-giza.png)](https://travis-ci.org/yadevteam/mongoid-giza) [![Code Climate](https://codeclimate.com/github/yadevteam/mongoid-giza.png)](https://codeclimate.com/github/yadevteam/mongoid-giza) [![Coverage Status](https://coveralls.io/repos/yadevteam/mongoid-giza/badge.png)](https://coveralls.io/r/yadevteam/mongoid-giza)
+# Mongoid::Giza [![Build Status](https://travis-ci.org/yadevteam/mongoid-giza.png)](https://travis-ci.org/yadevteam/mongoid-giza) [![Code Climate](https://codeclimate.com/github/yadevteam/mongoid-giza.png)](https://codeclimate.com/github/yadevteam/mongoid-giza) [![Coverage Status](https://coveralls.io/repos/yadevteam/mongoid-giza/badge.png)](https://coveralls.io/r/yadevteam/mongoid-giza)
 
 Mongoid layer for the Sphinx fulltext search server that supports block fields and dynamic indexes
 

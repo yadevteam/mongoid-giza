@@ -1,12 +1,12 @@
 require "mongoid"
-require "mongoid-giza/configuration"
-require "mongoid-giza/index"
-require "mongoid-giza/index/field"
-require "mongoid-giza/index/attribute"
-require "mongoid-giza/instance"
-require "mongoid-giza/search"
-require "mongoid-giza/version"
-require "mongoid-giza/xml_pipe2"
+require "mongoid/giza/configuration"
+require "mongoid/giza/index"
+require "mongoid/giza/index/field"
+require "mongoid/giza/index/attribute"
+require "mongoid/giza/instance"
+require "mongoid/giza/search"
+require "mongoid/giza/version"
+require "mongoid/giza/xml_pipe2"
 
 module Mongoid
   ##

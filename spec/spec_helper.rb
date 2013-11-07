@@ -8,7 +8,7 @@ require 'coveralls'
 Coveralls.wear!
 
 require "mongoid-rspec"
-require "mongoid-giza"
+require "mongoid/giza"
 
 MONGOID_CONFIG = {
   sessions: {
