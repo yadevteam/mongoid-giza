@@ -18,7 +18,7 @@ module Mongoid
       # The buffer passed on object creation will contain the XML
       def generate!
         @xml.instruct! :xml, version: "1.0", encoding: "utf-8"
-        @xml.sphinx :docset do |docset|
+        @xml.sphinx :docset do
           generate_schema
           generate_docset
         end
@@ -41,9 +41,21 @@ module Mongoid
       # Used internally by {#generate!} so you should never need to call it directly
       def generate_docset
         @index.klass.all.each do |object|
-          @xml.sphinx :document, id: object[:giza_id] do |document|
-            @index.fields.each { |field| document.tag! field.name, object[field.name].to_s }
-            @index.attributes.each { |attribute| document.tag! attribute.name, object[attribute.name].to_s }
+          @xml.sphinx :document, id: object[:giza_id] do
+            generate_doc_tags(@index.fields, object)
+            generate_doc_tags(@index.attributes, object)
+          end
+        end
+      end
+      ##
+      # Generates the tags with the content to be indexed of every field or attribute.
+      # Used internally by {#generate_docset} so you should never need to call it directly
+      def generate_doc_tags(contents, object)
+        contents.each do |content|
+          if content.block.nil?
+            @xml.tag! content.name, object[content.name]
+          else
+            @xml.tag! content.name, content.block.call(object)
           end
         end
       end

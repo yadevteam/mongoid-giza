@@ -33,18 +33,48 @@ describe Mongoid::Giza::XMLPipe2 do
   end
 
   describe "generate_docset" do
-    it "should generate the document entries" do
-      person = double("Person")
+    before do
+      person_class = double("Person")
       field = double("field")
       attribute = double("attribute")
-      allow(@index).to receive(:klass) { person }
+      person = {giza_id: 1}
+      allow(@index).to receive(:klass) { person_class }
       allow(@index).to receive(:fields) { [field] }
       allow(@index).to receive(:attributes) { [attribute] }
-      allow(person).to receive(:all) { [{giza_id: 1, name: "Person One", age: 25}] }
-      allow(field).to receive(:name) { :name }
-      allow(attribute).to receive(:name) { :age }
-      xmlpipe2.generate_docset
-      expect(@buffer).to eql('<sphinx:document id="1"><name>Person One</name><age>25</age></sphinx:document>')
+      allow(person_class).to receive(:all) { [person] }
+      allow(xmlpipe2).to receive(:generate_doc_tags).with([field], person) do
+        @buffer << "<name>Person One</name>"
+      end
+      allow(xmlpipe2).to receive(:generate_doc_tags).with([attribute], person) do
+        @buffer << "<age>25</age>"
+      end
+    end
+
+    context "static fields and attributes" do
+      it "should generate the document entries" do
+        xmlpipe2.generate_docset
+        expect(@buffer).to eql('<sphinx:document id="1"><name>Person One</name><age>25</age></sphinx:document>')
+      end
+    end
+  end
+
+  describe "generate_doc_tags" do
+    before do
+      name = double("name")
+      bio = double("bio")
+      @fields = [name, bio]
+      @person = {name: "Person One", bio: "About me"}
+      allow(name).to receive(:name) { :name }
+      allow(name).to receive(:block) do
+        Proc.new { |document| document[:name].upcase }
+      end
+      allow(bio).to receive(:name) { :bio }
+      allow(bio).to receive(:block) { nil }
+    end
+
+    it "should generate all tags for the given fields or attributes" do
+      xmlpipe2.generate_doc_tags(@fields, @person)
+      expect(@buffer).to eql('<name>PERSON ONE</name><bio>About me</bio>')
     end
   end
 
