@@ -64,7 +64,7 @@ module Mongoid
         search.indexes = @sphinx_indexes.join(" ")
         search.instance_eval(&block)
         results = search.run
-        results.each { |result| result[self.name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
+        results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
         results.length > 1 ? results : results.first
       end
     end
