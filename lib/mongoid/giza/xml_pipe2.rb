@@ -50,6 +50,9 @@ module Mongoid
       ##
       # Generates the tags with the content to be indexed of every field or attribute.
       # Used internally by {#generate_docset} so you should never need to call it directly
+      #
+      # @param contents [Array] list of fields or attributes to generate the tags for
+      # @param object [Object] the object being indexed
       def generate_doc_tags(contents, object)
         contents.each do |content|
           if content.block.nil?
