@@ -35,14 +35,12 @@ describe Mongoid::Giza::XMLPipe2 do
   describe "generate_docset" do
     it "should generate the document entries" do
       person = double("Person")
-      collection = double("collection")
       field = double("field")
       attribute = double("attribute")
       allow(@index).to receive(:klass) { person }
       allow(@index).to receive(:fields) { [field] }
       allow(@index).to receive(:attributes) { [attribute] }
-      allow(person).to receive(:collection) { collection }
-      allow(collection).to receive(:find) { [{"giza_id" => 1, "name" => "Person One", "age" => 25}] }
+      allow(person).to receive(:all) { [{giza_id: 1, name: "Person One", age: 25}] }
       allow(field).to receive(:name) { :name }
       allow(attribute).to receive(:name) { :age }
       xmlpipe2.generate_docset

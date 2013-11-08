@@ -40,10 +40,10 @@ module Mongoid
       # Generates the content part of the XML document.
       # Used internally by {#generate!} so you should never need to call it directly
       def generate_docset
-        @index.klass.collection.find.each do |object|
-          @xml.sphinx :document, id: object["giza_id"] do |document|
-            @index.fields.each { |field| document.tag! field.name, object[field.name.to_s].to_s }
-            @index.attributes.each { |attribute| document.tag! attribute.name, object[attribute.name.to_s].to_s }
+        @index.klass.all.each do |object|
+          @xml.sphinx :document, id: object[:giza_id] do |document|
+            @index.fields.each { |field| document.tag! field.name, object[field.name].to_s }
+            @index.attributes.each { |attribute| document.tag! attribute.name, object[attribute.name].to_s }
           end
         end
       end
