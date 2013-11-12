@@ -8,6 +8,13 @@ module Mongoid
     class Configuration < Riddle::Configuration
       include Singleton
       ##
+      # Creates the configuration instance
+      def initialize
+        super
+        source = Riddle::Configuration::XMLSource.new("source", :xmlpipe2)
+        @index = Riddle::Configuration::Index.new("index", source)
+      end
+      ##
       # Loads a YAML file with settings defined.
       # Settings that are not recognized are ignored
       #

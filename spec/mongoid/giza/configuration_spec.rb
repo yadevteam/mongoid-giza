@@ -3,6 +3,12 @@ require "spec_helper"
 describe Mongoid::Giza::Configuration do
   let(:config) { Mongoid::Giza::Configuration.instance }
 
+  describe "initialize" do
+    it "should create a Riddle::Configuration::Index for default settings" do
+      expect(config.instance_variable_get("@index")).to be_a_kind_of(Riddle::Configuration::Index)
+    end
+  end
+
   describe "load" do
     let(:file) { double("file") }
 
