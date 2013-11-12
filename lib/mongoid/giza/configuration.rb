@@ -23,6 +23,19 @@ module Mongoid
           end
         end
       end
+      ##
+      # Adds an index to the configuration file
+      #
+      # @param index [Mongoid::Giza::Index] the index to generate the configuration from
+      def add_index(index)
+        source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
+        riddle_index = Riddle::Configuration::Index.new(index.name, source)
+        index.settings.each do |setting, value|
+          method = "#{setting}="
+          riddle_index.send(method, value) if riddle_index.respond_to?(method)
+        end
+        @indices << riddle_index
+      end
     end
   end
 end
