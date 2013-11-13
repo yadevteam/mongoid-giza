@@ -49,20 +49,25 @@ describe Mongoid::Giza::Configuration do
       index
     end
 
+    let(:riddle_index) { double("riddle_index") }
+
     it "should add an Riddle::Configuration::Index" do
       allow(Riddle::Configuration::XMLSource).to receive(:new) { double("source").as_null_object }
+      allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
       expect { config.add_index(index) }.to change{config.indices.length}.by(1)
     end
 
     it "should create a xmlpipe2 source with the same name of the index" do
       expect(Riddle::Configuration::XMLSource).to receive(:new).with(index.name, :xmlpipe2) { double("source").as_null_object }
+      allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
       config.add_index(index)
     end
 
     it "should apply the settings defined" do
+      allow(Riddle::Configuration::Index).to receive(:new) { riddle_index }
       allow(index).to receive(:settings) { {html_strip: 1} }
+      expect(riddle_index).to receive("html_strip=").with(1)
       config.add_index(index)
-      expect(config.indices.last.html_strip).to eql(1)
     end
   end
 end
