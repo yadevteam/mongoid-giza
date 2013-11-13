@@ -11,8 +11,8 @@ module Mongoid
       # Creates the configuration instance
       def initialize
         super
-        source = Riddle::Configuration::XMLSource.new("source", :xmlpipe2)
-        @index = Riddle::Configuration::Index.new("index", source)
+        source = Riddle::Configuration::XMLSource.new(:source, :xmlpipe2)
+        @index = Riddle::Configuration::Index.new(:index, source)
       end
       ##
       # Loads a YAML file with settings defined.
@@ -37,10 +37,15 @@ module Mongoid
       def add_index(index)
         source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
         riddle_index = Riddle::Configuration::Index.new(index.name, source)
+        Riddle::Configuration::Index.settings.each do |setting|
+          value = @index.send("#{setting}")
+          riddle_index.send("#{setting}=", value)
+        end
         index.settings.each do |setting, value|
           method = "#{setting}="
           riddle_index.send(method, value) if riddle_index.respond_to?(method)
         end
+        riddle_index.path = File.join(riddle_index.path, index.name.to_s)
         @indices << riddle_index
       end
     end
