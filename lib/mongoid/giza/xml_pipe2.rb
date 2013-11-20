@@ -3,7 +3,7 @@ require "builder"
 module Mongoid
   module Giza
     class XMLPipe2
-      ##
+
       # Creates a new XMLPipe2 object based on the specified index and that will write to the specified buffer.
       # Note that the actual XML will be generated only when {#generate!} is called
       #
@@ -13,7 +13,7 @@ module Mongoid
         @index = index
         @xml = Builder::XmlMarkup.new(target: buffer)
       end
-      ##
+
       # Generates a XML document with the {http://sphinxsearch.com/docs/current.html#xmlpipe2 xmlpipe2 specification}.
       # The buffer passed on object creation will contain the XML
       def generate!
@@ -23,7 +23,7 @@ module Mongoid
           generate_docset
         end
       end
-      ##
+
       # Generates the schema part of the XML document.
       # Used internally by {#generate!} so you should never need to call it directly
       def generate_schema
@@ -36,7 +36,7 @@ module Mongoid
           @index.attributes.each { |attribute| schema.sphinx :attr, name: attribute.name, type: attribute.type }
         end
       end
-      ##
+
       # Generates the content part of the XML document.
       # Used internally by {#generate!} so you should never need to call it directly
       def generate_docset
@@ -47,7 +47,7 @@ module Mongoid
           end
         end
       end
-      ##
+
       # Generates the tags with the content to be indexed of every field or attribute.
       # Used internally by {#generate_docset} so you should never need to call it directly
       #

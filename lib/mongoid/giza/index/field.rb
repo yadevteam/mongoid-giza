@@ -1,11 +1,11 @@
 module Mongoid
   module Giza
     class Index
-      ##
+
       # Represents a Sphinx index {http://sphinxsearch.com/docs/current.html#fields full-text field}
       class Field
         attr_accessor :name, :attribute, :block
-        ##
+
         # Creates a full-text field with a name and an optional block
         #
         # If a block is given then it will be evaluated for each instance of the class being indexed

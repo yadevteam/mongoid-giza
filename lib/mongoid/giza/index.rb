@@ -1,9 +1,9 @@
 module Mongoid
   module Giza
-    ##
+
     # Represents a Sphinx index
     class Index
-      ##
+
       # Hash in which each key is a class accepted by +Mongoid+
       # and its value is a compatible Sphix attribute type
       TYPES_MAP = {
@@ -25,7 +25,7 @@ module Mongoid
       }
 
       attr_accessor :klass, :settings, :fields, :attributes
-      ##
+
       # Creates a new index with a class, which should include Mongoid::Document, and an optional settings hash.
       #
       # Note that no validations are made on class, so classes that behave like Mongoid::Document should be fine.
@@ -39,7 +39,7 @@ module Mongoid
         @fields = []
         @attributes = []
       end
-      ##
+
       # Adds a full-text field to the index with the corresponding name
       #
       # If a block is given then it will be evaluated for each instance of the class being indexed
@@ -54,7 +54,7 @@ module Mongoid
         attribute = options[:attribute].nil? ? false : true
         @fields << Mongoid::Giza::Index::Field.new(name, attribute, &block)
       end
-      ##
+
       # Adds an attribute to the index with the corresponding name.
       #
       # If a type is not given then it will try to fetch the type of the corresponding class field,
@@ -75,7 +75,7 @@ module Mongoid
         end
         @attributes << Mongoid::Giza::Index::Attribute.new(name, type, &block)
       end
-      ##
+
       # Retrieves and optionally sets the index name
       #
       # @param new_name [Symbol, String] an optional new name for the index

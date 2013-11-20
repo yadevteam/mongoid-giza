@@ -9,7 +9,7 @@ require "mongoid/giza/version"
 require "mongoid/giza/xml_pipe2"
 
 module Mongoid
-  ##
+
   # Module that should be included in a Mongoid::Document in order to
   # index fields of documents of this class
   #
@@ -38,7 +38,7 @@ module Mongoid
     extend ActiveSupport::Concern
 
     module ClassMethods
-      ##
+
       # Class method that defines a index relative to the current model's documents
       #
       # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
@@ -48,7 +48,7 @@ module Mongoid
         Mongoid::Giza::Instance.indexes[index.name] = index
         (@sphinx_indexes ||= []) << index.name
       end
-      ##
+
       # Class method that implements a search DSL using a {Mongoid::Giza::Search} object.
       # The search will run on indexes defined on the class unless it's overwritten using {Mongoid::Giza::Search#indexes=}
       #

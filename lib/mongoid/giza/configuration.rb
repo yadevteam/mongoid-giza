@@ -3,18 +3,18 @@ require "yaml"
 
 module Mongoid
   module Giza
-    ##
+
     # Holds the configuration of the module
     class Configuration < Riddle::Configuration
       include Singleton
-      ##
+
       # Creates the configuration instance
       def initialize
         super
         source = Riddle::Configuration::XMLSource.new(:source, :xmlpipe2)
         @index = Riddle::Configuration::Index.new(:index, source)
       end
-      ##
+
       # Loads a YAML file with settings defined.
       # Settings that are not recognized are ignored
       #
@@ -30,7 +30,7 @@ module Mongoid
           end
         end
       end
-      ##
+
       # Adds an index to the configuration file
       #
       # @param index [Mongoid::Giza::Index] the index to generate the configuration from

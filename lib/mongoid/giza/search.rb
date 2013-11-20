@@ -2,12 +2,12 @@ require "riddle"
 
 module Mongoid
   module Giza
-    ##
+
     # Executes queries on Sphinx
     class Search
       attr_accessor :indexes
       attr_reader :client
-      ##
+
       # Creates a new search
       #
       # @param host [String] the host address of sphinxd
@@ -18,14 +18,14 @@ module Mongoid
         @client = Riddle::Client.new(host, port)
         @indexes = indexes || "*"
       end
-      ##
+
       # Sets the search criteria on full-text fields
       #
       # @param query [String] a sphinx query string based on the current {http://sphinxsearch.com/docs/current.html#matching-modes matching mode}
       def fulltext(query)
         @client.append_query(query, indexes)
       end
-      ##
+
       # Sets a filter based on an attribute.
       # Only documents that the attribute value matches will be returned from the search
       #
@@ -34,7 +34,7 @@ module Mongoid
       def with(attribute, value)
         @client.filters << Riddle::Client::Filter.new(attribute.to_s, value, false)
       end
-      ##
+
       # Excludes from the search documents that the attribute value matches
       #
       # @param attribute [Symbol] the attribute name
@@ -42,7 +42,7 @@ module Mongoid
       def without(attribute, value)
         @client.filters << Riddle::Client::Filter.new(attribute.to_s, value, true)
       end
-      ##
+
       # Sets the order in which the results will be returned
       #
       # @param attribute [Symbol] the attribute used for sorting
@@ -50,14 +50,14 @@ module Mongoid
       def order_by(attribute, order)
         @client.sort_by = "#{attribute} #{order.to_s.upcase}"
       end
-      ##
+
       # Executes the configured queries
       #
       # @return [Array] an Array of Hashes as specified by Riddle::Response
       def run
         @client.run
       end
-      ##
+
       # Checks for methods on Riddle::Client
       #
       # @param method [Symbol, String] the method name that will be checked on Riddle::Client
@@ -66,7 +66,7 @@ module Mongoid
       def respond_to?(method)
         @client.respond_to?("#{method}=") || super
       end
-      ##
+
       # Dynamically dispatches the method call to Riddle::Client if the method is defined in it
       #
       # @param method [Symbol, String] the method name that will be called on Riddle::Client
