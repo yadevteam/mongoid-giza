@@ -68,6 +68,11 @@ module Mongoid
           instance.send("#{setting}=", value)
         end
       end
+
+      # Renders the configuration to the output_path
+      def render
+        File.open(@file.output_path, "w") { |file| file.write(super) }
+      end
     end
   end
 end

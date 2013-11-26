@@ -139,4 +139,18 @@ describe Mongoid::Giza::Configuration do
       @config.apply_global_settings(section, global, instance)
     end
   end
+
+  describe "render" do
+    it "should render the configuration to the specified output path" do
+      file = double("file")
+      index = double("index")
+      @config.indices << index
+      allow(@config.indexer).to receive(:render) { "indexer" }
+      allow(@config.searchd).to receive(:render) { "searchd" }
+      allow(index).to receive(:render) { "source\nindex" }
+      expect(File).to receive(:open).with(@config.file.output_path, "w").and_yield(file)
+      expect(file).to receive(:write).with("indexer\nsearchd\nsource\nindex")
+      @config.render
+    end
+  end
 end
