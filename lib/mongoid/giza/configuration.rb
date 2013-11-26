@@ -56,7 +56,7 @@ module Mongoid
         @indices << riddle_index
       end
 
-      # Apply the settings definedon the configuration file to the current Index or Source.
+      # Applies the settings definedon the configuration file to the current Index or Source.
       # Used internally by {#add_index} so you should never need to call it directly
       #
       # @param section [Class] either Riddle::Configuration::Index or Riddle::Configuration::XMLSource
