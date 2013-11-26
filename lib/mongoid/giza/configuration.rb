@@ -1,5 +1,6 @@
 require "riddle"
 require "yaml"
+require "ostruct"
 
 module Mongoid
   module Giza
@@ -13,6 +14,8 @@ module Mongoid
         super
         @source = Riddle::Configuration::XMLSource.new(:source, :xmlpipe2)
         @index = Riddle::Configuration::Index.new(:index, @source)
+        @file = OpenStruct.new
+        @file.output_path = "./sphinx.conf"
       end
 
       # Loads a YAML file with settings defined.
