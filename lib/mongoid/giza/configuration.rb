@@ -9,6 +9,8 @@ module Mongoid
     class Configuration < Riddle::Configuration
       include Singleton
 
+      attr_reader :source, :index, :file
+
       # Creates the configuration instance
       def initialize
         super

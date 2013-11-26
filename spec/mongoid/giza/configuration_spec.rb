@@ -11,22 +11,20 @@ describe Mongoid::Giza::Configuration do
 
   describe "initialize" do
     it "should create a Riddle::Configuration::Index for default settings" do
-      expect(@config.instance_variable_get("@index")).to be(@default_index)
+      expect(@config.index).to be(@default_index)
     end
 
     it "should create a Riddle::Configuration::XMLSource for default settings" do
-      expect(@config.instance_variable_get("@source")).to be(@default_source)
+      expect(@config.source).to be(@default_source)
     end
 
     describe "file section" do
-      let(:file) { @config.instance_variable_get("@file") }
-
       it "should create a file section" do
-        expect(file).to be_a_kind_of(OpenStruct)
+        expect(@config.file).to be_a_kind_of(OpenStruct)
       end
 
       it "should have output path setting" do
-        expect(file.respond_to?(:output_path=)).to be(true)
+        expect(@config.file.respond_to?(:output_path=)).to be(true)
       end
     end
   end
