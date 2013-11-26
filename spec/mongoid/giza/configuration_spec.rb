@@ -91,9 +91,20 @@ describe Mongoid::Giza::Configuration do
       @config.add_index(index)
     end
 
-    it "should apply the settings defined" do
+    it "should apply the index settings defined" do
       allow(index).to receive(:settings) { {html_strip: 1} }
+      allow(riddle_index).to receive(:respond_to?) { true }
+      allow(riddle_index).to receive(:respond_to?).with("html_strip=") { true }
       expect(riddle_index).to receive(:html_strip=).with(1)
+      @config.add_index(index)
+    end
+
+    it "should apply the source settings defined" do
+      allow(index).to receive(:settings) { {xmlpipe_command: "cat /path/to/index"} }
+      allow(riddle_index).to receive(:respond_to?) { true }
+      allow(riddle_index).to receive(:respond_to?).with("xmlpipe_command=") { false }
+      allow(source).to receive(:respond_to?).with("xmlpipe_command=") { true }
+      expect(source).to receive(:xmlpipe_command=).with("cat /path/to/index")
       @config.add_index(index)
     end
 
@@ -112,9 +123,9 @@ describe Mongoid::Giza::Configuration do
       section = double("section")
       global = double("global")
       instance = double("instance")
-      allow(section).to receive(:settings) { [:xml_command] }
-      allow(global).to receive(:xml_command) { "cat /path/to/index" }
-      expect(instance).to receive(:xml_command=).with("cat /path/to/index")
+      allow(section).to receive(:settings) { [:xmlpipe_command] }
+      allow(global).to receive(:xmlpipe_command) { "cat /path/to/index" }
+      expect(instance).to receive(:xmlpipe_command=).with("cat /path/to/index")
       @config.apply_global_settings(section, global, instance)
     end
   end

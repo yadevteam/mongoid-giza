@@ -41,7 +41,11 @@ module Mongoid
         apply_global_settings(Riddle::Configuration::XMLSource, @source, source)
         index.settings.each do |setting, value|
           method = "#{setting}="
-          riddle_index.send(method, value) if riddle_index.respond_to?(method)
+          if riddle_index.respond_to?(method)
+            riddle_index.send(method, value)
+          elsif source.respond_to?(method)
+            source.send(method, value)
+          end
         end
         riddle_index.path = File.join(riddle_index.path, index.name.to_s)
         @indices << riddle_index
