@@ -11,8 +11,8 @@ module Mongoid
       # Creates the configuration instance
       def initialize
         super
-        source = Riddle::Configuration::XMLSource.new(:source, :xmlpipe2)
-        @index = Riddle::Configuration::Index.new(:index, source)
+        @source = Riddle::Configuration::XMLSource.new(:source, :xmlpipe2)
+        @index = Riddle::Configuration::Index.new(:index, @source)
       end
 
       # Loads a YAML file with settings defined.
@@ -37,16 +37,27 @@ module Mongoid
       def add_index(index)
         source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
         riddle_index = Riddle::Configuration::Index.new(index.name, source)
-        Riddle::Configuration::Index.settings.each do |setting|
-          value = @index.send("#{setting}")
-          riddle_index.send("#{setting}=", value)
-        end
+        apply_global_settings(Riddle::Configuration::Index, @index, riddle_index)
+        apply_global_settings(Riddle::Configuration::XMLSource, @source, source)
         index.settings.each do |setting, value|
           method = "#{setting}="
           riddle_index.send(method, value) if riddle_index.respond_to?(method)
         end
         riddle_index.path = File.join(riddle_index.path, index.name.to_s)
         @indices << riddle_index
+      end
+
+      # Apply the settings definedon the configuration file to the current Index or Source.
+      # Used internally by {#add_index} so you should never need to call it directly
+      #
+      # @param section [Class] either Riddle::Configuration::Index or Riddle::Configuration::XMLSource
+      # @param global [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that holds the global settings values
+      # @param instance [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that settings are being set
+      def apply_global_settings(section, global, instance)
+        section.settings.each do |setting|
+          value = global.send("#{setting}")
+          instance.send("#{setting}=", value)
+        end
       end
     end
   end

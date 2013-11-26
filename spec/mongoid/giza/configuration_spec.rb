@@ -2,16 +2,20 @@ require "spec_helper"
 
 describe Mongoid::Giza::Configuration do
   before do
-    source = double("source")
+    @default_source = double("default_source")
     @default_index = double("default_index")
-    allow(Riddle::Configuration::Source).to receive(:new).with(:source, :xmlpipe2) { source }
-    allow(Riddle::Configuration::Index).to receive(:new).with(:index, source) { @default_index }
+    allow(Riddle::Configuration::XMLSource).to receive(:new).with(:source, :xmlpipe2) { @default_source }
+    allow(Riddle::Configuration::Index).to receive(:new).with(:index, @default_source) { @default_index }
     @config = Mongoid::Giza::Configuration.send(:new)
   end
 
   describe "initialize" do
     it "should create a Riddle::Configuration::Index for default settings" do
       expect(@config.instance_variable_get("@index")).to be(@default_index)
+    end
+
+    it "should create a Riddle::Configuration::XMLSource for default settings" do
+      expect(@config.instance_variable_get("@source")).to be(@default_source)
     end
   end
 
@@ -63,6 +67,7 @@ describe Mongoid::Giza::Configuration do
       allow(Riddle::Configuration::Index).to receive(:settings) { [] }
       allow(Riddle::Configuration::XMLSource).to receive(:new) { source }
       allow(Riddle::Configuration::Index).to receive(:new).with(index.name, source) { riddle_index }
+      allow(@config).to receive(:apply_global_settings)
     end
 
     it "should add an Riddle::Configuration::Index" do
@@ -76,10 +81,13 @@ describe Mongoid::Giza::Configuration do
       @config.add_index(index)
     end
 
-    it "should load the default settings" do
-      allow(Riddle::Configuration::Index).to receive(:settings) { [:html_strip] }
-      allow(@default_index).to receive(:html_strip) { 1 }
-      expect(riddle_index).to receive(:html_strip=).with(1)
+    it "should load the global index settings" do
+      expect(@config).to receive(:apply_global_settings).with(Riddle::Configuration::Index, @default_index, riddle_index)
+      @config.add_index(index)
+    end
+
+    it "should load the global index settings" do
+      expect(@config).to receive(:apply_global_settings).with(Riddle::Configuration::XMLSource, @default_source, source)
       @config.add_index(index)
     end
 
@@ -96,6 +104,18 @@ describe Mongoid::Giza::Configuration do
       allow(riddle_index).to receive(:path) { "/path/to/index" }
       expect(riddle_index).to receive(:path=).with("/path/to/index/#{index.name}")
       @config.add_index(index)
+    end
+  end
+
+  describe "apply_global_settings" do
+    it "should set the global section settings" do
+      section = double("section")
+      global = double("global")
+      instance = double("instance")
+      allow(section).to receive(:settings) { [:xml_command] }
+      allow(global).to receive(:xml_command) { "cat /path/to/index" }
+      expect(instance).to receive(:xml_command=).with("cat /path/to/index")
+      @config.apply_global_settings(section, global, instance)
     end
   end
 end
