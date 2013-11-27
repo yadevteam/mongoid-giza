@@ -1,5 +1,3 @@
-require "riddle"
-
 module Mongoid
   module Giza
 

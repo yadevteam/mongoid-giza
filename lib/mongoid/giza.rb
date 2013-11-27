@@ -1,4 +1,5 @@
 require "mongoid"
+require "riddle"
 require "mongoid/giza/configuration"
 require "mongoid/giza/index"
 require "mongoid/giza/index/field"

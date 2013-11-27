@@ -1,4 +1,3 @@
-require "riddle"
 require "yaml"
 require "ostruct"
 
