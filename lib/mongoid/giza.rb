@@ -58,8 +58,8 @@ module Mongoid
       # Class method that defines a index relative to the current model's documents
       #
       # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
-      def search_index(&block)
-        index = Index.new(self)
+      def search_index(settings = {}, &block)
+        index = Index.new(self, settings)
         index.instance_eval(&block)
         Mongoid::Giza::Instance.indexes[index.name] = index
         (@sphinx_indexes ||= []) << index.name
