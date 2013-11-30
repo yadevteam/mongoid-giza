@@ -16,7 +16,7 @@ module Mongoid
         # @param attribute [TrueClass, FalseClass] whether this field will also be stored as an string attribute
         #   (see {http://sphinxsearch.com/docs/current.html#conf-xmlpipe-field-string})
         # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
-        def initialize(name, attribute=false, &block)
+        def initialize(name, attribute = false, &block)
           @name = name
           @attribute = attribute
           @block = block

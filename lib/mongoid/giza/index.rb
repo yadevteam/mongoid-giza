@@ -32,7 +32,7 @@ module Mongoid
       #
       # @param klass [Class] the class whose objects will be indexed
       # @param settings [Hash] an optional settings hash to be forwarded to Riddle
-      def initialize(klass, settings={})
+      def initialize(klass, settings = {})
         @klass = klass
         @settings = settings
         @name = @klass.name.to_sym
@@ -50,7 +50,7 @@ module Mongoid
       # @param options [Hash] an optional hash of options.
       #   Currently only the boolean option :attribute is avaiable (see {Mongoid::Giza::Index::Field#initialize})
       # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
-      def field(name, options={}, &block)
+      def field(name, options = {}, &block)
         attribute = options[:attribute].nil? ? false : true
         @fields << Mongoid::Giza::Index::Field.new(name, attribute, &block)
       end
@@ -67,7 +67,7 @@ module Mongoid
       # @param name [Symbol] the name of the attribute
       # @param type [Symbol] an optional attribute type
       # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
-      def attribute(name, type=nil, &block)
+      def attribute(name, type = nil, &block)
         if type.nil?
           field = @klass.fields[name.to_s]
           type = field.nil? ? Mongoid::Giza::Index::TYPES_MAP.values.first :
@@ -81,7 +81,7 @@ module Mongoid
       # @param new_name [Symbol, String] an optional new name for the index
       #
       # @return [Symbol] The name of the index
-      def name(new_name=nil)
+      def name(new_name = nil)
         if !new_name.nil?
           @name = new_name.to_sym
         end
