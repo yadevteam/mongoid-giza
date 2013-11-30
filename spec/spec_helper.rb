@@ -7,6 +7,7 @@
 require 'coveralls'
 Coveralls.wear!
 
+require "database_cleaner"
 require "mongoid-rspec"
 require "mongoid/giza"
 
@@ -35,4 +36,16 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.include Mongoid::Matchers, type: :model
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :truncation
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
 end
