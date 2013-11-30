@@ -7,6 +7,7 @@ require "mongoid/giza/index/attribute"
 require "mongoid/giza/indexer"
 require "mongoid/giza/instance"
 require "mongoid/giza/models/giza_id"
+require "mongoid/giza/railtie" if defined?(Rails)
 require "mongoid/giza/search"
 require "mongoid/giza/version"
 require "mongoid/giza/xml_pipe2"
