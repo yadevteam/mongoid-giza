@@ -23,8 +23,9 @@ module Mongoid
       # Settings that are not recognized are ignored
       #
       # @param path [String] path to the YAML file which contains the settings defined
-      def load(path)
-        YAML.load(File.open(path).read).each do |section_name, settings|
+      # @param env [String] environment whoose settings will be loaded
+      def load(path, env)
+        YAML.load(File.open(path).read)[env].each do |section_name, settings|
           section = instance_variable_get("@#{section_name}")
           if !section.nil?
             settings.each do |setting, value|

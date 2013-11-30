@@ -35,29 +35,29 @@ describe Mongoid::Giza::Configuration do
     let(:file_open) { allow(File).to receive(:open).with("giza.yml") { file } }
 
     it "should load the configuration file" do
-      expect(file).to receive(:read) { "searchd:\n  address: localhost" }
+      expect(file).to receive(:read) { "test:\n  searchd:\n    address: localhost" }
       expect(File).to receive(:open).with("giza.yml") { file }
-      @config.load("giza.yml")
+      @config.load("giza.yml", "test")
     end
 
     it "should set settings" do
-      allow(file).to receive(:read) { "searchd:\n  address: localhost" }
+      allow(file).to receive(:read) { "test:\n  searchd:\n    address: localhost" }
       file_open
-      @config.load("giza.yml")
+      @config.load("giza.yml", "test")
       expect(@config.searchd.address).to eql("localhost")
     end
 
     it "should ignore non-existent sections" do
-      allow(file).to receive(:read) { "miss_section:\n  address: localhost" }
+      allow(file).to receive(:read) { "test:\n  miss_section:\n    address: localhost" }
       file_open
-      expect { @config.load("giza.yml") }.not_to raise_error
+      expect { @config.load("giza.yml", "test") }.not_to raise_error
     end
 
     it "should ignore non-existent settings" do
-      allow(file).to receive(:read) { "searchd:\n  miss_setting: false" }
+      allow(file).to receive(:read) { "test:\n  searchd:\n    miss_setting: false" }
       expect(@config.searchd).not_to receive(:method_missing).with(:miss_setting=, false)
       file_open
-      @config.load("giza.yml")
+      @config.load("giza.yml", "test")
     end
   end
 
