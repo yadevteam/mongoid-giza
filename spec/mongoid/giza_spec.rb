@@ -2,6 +2,8 @@ require "spec_helper"
 
 describe Mongoid::Giza do
   before do
+    allow(Mongoid::Giza::GizaID).to receive(:create).with(id: :Person)
+
     class Person
       include Mongoid::Document
       include Mongoid::Giza
@@ -128,6 +130,20 @@ describe Mongoid::Giza do
       allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
       expect(Person).to receive(:in).twice { Mongoid::Criteria.new(Person) }
       Person.search { }
+    end
+  end
+
+  describe "giza_id" do
+    let(:person) { Person.new }
+
+    it "should use a previously created giza id" do
+      person[:giza_id] = 1
+      expect(person.giza_id).to eql(1)
+    end
+
+    it "should create a new giza id when needed" do
+      allow(Mongoid::Giza::GizaID).to receive(:next_id).with(:Person) { 1 }
+      expect(person.giza_id).to eql(1)
     end
   end
 end

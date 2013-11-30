@@ -41,7 +41,7 @@ module Mongoid
       # Used internally by {#generate!} so you should never need to call it directly
       def generate_docset
         @index.klass.all.each do |object|
-          @xml.sphinx :document, id: object[:giza_id] do
+          @xml.sphinx :document, id: object.giza_id do
             generate_doc_tags(@index.fields, object)
             generate_doc_tags(@index.attributes, object)
           end
