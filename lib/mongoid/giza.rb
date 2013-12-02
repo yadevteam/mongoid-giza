@@ -1,3 +1,4 @@
+require "docile"
 require "mongoid"
 require "riddle"
 require "mongoid/giza/configuration"
@@ -60,7 +61,7 @@ module Mongoid
       # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
       def search_index(settings = {}, &block)
         index = Index.new(self, settings)
-        index.instance_eval(&block)
+        Docile.dsl_eval(index, &block)
         Mongoid::Giza::Instance.indexes[index.name] = index
         (@sphinx_indexes ||= []) << index.name
       end
@@ -78,7 +79,7 @@ module Mongoid
         config = Mongoid::Giza::Configuration.instance
         search = Mongoid::Giza::Search.new(config.searchd.address, config.searchd.port)
         search.indexes = @sphinx_indexes.join(" ")
-        search.instance_eval(&block)
+        Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
         results.length > 1 ? results : results.first
