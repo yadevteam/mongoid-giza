@@ -11,7 +11,7 @@ module Mongoid
 
         # Creates the sphinx configuration file then executes the indexer on it
         def index!
-          Mongoid::Giza::Instance.indexes.each { |index| @configuration.add_index(index) }
+          Mongoid::Giza::Instance.indexes.each_value { |index| @configuration.add_index(index) }
           @configuration.render
           @controller.index
         end
