@@ -45,12 +45,8 @@ module Mongoid
         apply_global_settings(Riddle::Configuration::Index, @index, riddle_index)
         apply_global_settings(Riddle::Configuration::XMLSource, @source, source)
         index.settings.each do |setting, value|
-          method = "#{setting}="
-          if riddle_index.respond_to?(method)
-            riddle_index.send(method, value)
-          elsif source.respond_to?(method)
-            source.send(method, value)
-          end
+          apply_giza_index_setting(riddle_index, setting, value)
+          apply_giza_index_setting(source, setting, value)
         end
         riddle_index.path = File.join(riddle_index.path, index.name.to_s)
         riddle_index.charset_type = "utf-8"
@@ -68,6 +64,13 @@ module Mongoid
           method = "#{setting}="
           value = global.send("#{setting}")
           instance.send(method, value) if !value.nil? and instance.respond_to?(method)
+        end
+      end
+
+      def apply_giza_index_setting(section, setting, value)
+        method = "#{setting}="
+        if section.respond_to?(method)
+          section.send(method, value)
         end
       end
 

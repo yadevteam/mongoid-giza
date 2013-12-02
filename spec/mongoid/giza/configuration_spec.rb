@@ -78,6 +78,7 @@ describe Mongoid::Giza::Configuration do
       allow(Riddle::Configuration::XMLSource).to receive(:new) { source }
       allow(Riddle::Configuration::Index).to receive(:new).with(index.name, source) { riddle_index }
       allow(@config).to receive(:apply_global_settings)
+      allow(@config).to receive(:apply_giza_index_setting).twice
     end
 
     it "should add an Riddle::Configuration::Index" do
@@ -103,18 +104,13 @@ describe Mongoid::Giza::Configuration do
 
     it "should apply the index settings defined" do
       allow(index).to receive(:settings) { {html_strip: 1} }
-      allow(riddle_index).to receive(:respond_to?) { true }
-      allow(riddle_index).to receive(:respond_to?).with("html_strip=") { true }
-      expect(riddle_index).to receive(:html_strip=).with(1)
+      expect(@config).to receive(:apply_giza_index_setting).with(riddle_index, :html_strip, 1)
       @config.add_index(index)
     end
 
     it "should apply the source settings defined" do
       allow(index).to receive(:settings) { {xmlpipe_command: "cat /path/to/index"} }
-      allow(riddle_index).to receive(:respond_to?) { true }
-      allow(riddle_index).to receive(:respond_to?).with("xmlpipe_command=") { false }
-      allow(source).to receive(:respond_to?).with("xmlpipe_command=") { true }
-      expect(source).to receive(:xmlpipe_command=).with("cat /path/to/index")
+      expect(@config).to receive(:apply_giza_index_setting).with(source, :xmlpipe_command, "cat /path/to/index")
       @config.add_index(index)
     end
 
@@ -167,6 +163,26 @@ describe Mongoid::Giza::Configuration do
       expect(File).to receive(:open).with(@config.file.output_path, "w").and_yield(file)
       expect(file).to receive(:write).with("indexer\nsearchd\nsource\nindex")
       @config.render
+    end
+  end
+
+  describe "apply_giza_index_setting" do
+    before do
+      @section = double("section")
+      @setting = "xmlpipe_command"
+      @value = "cat /path/to/index"
+    end
+
+    it "should set the value" do
+      allow(@section).to receive(:respond_to?).with("xmlpipe_command=") { true }
+      expect(@section).to receive(:xmlpipe_command=).with("cat /path/to/index")
+      @config.apply_giza_index_setting(@section, @setting, @value)
+    end
+
+    it "should not try to set when the setting does not exists" do
+      allow(@section).to receive(:respond_to?).with("xmlpipe_command=") { false }
+      expect(@section).not_to receive(:xmlpipe_command=)
+      @config.apply_giza_index_setting(@section, @setting, @value)
     end
   end
 end
