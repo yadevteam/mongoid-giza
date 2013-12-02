@@ -4,16 +4,17 @@ module Mongoid
     # Routines related to creating the defined indexes in sphinx
     module Indexer
       @configuration = Mongoid::Giza::Configuration.instance
-      @controller = Riddle::Controller.new(@configuration, @configuration.file.output_path)
 
       class << self
-        attr_reader :controller
+        def controller
+          @controller ||= Riddle::Controller.new(@configuration, @configuration.file.output_path)
+        end
 
         # Creates the sphinx configuration file then executes the indexer on it
         def index!
           Mongoid::Giza::Instance.indexes.each_value { |index| @configuration.add_index(index) }
           @configuration.render
-          @controller.index
+          controller.index(verbose: true)
         end
       end
     end
