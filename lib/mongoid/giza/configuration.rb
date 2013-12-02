@@ -53,6 +53,7 @@ module Mongoid
           end
         end
         riddle_index.path = File.join(riddle_index.path, index.name.to_s)
+        riddle_index.charset_type = "utf-8"
         @indices << riddle_index
       end
 
