@@ -151,5 +151,17 @@ describe Mongoid::Giza do
       allow(Mongoid::Giza::GizaID).to receive(:next_id).with(:Person) { 1 }
       expect(person.giza_id).to eql(1)
     end
+
+    it "should save the object when the id is created" do
+      allow(Mongoid::Giza::GizaID).to receive(:next_id).with(:Person) { 1 }
+      expect(person).to receive(:set).with(:giza_id, 1)
+      person.giza_id
+    end
+
+    it "should not save the object when the id is reused" do
+      person[:giza_id] = 1
+      expect(person).not_to receive(:set)
+      person.giza_id
+    end
   end
 end
