@@ -122,6 +122,12 @@ describe Mongoid::Giza::Configuration do
       expect(riddle_index).to receive(:path=).with("/path/to/index/#{index.name}")
       @config.add_index(index)
     end
+
+    it "should not add the same index twice" do
+      allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
+      @config.add_index(index)
+      expect { @config.add_index(index) }.not_to change{@config.indices.length}.by(1)
+    end
   end
 
   describe "apply_global_settings" do

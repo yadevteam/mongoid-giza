@@ -17,6 +17,7 @@ module Mongoid
         @index = Riddle::Configuration::Index.new(:index, @source)
         @file = OpenStruct.new
         @file.output_path = "./sphinx.conf"
+        @index_names = []
       end
 
       # Loads a YAML file with settings defined.
@@ -40,17 +41,20 @@ module Mongoid
       #
       # @param index [Mongoid::Giza::Index] the index to generate the configuration from
       def add_index(index)
-        source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
-        riddle_index = Riddle::Configuration::Index.new(index.name, source)
-        apply_global_settings(Riddle::Configuration::Index, @index, riddle_index)
-        apply_global_settings(Riddle::Configuration::XMLSource, @source, source)
-        index.settings.each do |setting, value|
-          apply_giza_index_setting(riddle_index, setting, value)
-          apply_giza_index_setting(source, setting, value)
+        if !@index_names.include? index.name
+          source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
+          riddle_index = Riddle::Configuration::Index.new(index.name, source)
+          apply_global_settings(Riddle::Configuration::Index, @index, riddle_index)
+          apply_global_settings(Riddle::Configuration::XMLSource, @source, source)
+          index.settings.each do |setting, value|
+            apply_giza_index_setting(riddle_index, setting, value)
+            apply_giza_index_setting(source, setting, value)
+          end
+          riddle_index.path = File.join(riddle_index.path, index.name.to_s)
+          riddle_index.charset_type = "utf-8"
+          @indices << riddle_index
+          @index_names << index.name
         end
-        riddle_index.path = File.join(riddle_index.path, index.name.to_s)
-        riddle_index.charset_type = "utf-8"
-        @indices << riddle_index
       end
 
       # Applies the settings definedon the configuration file to the current Index or Source.
