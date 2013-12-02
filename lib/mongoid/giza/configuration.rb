@@ -65,7 +65,7 @@ module Mongoid
       def apply_global_settings(section, global, instance)
         section.settings.each do |setting|
           value = global.send("#{setting}")
-          instance.send("#{setting}=", value)
+          instance.send("#{setting}=", value) if !value.nil?
         end
       end
 

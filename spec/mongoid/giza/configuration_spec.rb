@@ -129,14 +129,24 @@ describe Mongoid::Giza::Configuration do
   end
 
   describe "apply_global_settings" do
+    before do
+      @section = double("section")
+      @global = double("global")
+      @instance = double("instance")
+    end
+
     it "should set the global section settings" do
-      section = double("section")
-      global = double("global")
-      instance = double("instance")
-      allow(section).to receive(:settings) { [:xmlpipe_command] }
-      allow(global).to receive(:xmlpipe_command) { "cat /path/to/index" }
-      expect(instance).to receive(:xmlpipe_command=).with("cat /path/to/index")
-      @config.apply_global_settings(section, global, instance)
+      allow(@section).to receive(:settings) { [:xmlpipe_command] }
+      allow(@global).to receive(:xmlpipe_command) { "cat /path/to/index" }
+      expect(@instance).to receive(:xmlpipe_command=).with("cat /path/to/index")
+      @config.apply_global_settings(@section, @global, @instance)
+    end
+
+    it "should not set nil values" do
+      allow(@section).to receive(:settings) { [:xmlpipe_command] }
+      allow(@global).to receive(:xmlpipe_command) { nil }
+      expect(@instance).not_to receive(:xmlpipe_command=)
+      @config.apply_global_settings(@section, @global, @instance)
     end
   end
 
