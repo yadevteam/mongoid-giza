@@ -64,8 +64,9 @@ module Mongoid
       # @param instance [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that settings are being set
       def apply_global_settings(section, global, instance)
         section.settings.each do |setting|
+          method = "#{setting}="
           value = global.send("#{setting}")
-          instance.send("#{setting}=", value) if !value.nil?
+          instance.send(method, value) if !value.nil? and instance.respond_to?(method)
         end
       end
 
