@@ -44,6 +44,7 @@ module Mongoid
 
     included do
       Mongoid::Giza::GizaID.create(id: name.to_sym)
+      @giza_configuration = Mongoid::Giza::Configuration.instance
     end
 
     # Retrives the sphinx compatible id of the object.
@@ -63,8 +64,8 @@ module Mongoid
       def search_index(settings = {}, &block)
         index = Index.new(self, settings)
         Docile.dsl_eval(index, &block)
-        Mongoid::Giza::Instance.indexes[index.name] = index
         sphinx_indexes << index
+        @giza_configuration.add_index(index)
       end
 
       # Class method that implements a search DSL using a {Mongoid::Giza::Search} object.
@@ -77,10 +78,9 @@ module Mongoid
       #   If two or more were defined then returns an Array containing results Hashes as described above,
       #   one element for each {Mongoid::Giza::Search#fulltext} query
       def search(&block)
-        config = Mongoid::Giza::Configuration.instance
         indexes_names = sphinx_indexes.map(&:name).join(" ")
         indexes = indexes_names.length > 0 ? indexes_names : nil
-        search = Mongoid::Giza::Search.new(config.searchd.address, config.searchd.port, indexes)
+        search = Mongoid::Giza::Search.new(@giza_configuration.searchd.address, @giza_configuration.searchd.port, indexes)
         Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }

@@ -3,6 +3,7 @@ require "spec_helper"
 describe Mongoid::Giza do
   before do
     allow(Mongoid::Giza::GizaID).to receive(:create).with(id: :Person)
+    allow(Mongoid::Giza::Configuration.instance).to receive(:add_index)
 
     class Person
       include Mongoid::Document
@@ -52,14 +53,6 @@ describe Mongoid::Giza do
         Person.search_index { field :name }
       end
 
-      it "should register the index" do
-        indexes = double("indexes")
-        expect(indexes).to receive(:[]=).with(:Person, index)
-        expect(Mongoid::Giza::Instance).to receive(:indexes) { indexes }
-        new_index
-        Person.search_index { }
-      end
-
       it "should register the index on the class" do
         sphinx_indexes = double("sphinx_indexes")
         expect(sphinx_indexes).to receive(:<<).with(index)
@@ -72,6 +65,12 @@ describe Mongoid::Giza do
         config_indexes
         expect(Mongoid::Giza::Index).to receive(:new).with(Person, enable_star: 1) { index }
         Person.search_index(enable_star: 1) { }
+      end
+
+      it "should add the index to the configuration" do
+        expect(Mongoid::Giza::Configuration.instance).to receive(:add_index).with(index)
+        new_index
+        Person.search_index { }
       end
     end
   end
