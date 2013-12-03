@@ -6,6 +6,10 @@ module Mongoid
       @configuration = Mongoid::Giza::Configuration.instance
 
       class << self
+
+        # Helper to retrieve or create a new Riddle::Controller
+        #
+        # @return [Riddle::Controller] an instance Riddle::Controller
         def controller
           @controller ||= Riddle::Controller.new(@configuration, @configuration.file.output_path)
         end
