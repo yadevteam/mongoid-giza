@@ -44,12 +44,10 @@ module Mongoid
         if !@index_names.include? index.name
           source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
           riddle_index = Riddle::Configuration::Index.new(index.name, source)
-          apply_global_settings(Riddle::Configuration::Index, @index, riddle_index)
-          apply_global_settings(Riddle::Configuration::XMLSource, @source, source)
-          index.settings.each do |setting, value|
-            apply_giza_index_setting(riddle_index, setting, value)
-            apply_giza_index_setting(source, setting, value)
-          end
+          apply_settings(@index, riddle_index)
+          apply_settings(@source, source)
+          apply_settings(index, riddle_index)
+          apply_settings(index, source)
           riddle_index.path = File.join(riddle_index.path, index.name.to_s)
           riddle_index.charset_type = "utf-8"
           @indices << riddle_index
@@ -57,24 +55,16 @@ module Mongoid
         end
       end
 
-      # Applies the settings definedon the configuration file to the current Index or Source.
+      # Applies the settings defined on a section object to a Riddle::Configuration::Index or Riddle::Configuration::XMLSource instance.
       # Used internally by {#add_index} so you should never need to call it directly
       #
-      # @param section [Class] either Riddle::Configuration::Index or Riddle::Configuration::XMLSource
-      # @param global [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that holds the global settings values
+      # @param section [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that holds the global settings values
       # @param instance [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that settings are being set
-      def apply_global_settings(section, global, instance)
+      def apply_settings(section, instance)
         section.settings.each do |setting|
           method = "#{setting}="
-          value = global.send("#{setting}")
+          value = section.send("#{setting}")
           instance.send(method, value) if !value.nil? and instance.respond_to?(method)
-        end
-      end
-
-      def apply_giza_index_setting(section, setting, value)
-        method = "#{setting}="
-        if section.respond_to?(method)
-          section.send(method, value)
         end
       end
 

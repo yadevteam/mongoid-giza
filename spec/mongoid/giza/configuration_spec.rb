@@ -77,8 +77,7 @@ describe Mongoid::Giza::Configuration do
       allow(Riddle::Configuration::Index).to receive(:settings) { [] }
       allow(Riddle::Configuration::XMLSource).to receive(:new) { source }
       allow(Riddle::Configuration::Index).to receive(:new).with(index.name, source) { riddle_index }
-      allow(@config).to receive(:apply_global_settings)
-      allow(@config).to receive(:apply_giza_index_setting).twice
+      allow(@config).to receive(:apply_settings)
     end
 
     it "should add an Riddle::Configuration::Index" do
@@ -89,28 +88,6 @@ describe Mongoid::Giza::Configuration do
     it "should create a xmlpipe2 source with the same name of the index" do
       expect(Riddle::Configuration::XMLSource).to receive(:new).with(index.name, :xmlpipe2) { source }
       allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
-      @config.add_index(index)
-    end
-
-    it "should load the global index settings" do
-      expect(@config).to receive(:apply_global_settings).with(Riddle::Configuration::Index, @default_index, riddle_index)
-      @config.add_index(index)
-    end
-
-    it "should load the global index settings" do
-      expect(@config).to receive(:apply_global_settings).with(Riddle::Configuration::XMLSource, @default_source, source)
-      @config.add_index(index)
-    end
-
-    it "should apply the index settings defined" do
-      allow(index).to receive(:settings) { {html_strip: 1} }
-      expect(@config).to receive(:apply_giza_index_setting).with(riddle_index, :html_strip, 1)
-      @config.add_index(index)
-    end
-
-    it "should apply the source settings defined" do
-      allow(index).to receive(:settings) { {xmlpipe_command: "cat /path/to/index"} }
-      expect(@config).to receive(:apply_giza_index_setting).with(source, :xmlpipe_command, "cat /path/to/index")
       @config.add_index(index)
     end
 
@@ -128,33 +105,54 @@ describe Mongoid::Giza::Configuration do
       @config.add_index(index)
       expect { @config.add_index(index) }.not_to change{@config.indices.length}.by(1)
     end
-  end
 
-  describe "apply_global_settings" do
-    before do
-      @section = double("section")
-      @global = double("global")
-      @instance = double("instance")
-      allow(@section).to receive(:settings) { [:xmlpipe_command] }
+    it "should apply global settings to the index" do
+      expect(@config).to receive(:apply_settings).with(@default_index, riddle_index)
+      @config.add_index(index)
     end
 
-    it "should set the global section settings" do
-      allow(@global).to receive(:xmlpipe_command) { "cat /path/to/index" }
-      expect(@instance).to receive(:xmlpipe_command=).with("cat /path/to/index")
-      @config.apply_global_settings(@section, @global, @instance)
+    it "should apply global settings to the source" do
+      expect(@config).to receive(:apply_settings).with(@default_source, source)
+      @config.add_index(index)
+    end
+
+    it "should apply user defined settings to the index" do
+      expect(@config).to receive(:apply_settings).with(index, riddle_index)
+      @config.add_index(index)
+    end
+
+    it "should apply user defined settings to the source" do
+      expect(@config).to receive(:apply_settings).with(index, source)
+      @config.add_index(index)
+    end
+  end
+
+  describe "apply_settings" do
+    before do
+      @section = double("section")
+      @instance = double("instance")
+      allow(@section).to receive(:settings) { [:html_strip] }
+    end
+
+    it "should apply the settings from section to instance" do
+      allow(@section).to receive(:html_strip) { 1 }
+      allow(@instance).to receive(:respond_to?).with("html_strip=") { true }
+      expect(@instance).to receive(:html_strip=).with(1)
+      @config.apply_settings(@section, @instance)
     end
 
     it "should not set nil values" do
-      allow(@global).to receive(:xmlpipe_command) { nil }
-      expect(@instance).not_to receive(:xmlpipe_command=)
-      @config.apply_global_settings(@section, @global, @instance)
+      allow(@section).to receive(:html_strip) { nil }
+      allow(@instance).to receive(:respond_to?).with("html_strip=") { true }
+      expect(@instance).not_to receive(:html_strip=)
+      @config.apply_settings(@section, @instance)
     end
 
-    it "should not set settings without a setter" do
-      allow(@global).to receive(:xmlpipe_command) { "cat /path/to/index" }
-      allow(@instance).to receive(:respond_to?).with("xmlpipe_command=") { false }
-      expect(@instance).not_to receive(:xmlpipe_command=)
-      @config.apply_global_settings(@section, @global, @instance)
+    it "should not try to apply settings without a setter" do
+      allow(@section).to receive(:html_strip) { 1 }
+      allow(@instance).to receive(:respond_to?).with("html_strip=") { false }
+      expect(@instance).not_to receive(:html_strip=)
+      @config.apply_settings(@section, @instance)
     end
   end
 
@@ -169,26 +167,6 @@ describe Mongoid::Giza::Configuration do
       expect(File).to receive(:open).with(@config.file.output_path, "w").and_yield(file)
       expect(file).to receive(:write).with("indexer\nsearchd\nsource\nindex")
       @config.render
-    end
-  end
-
-  describe "apply_giza_index_setting" do
-    before do
-      @section = double("section")
-      @setting = "xmlpipe_command"
-      @value = "cat /path/to/index"
-    end
-
-    it "should set the value" do
-      allow(@section).to receive(:respond_to?).with("xmlpipe_command=") { true }
-      expect(@section).to receive(:xmlpipe_command=).with("cat /path/to/index")
-      @config.apply_giza_index_setting(@section, @setting, @value)
-    end
-
-    it "should not try to set when the setting does not exists" do
-      allow(@section).to receive(:respond_to?).with("xmlpipe_command=") { false }
-      expect(@section).not_to receive(:xmlpipe_command=)
-      @config.apply_giza_index_setting(@section, @setting, @value)
     end
   end
 end
