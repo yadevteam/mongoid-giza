@@ -10,8 +10,6 @@ describe Mongoid::Giza do
 
       field :name, type: String
       field :age, type: Integer
-
-      @sphinx_indexes = []
     end
   end
 
@@ -31,7 +29,7 @@ describe Mongoid::Giza do
 
   let(:search) do
     search = double("search")
-    allow(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132) { search }
+    allow(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, nil) { search }
     search
   end
 
@@ -62,10 +60,11 @@ describe Mongoid::Giza do
         Person.search_index { }
       end
 
-      it "should register the index name on the class" do
+      it "should register the index on the class" do
         sphinx_indexes = double("sphinx_indexes")
-        expect(sphinx_indexes).to receive(:<<).with(index.name)
-        Person.instance_variable_set("@sphinx_indexes", sphinx_indexes)
+        expect(sphinx_indexes).to receive(:<<).with(index)
+        allow(Person).to receive(:sphinx_indexes) { sphinx_indexes }
+        new_index
         Person.search_index { }
       end
 
@@ -84,13 +83,7 @@ describe Mongoid::Giza do
     end
 
     it "should create a search" do
-      expect(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132) { double("search").as_null_object }
-      Person.search {  }
-    end
-
-    it "should set the indexes to search to the ones setup on the current class" do
-      search_run
-      expect(search).to receive(:indexes=).with("Person Person_2")
+      expect(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, "Person Person_2") { double("search").as_null_object }
       Person.search_index { }
       Person.search_index { name :Person_2 }
       Person.search {  }
@@ -162,6 +155,17 @@ describe Mongoid::Giza do
       person[:giza_id] = 1
       expect(person).not_to receive(:set)
       person.giza_id
+    end
+  end
+
+  describe "sphinx_indexes" do
+    it "should return an empty array when no indexes are defined" do
+      expect(Person.sphinx_indexes).to eql([])
+    end
+
+    it "should return the defined indexes for the class" do
+      Person.instance_variable_set("@sphinx_indexes", [1])
+      expect(Person.sphinx_indexes).to eql([1])
     end
   end
 end

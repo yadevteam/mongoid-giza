@@ -64,7 +64,7 @@ module Mongoid
         index = Index.new(self, settings)
         Docile.dsl_eval(index, &block)
         Mongoid::Giza::Instance.indexes[index.name] = index
-        (@sphinx_indexes ||= []) << index.name
+        sphinx_indexes << index
       end
 
       # Class method that implements a search DSL using a {Mongoid::Giza::Search} object.
@@ -78,12 +78,20 @@ module Mongoid
       #   one element for each {Mongoid::Giza::Search#fulltext} query
       def search(&block)
         config = Mongoid::Giza::Configuration.instance
-        search = Mongoid::Giza::Search.new(config.searchd.address, config.searchd.port)
-        search.indexes = @sphinx_indexes.join(" ")
+        indexes_names = sphinx_indexes.map(&:name).join(" ")
+        indexes = indexes_names.length > 0 ? indexes_names : nil
+        search = Mongoid::Giza::Search.new(config.searchd.address, config.searchd.port, indexes)
         Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
         results.length > 1 ? results : results.first
+      end
+
+      # Retrieves all the sphinx indexes defined on this class
+      #
+      # @return [Array] an Array of the current class {Mongoid::Giza::Index}
+      def sphinx_indexes
+        @sphinx_indexes ||= []
       end
     end
   end
