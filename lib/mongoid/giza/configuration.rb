@@ -44,10 +44,10 @@ module Mongoid
         if !@index_names.include? index.name
           source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
           riddle_index = Riddle::Configuration::Index.new(index.name, source)
-          apply_settings(@index, riddle_index)
-          apply_settings(@source, source)
-          apply_settings(index, riddle_index)
-          apply_settings(index, source)
+          apply_default_settings(@index, riddle_index)
+          apply_default_settings(@source, source)
+          apply_user_settings(index, riddle_index)
+          apply_user_settings(index, source)
           riddle_index.path = File.join(riddle_index.path, index.name.to_s)
           riddle_index.charset_type = "utf-8"
           @indices << riddle_index
@@ -55,16 +55,28 @@ module Mongoid
         end
       end
 
-      # Applies the settings defined on a section object to a Riddle::Configuration::Index or Riddle::Configuration::XMLSource instance.
+      # Applies the settings defined on an object loaded from the configuration to a Riddle::Configuration::Index or Riddle::Configuration::XMLSource instance.
       # Used internally by {#add_index} so you should never need to call it directly
       #
-      # @param section [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that holds the global settings values
-      # @param instance [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that settings are being set
-      def apply_settings(section, instance)
-        section.settings.each do |setting|
+      # @param default [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that holds the global settings values
+      # @param section [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that settings are being set
+      def apply_default_settings(default, section)
+        default.class.settings.each do |setting|
           method = "#{setting}="
-          value = section.send("#{setting}")
-          instance.send(method, value) if !value.nil? and instance.respond_to?(method)
+          value = default.send("#{setting}")
+          section.send(method, value) if !value.nil? and section.respond_to?(method)
+        end
+      end
+
+      # Applies the settings defined on a {Mongoid::Giza::Index} to the Riddle::Configuration::Index or Riddle::Configuration::XMLSource.
+      # Used internally by {#add_index} so you should never need to call it directly
+      #
+      # @param index [Mongoid::Giza::Index] the index where the settings were defined
+      # @param section [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] where the settings will be applied
+      def apply_user_settings(index, section)
+        index.settings.each do |setting, value|
+          method = "#{setting}="
+          section.send(method, value) if section.respond_to?(method)
         end
       end
 

@@ -77,7 +77,8 @@ describe Mongoid::Giza::Configuration do
       allow(Riddle::Configuration::Index).to receive(:settings) { [] }
       allow(Riddle::Configuration::XMLSource).to receive(:new) { source }
       allow(Riddle::Configuration::Index).to receive(:new).with(index.name, source) { riddle_index }
-      allow(@config).to receive(:apply_settings)
+      allow(@config).to receive(:apply_default_settings)
+      allow(@config).to receive(:apply_user_settings)
     end
 
     it "should add an Riddle::Configuration::Index" do
@@ -106,53 +107,77 @@ describe Mongoid::Giza::Configuration do
       expect { @config.add_index(index) }.not_to change{@config.indices.length}.by(1)
     end
 
-    it "should apply global settings to the index" do
-      expect(@config).to receive(:apply_settings).with(@default_index, riddle_index)
+    it "should apply default settings to the index" do
+      expect(@config).to receive(:apply_default_settings).with(@default_index, riddle_index)
       @config.add_index(index)
     end
 
-    it "should apply global settings to the source" do
-      expect(@config).to receive(:apply_settings).with(@default_source, source)
+    it "should apply default settings to the source" do
+      expect(@config).to receive(:apply_default_settings).with(@default_source, source)
       @config.add_index(index)
     end
 
     it "should apply user defined settings to the index" do
-      expect(@config).to receive(:apply_settings).with(index, riddle_index)
+      expect(@config).to receive(:apply_user_settings).with(index, riddle_index)
       @config.add_index(index)
     end
 
     it "should apply user defined settings to the source" do
-      expect(@config).to receive(:apply_settings).with(index, source)
+      expect(@config).to receive(:apply_user_settings).with(index, source)
       @config.add_index(index)
     end
   end
 
-  describe "apply_settings" do
+  describe "apply_default_settings" do
     before do
+      @default = double("default")
       @section = double("section")
-      @instance = double("instance")
-      allow(@section).to receive(:settings) { [:html_strip] }
+      allow(@default).to receive(:class) do
+        klass = double("class")
+        allow(klass).to receive(:settings) { [:html_strip] }
+        klass
+      end
     end
 
-    it "should apply the settings from section to instance" do
-      allow(@section).to receive(:html_strip) { 1 }
-      allow(@instance).to receive(:respond_to?).with("html_strip=") { true }
-      expect(@instance).to receive(:html_strip=).with(1)
-      @config.apply_settings(@section, @instance)
+    it "should apply the settings from default to section" do
+      allow(@default).to receive(:html_strip) { 1 }
+      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
+      expect(@section).to receive(:html_strip=).with(1)
+      @config.apply_default_settings(@default, @section)
     end
 
     it "should not set nil values" do
-      allow(@section).to receive(:html_strip) { nil }
-      allow(@instance).to receive(:respond_to?).with("html_strip=") { true }
-      expect(@instance).not_to receive(:html_strip=)
-      @config.apply_settings(@section, @instance)
+      allow(@default).to receive(:html_strip) { nil }
+      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
+      expect(@section).not_to receive(:html_strip=)
+      @config.apply_default_settings(@default, @section)
     end
 
     it "should not try to apply settings without a setter" do
-      allow(@section).to receive(:html_strip) { 1 }
-      allow(@instance).to receive(:respond_to?).with("html_strip=") { false }
-      expect(@instance).not_to receive(:html_strip=)
-      @config.apply_settings(@section, @instance)
+      allow(@default).to receive(:html_strip) { 1 }
+      allow(@section).to receive(:respond_to?).with("html_strip=") { false }
+      expect(@section).not_to receive(:html_strip=)
+      @config.apply_default_settings(@default, @section)
+    end
+  end
+
+  describe "apply_user_settings" do
+    before do
+      @index = double("index")
+      @section = double("section")
+      allow(@index).to receive(:settings) { {html_strip: 1} }
+    end
+
+    it "should apply the the settings" do
+      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
+      expect(@section).to receive(:html_strip=).with(1)
+      @config.apply_user_settings(@index, @section)
+    end
+
+    it "should not try to apply settings without a setter" do
+      allow(@section).to receive(:respond_to?).with("html_strip=") { false }
+      expect(@section).not_to receive(:html_strip=)
+      @config.apply_user_settings(@index, @section)
     end
   end
 
