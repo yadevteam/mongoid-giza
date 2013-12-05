@@ -57,7 +57,7 @@ describe Mongoid::Giza do
 
       it "should register the index on the class" do
         sphinx_indexes = double("sphinx_indexes")
-        expect(sphinx_indexes).to receive(:<<).with(index)
+        expect(sphinx_indexes).to receive(:[]=).with(index.name, index)
         allow(Person).to receive(:sphinx_indexes) { sphinx_indexes }
         new_index
         Person.search_index { }
@@ -160,13 +160,13 @@ describe Mongoid::Giza do
   end
 
   describe "sphinx_indexes" do
-    it "should return an empty array when no indexes are defined" do
-      expect(Person.sphinx_indexes).to eql([])
+    it "should return an empty collection when no indexes are defined" do
+      expect(Person.sphinx_indexes).to eql({})
     end
 
     it "should return the defined indexes for the class" do
-      Person.instance_variable_set("@sphinx_indexes", [1])
-      expect(Person.sphinx_indexes).to eql([1])
+      Person.instance_variable_set("@sphinx_indexes", {a: 1})
+      expect(Person.sphinx_indexes).to eql({a: 1})
     end
   end
 

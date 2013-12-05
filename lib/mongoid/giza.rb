@@ -64,7 +64,7 @@ module Mongoid
       def search_index(settings = {}, &block)
         index = Index.new(self, settings)
         Docile.dsl_eval(index, &block)
-        sphinx_indexes << index
+        sphinx_indexes[index.name] = index
         @giza_configuration.add_index(index)
       end
 
@@ -78,7 +78,7 @@ module Mongoid
       #   If two or more were defined then returns an Array containing results Hashes as described above,
       #   one element for each {Mongoid::Giza::Search#fulltext} query
       def search(&block)
-        indexes_names = sphinx_indexes.map(&:name).join(" ")
+        indexes_names = sphinx_indexes.values.map(&:name).join(" ")
         indexes = indexes_names.length > 0 ? indexes_names : nil
         search = Mongoid::Giza::Search.new(@giza_configuration.searchd.address, @giza_configuration.searchd.port, indexes)
         Docile.dsl_eval(search, &block)
@@ -91,14 +91,14 @@ module Mongoid
       #
       # @return [Array] an Array of the current class {Mongoid::Giza::Index}
       def sphinx_indexes
-        @sphinx_indexes ||= []
+        @sphinx_indexes ||= {}
       end
 
       # Execute the indexing routines of the indexes defined on the class.
       # This means (re)create the sphinx configuration file and then execute the indexer program on it.
       def sphinx_indexer!(*indexes_names)
         if sphinx_indexes.length > 0
-          indexes = indexes_names.length > 0 ? sphinx_indexes.select { |index| indexes_names.include? index.name } : sphinx_indexes
+          indexes = indexes_names.length > 0 ? sphinx_indexes.values.select { |index| indexes_names.include? index.name } : sphinx_indexes.values
           Mongoid::Giza::Indexer.instance.index!(*indexes)
         end
       end
