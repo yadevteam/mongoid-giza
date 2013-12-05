@@ -21,8 +21,8 @@ module Mongoid
       #
       # @param query [String] a sphinx query string based on the current {http://sphinxsearch.com/docs/current.html#matching-modes matching mode}
       def fulltext(query)
-        search_index = indexes.length > 0 ? indexes.join(" ") : "*"
-        @client.append_query(query, search_index)
+        index = indexes.length > 0 ? indexes.join(" ") : "*"
+        @client.append_query(query, index)
       end
 
       # Sets a filter based on an attribute.
