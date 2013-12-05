@@ -2,24 +2,19 @@ module Mongoid
   module Giza
 
     # Routines related to creating the defined indexes in sphinx
-    module Indexer
-      @configuration = Mongoid::Giza::Configuration.instance
+    class Indexer
+      include Singleton
 
-      class << self
+      # Creates the Indexer instance
+      def initialize
+        @configuration = Mongoid::Giza::Configuration.instance
+        @controller = Riddle::Controller.new(@configuration, @configuration.file.output_path)
+      end
 
-        # Helper to retrieve or create a new Riddle::Controller
-        #
-        # @return [Riddle::Controller] an instance Riddle::Controller
-        def controller
-          @controller ||= Riddle::Controller.new(@configuration, @configuration.file.output_path)
-        end
-
-        # Creates the sphinx configuration file then executes the indexer on it
-        def index!
-          Mongoid::Giza::Instance.indexes.each_value { |index| @configuration.add_index(index) }
-          @configuration.render
-          controller.index(verbose: true)
-        end
+      # Creates the sphinx configuration file then executes the indexer on it
+      def index!(*indexes)
+        @configuration.render
+        @controller.index(*indexes.map(&:name), verbose: true)
       end
     end
   end
