@@ -12,16 +12,17 @@ module Mongoid
       # @param port [Fixnum] the TCP port of sphinxd
       # @param indexes [String] an optional string define the indexes that the search will run on.
       #   Defaults to "*" which means all indexes
-      def initialize(host, port, indexes = "*")
+      def initialize(host, port, *indexes)
         @client = Riddle::Client.new(host, port)
-        @indexes = indexes || "*"
+        @indexes = indexes
       end
 
       # Sets the search criteria on full-text fields
       #
       # @param query [String] a sphinx query string based on the current {http://sphinxsearch.com/docs/current.html#matching-modes matching mode}
       def fulltext(query)
-        @client.append_query(query, indexes)
+        search_index = indexes.length > 0 ? indexes.join(" ") : "*"
+        @client.append_query(query, search_index)
       end
 
       # Sets a filter based on an attribute.

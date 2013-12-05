@@ -17,23 +17,29 @@ describe Mongoid::Giza::Search do
 
   let(:filter) { double("filter") }
 
-  it "should create a new client with the given host and port" do
-    expect(Riddle::Client).to receive(:new).with("localhost", 9132)
-    search
+  describe "initialize" do
+    it "should create a new client with the given host and port" do
+      expect(Riddle::Client).to receive(:new).with("localhost", 9132)
+      search
+    end
+
+    it "should accept a index list" do
+      indexes = Mongoid::Giza::Search.new("localhost", 9132, :index1, :index2).indexes
+      expect(indexes).to eql([:index1, :index2])
+    end
   end
 
   describe "fulltext" do
     it "should append a query on the specified indexes" do
       expect(client).to receive(:append_query).with("query", "index1 index2")
-      allow(search).to receive(:indexes) { "index1 index2" }
+      allow(search).to receive(:indexes) { [:index1, :index2] }
       search.fulltext("query")
     end
-  end
 
-  describe "indexes" do
-    it "should default to '*'" do
-      client
-      expect(search.indexes).to eql("*")
+    it "should search all indexes by default" do
+      expect(client).to receive(:append_query).with("query", "*")
+      allow(search).to receive(:indexes) { [] }
+      search.fulltext("query")
     end
   end
 

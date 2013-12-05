@@ -30,7 +30,7 @@ describe Mongoid::Giza do
 
   let(:search) do
     search = double("search")
-    allow(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, nil) { search }
+    allow(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132) { search }
     search
   end
 
@@ -84,7 +84,7 @@ describe Mongoid::Giza do
     end
 
     it "should create a search" do
-      expect(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, "Person Person_2") { double("search").as_null_object }
+      expect(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, :Person, :Person_2) { double("search").as_null_object }
       Person.search_index { }
       Person.search_index { name :Person_2 }
       Person.search {  }
