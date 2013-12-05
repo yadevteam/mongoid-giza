@@ -73,10 +73,8 @@ module Mongoid
       #
       # @param block [Proc] a block that will be evaluated on a {Mongoid::Giza::Search}
       #
-      # @return [Hash, Array] a Riddle result hash containing an additional key with the name of the class
-      #   if only one {Mongoid::Giza::Search#fulltext} query was defined.
-      #   If two or more were defined then returns an Array containing results Hashes as described above,
-      #   one element for each {Mongoid::Giza::Search#fulltext} query
+      # @return [Array] an Array with Riddle result hashes containing an additional key with the name of the class.
+      #   The value of this aditional key is a Mongoid::Criteria that return the actual objects of the match
       def search(&block)
         indexes_names = sphinx_indexes.values.map(&:name).join(" ")
         indexes = indexes_names.length > 0 ? indexes_names : nil
@@ -84,7 +82,6 @@ module Mongoid
         Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
-        results.length > 1 ? results : results.first
       end
 
       # Retrieves all the sphinx indexes defined on this class

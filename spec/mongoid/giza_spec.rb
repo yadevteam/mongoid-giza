@@ -103,26 +103,11 @@ describe Mongoid::Giza do
       Person.search { }
     end
 
-    it "should return only one result when only one query was defined" do
-      search_indexes
-      allow(search).to receive(:run) { [{matches: []}] }
-      allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
-      expect(Person.search { }).to be_a_kind_of(Hash)
-    end
-
-    it "should return an array of results when multiple queries were defined" do
+    it "should return an array of results" do
       search_indexes
       allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
       allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
       expect(Person.search { }).to be_a_kind_of(Array)
-    end
-
-    it "should return a Mongoid::Criteria with the search results" do
-      search_indexes
-      allow(search).to receive(:run) { [{matches: []}] }
-      allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
-      results =  Person.search { }
-      expect(results[:Person]).to be_a_kind_of(Mongoid::Criteria)
     end
 
     it "should return a Mongoid::Criteria with on each search results" do
