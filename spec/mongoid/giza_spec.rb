@@ -40,19 +40,19 @@ describe Mongoid::Giza do
 
   let(:config) { Mongoid::Giza::Configuration.instance }
 
-  describe "search_index" do
+  describe "fulltext_index" do
     context "static index" do
       it "should create an index" do
         config_indexes
         expect(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index }
-        Person.search_index { }
+        Person.fulltext_index { }
       end
 
       it "should call index methods" do
         config_indexes
         expect(index).to receive(:field).with(:name)
         new_index
-        Person.search_index { field :name }
+        Person.fulltext_index { field :name }
       end
 
       it "should register the index on the class" do
@@ -60,19 +60,19 @@ describe Mongoid::Giza do
         expect(sphinx_indexes).to receive(:[]=).with(index.name, index)
         allow(Person).to receive(:sphinx_indexes) { sphinx_indexes }
         new_index
-        Person.search_index { }
+        Person.fulltext_index { }
       end
 
       it "should accept settings" do
         config_indexes
         expect(Mongoid::Giza::Index).to receive(:new).with(Person, enable_star: 1) { index }
-        Person.search_index(enable_star: 1) { }
+        Person.fulltext_index(enable_star: 1) { }
       end
 
       it "should add the index to the configuration" do
         expect(config).to receive(:add_index).with(index)
         new_index
-        Person.search_index { }
+        Person.fulltext_index { }
       end
     end
   end
@@ -85,8 +85,8 @@ describe Mongoid::Giza do
 
     it "should create a search" do
       expect(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, :Person, :Person_2) { double("search").as_null_object }
-      Person.search_index { }
-      Person.search_index { name :Person_2 }
+      Person.fulltext_index { }
+      Person.fulltext_index { name :Person_2 }
       Person.search {  }
     end
 
@@ -160,16 +160,16 @@ describe Mongoid::Giza do
 
     it "should execute the index with all indexes from this class" do
       expect(indexer).to receive(:index!).with(:Person, :Person_2)
-      Person.search_index { }
-      Person.search_index { name :Person_2 }
+      Person.fulltext_index { }
+      Person.fulltext_index { name :Person_2 }
       Person.sphinx_indexer!
     end
 
     it "should accept a list of indexes names" do
       expect(indexer).to receive(:index!).with(:Person, :Person_3)
-      Person.search_index { }
-      Person.search_index { name :Person_2 }
-      Person.search_index { name :Person_3 }
+      Person.fulltext_index { }
+      Person.fulltext_index { name :Person_2 }
+      Person.fulltext_index { name :Person_3 }
       Person.sphinx_indexer!(:Person, :Person_3)
     end
 
@@ -180,7 +180,7 @@ describe Mongoid::Giza do
 
     it "should not execute if the supplied names do not match any index name of the current class" do
       expect(indexer).not_to receive(:index!)
-      Person.search_index { }
+      Person.fulltext_index { }
       Person.sphinx_indexer!(:Person_2)
     end
   end

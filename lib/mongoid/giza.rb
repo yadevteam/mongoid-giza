@@ -26,7 +26,7 @@ module Mongoid
   #     field :name
   #     field :age, type: Integer
   #
-  #     search_index do
+  #     fulltext_index do
   #       field :name
   #       attribute :age
   #     end
@@ -61,7 +61,7 @@ module Mongoid
       # Class method that defines a index relative to the current model's documents
       #
       # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
-      def search_index(settings = {}, &block)
+      def fulltext_index(settings = {}, &block)
         index = Index.new(self, settings)
         Docile.dsl_eval(index, &block)
         sphinx_indexes[index.name] = index
