@@ -14,7 +14,7 @@ module Mongoid
       # Creates the sphinx configuration file then executes the indexer on it
       def index!(*indexes)
         @configuration.render
-        @controller.index(*indexes.map(&:name), verbose: true)
+        @controller.index(*indexes, verbose: true)
       end
     end
   end

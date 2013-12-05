@@ -24,13 +24,9 @@ describe Mongoid::Giza::Indexer do
     end
 
     it "should accept an index list" do
-      person = double("person")
-      person_2 = double("person 2")
-      allow(person).to receive(:name) { :Person }
-      allow(person_2).to receive(:name) { :Person_2 }
       allow(config).to receive(:render)
       expect(@controller).to receive(:index).with(:Person, :Person_2, verbose: true)
-      @indexer.index!(person, person_2)
+      @indexer.index!(:Person, :Person_2)
     end
   end
 end

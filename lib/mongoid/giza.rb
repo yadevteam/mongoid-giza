@@ -76,7 +76,9 @@ module Mongoid
       # @return [Array] an Array with Riddle result hashes containing an additional key with the name of the class.
       #   The value of this aditional key is a Mongoid::Criteria that return the actual objects of the match
       def search(&block)
-        search = Mongoid::Giza::Search.new(@giza_configuration.searchd.address, @giza_configuration.searchd.port, *sphinx_indexes.values.map(&:name))
+        search = Mongoid::Giza::Search.new(@giza_configuration.searchd.address,
+          @giza_configuration.searchd.port,
+          *sphinx_indexes.values.map(&:name))
         Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
@@ -92,10 +94,10 @@ module Mongoid
       # Execute the indexing routines of the indexes defined on the class.
       # This means (re)create the sphinx configuration file and then execute the indexer program on it.
       def sphinx_indexer!(*indexes_names)
-        if sphinx_indexes.length > 0
-          indexes = indexes_names.length > 0 ? sphinx_indexes.values.select { |index| indexes_names.include? index.name } : sphinx_indexes.values
-          Mongoid::Giza::Indexer.instance.index!(*indexes)
-        end
+        indexes = indexes_names.length > 0 ?
+          sphinx_indexes.values.select { |index| indexes_names.include? index.name } :
+          sphinx_indexes.values
+        Mongoid::Giza::Indexer.instance.index!(*indexes.map(&:name)) if indexes.length > 0
       end
     end
   end
