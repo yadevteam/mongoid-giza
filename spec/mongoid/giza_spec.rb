@@ -38,6 +38,8 @@ describe Mongoid::Giza do
 
   let(:search_indexes) { allow(search).to receive(:indexes=) }
 
+  let(:config) { Mongoid::Giza::Configuration.instance }
+
   describe "search_index" do
     context "static index" do
       it "should create an index" do
@@ -68,7 +70,7 @@ describe Mongoid::Giza do
       end
 
       it "should add the index to the configuration" do
-        expect(Mongoid::Giza::Configuration.instance).to receive(:add_index).with(index)
+        expect(config).to receive(:add_index).with(index)
         new_index
         Person.search_index { }
       end
@@ -165,6 +167,30 @@ describe Mongoid::Giza do
     it "should return the defined indexes for the class" do
       Person.instance_variable_set("@sphinx_indexes", [1])
       expect(Person.sphinx_indexes).to eql([1])
+    end
+  end
+
+  describe "sphinx_indexer!" do
+    let(:indexer) { Mongoid::Giza::Indexer.instance }
+
+    it "should execute the index with all indexes from this class" do
+      expect(indexer).to receive(:index!).with(kind_of(Mongoid::Giza::Index), kind_of(Mongoid::Giza::Index))
+      Person.search_index { }
+      Person.search_index { name :Person_2 }
+      Person.sphinx_indexer!
+    end
+
+    it "should accept a list of indexes names" do
+      expect(indexer).to receive(:index!).with(kind_of(Mongoid::Giza::Index), kind_of(Mongoid::Giza::Index))
+      Person.search_index { }
+      Person.search_index { name :Person_2 }
+      Person.search_index { name :Person_3 }
+      Person.sphinx_indexer!(:Person, :Person_3)
+    end
+
+    it "should not execute if the class has no indexes" do
+      expect(indexer).not_to receive(:index!)
+      Person.sphinx_indexer!
     end
   end
 end

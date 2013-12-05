@@ -93,6 +93,15 @@ module Mongoid
       def sphinx_indexes
         @sphinx_indexes ||= []
       end
+
+      # Execute the indexing routines of the indexes defined on the class.
+      # This means (re)create the sphinx configuration file and then execute the indexer program on it.
+      def sphinx_indexer!(*indexes_names)
+        if sphinx_indexes.length > 0
+          indexes = indexes_names.length > 0 ? sphinx_indexes.select { |index| indexes_names.include? index.name } : sphinx_indexes
+          Mongoid::Giza::Indexer.instance.index!(*indexes)
+        end
+      end
     end
   end
 end
