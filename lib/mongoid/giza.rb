@@ -2,6 +2,7 @@ require "docile"
 require "mongoid"
 require "riddle"
 require "mongoid/giza/configuration"
+require "mongoid/giza/dynamic_index"
 require "mongoid/giza/index"
 require "mongoid/giza/index/field"
 require "mongoid/giza/index/attribute"
@@ -26,7 +27,7 @@ module Mongoid
   #     field :name
   #     field :age, type: Integer
   #
-  #     fulltext_index do
+  #     sphinx_index do
   #       field :name
   #       attribute :age
   #     end
@@ -38,13 +39,16 @@ module Mongoid
   #     with age: 18..59
   #   end
   #
-  #   results[:Person].first # => First object that matched
+  #   results.first[:Person].first # => First object that matched
   module Giza
     extend ActiveSupport::Concern
 
     included do
       Mongoid::Giza::GizaID.create(id: name.to_sym)
-      @giza_configuration = Mongoid::Giza::Configuration.instance
+      @giza_configuration = Configuration.instance
+      @sphinx_static_indexes = {}
+      @sphinx_generated_indexes = {}
+      @sphinx_dynamic_indexes = []
     end
 
     # Retrives the sphinx compatible id of the object.
@@ -57,14 +61,44 @@ module Mongoid
     end
 
     module ClassMethods
+      attr_reader :sphinx_static_indexes, :sphinx_generated_indexes, :sphinx_dynamic_indexes
 
-      # Class method that defines a index relative to the current model's documents
+      # Class method that defines a index relative to the current model's documents.
+      # If an argument is given in the block then a dynamic index will be created.
+      # Otherwise it will generate a static index.
       #
+      # @param settings [Hash] optional settings for the index and it's source
       # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
-      def fulltext_index(settings = {}, &block)
+      def sphinx_index(settings = {}, &block)
+        if block_given?
+          if block.arity > 0
+            add_dynamic_sphinx_index(settings, block)
+          else
+            add_static_sphinx_index(settings, block)
+          end
+        end
+      end
+
+      # Adds an dynamic index to the class.
+      # Will also automatically generate the dynamic index for each object of the class
+      #
+      # @param settings [Hash] settings for the index and it's source
+      # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}.
+      #   The block receives one argument that is the current object of the class for which the index will be generated
+      def add_dynamic_sphinx_index(settings, block)
+        dynamic_index = DynamicIndex.new(self, settings, block)
+        sphinx_generated_indexes.merge(dynamic_index.generate!)
+        sphinx_dynamic_indexes << dynamic_index
+      end
+
+      # Adds an static index to the class
+      #
+      # @param settings [Hash] settings for the index and it's source
+      # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}.
+      def add_static_sphinx_index(settings, block)
         index = Index.new(self, settings)
         Docile.dsl_eval(index, &block)
-        sphinx_indexes[index.name] = index
+        sphinx_static_indexes[index.name] = index
         @giza_configuration.add_index(index)
       end
 
@@ -76,28 +110,35 @@ module Mongoid
       # @return [Array] an Array with Riddle result hashes containing an additional key with the name of the class.
       #   The value of this aditional key is a Mongoid::Criteria that return the actual objects of the match
       def search(&block)
-        search = Mongoid::Giza::Search.new(@giza_configuration.searchd.address,
-          @giza_configuration.searchd.port,
-          *sphinx_indexes.values.map(&:name))
+        search = Mongoid::Giza::Search.new(@giza_configuration.searchd.address, @giza_configuration.searchd.port, *sphinx_indexes_names)
         Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
       end
 
-      # Retrieves all the sphinx indexes defined on this class
+      # Retrieves all the sphinx indexes defined on this class, static and dynamic
       #
-      # @return [Array] an Array of the current class {Mongoid::Giza::Index}
+      # @return [Array] an Array of indexes from the current class {Mongoid::Giza::Index}
       def sphinx_indexes
-        @sphinx_indexes ||= {}
+        sphinx_static_indexes.merge(sphinx_generated_indexes).values
+      end
+
+      # Retrieves all the names of sphinx indexes defined on this class, static and dynamic
+      #
+      # @return [Array] an Array of names of indexes from the current class {Mongoid::Giza::Index}
+      def sphinx_indexes_names
+        sphinx_static_indexes.merge(sphinx_generated_indexes).keys
       end
 
       # Execute the indexing routines of the indexes defined on the class.
       # This means (re)create the sphinx configuration file and then execute the indexer program on it.
-      def sphinx_indexer!(*indexes_names)
-        indexes = indexes_names.length > 0 ?
-          sphinx_indexes.values.select { |index| indexes_names.include? index.name } :
-          sphinx_indexes.values
-        Mongoid::Giza::Indexer.instance.index!(*indexes.map(&:name)) if indexes.length > 0
+      # If no index names are supplied than all indexes defined on the class will be indexed.
+      # If none of the index names supplied are on this class then nothing is indexed
+      #
+      # @param names [Array] a list of index names of this class that will be indexed
+      def sphinx_indexer!(*names)
+        indexes_names = names.length > 0 ? sphinx_indexes_names.select { |name| names.include? name } : sphinx_indexes_names
+        Mongoid::Giza::Indexer.instance.index!(*indexes_names) if indexes_names.length > 0
       end
     end
   end
