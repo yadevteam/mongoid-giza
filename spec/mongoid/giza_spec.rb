@@ -94,6 +94,13 @@ describe Mongoid::Giza do
   describe "add_dynamic_sphinx_index" do
     let(:dynamic_index) { double("dynamic index") }
 
+    let(:generated) { double("generated") }
+
+    before do
+      allow(dynamic_index).to receive(:generate!) { generated }
+      allow(generated).to receive(:each)
+    end
+
     it "should create a dynamic index" do
       allow(dynamic_index).to receive(:generate!) { double.as_null_object }
       allow(Person).to receive(:sphinx_generated_indexes) { double.as_null_object }
@@ -109,12 +116,10 @@ describe Mongoid::Giza do
     end
 
     it "should register the generated indexes" do
-      generated = double("generated")
       indexes = double("indexes")
       allow(Mongoid::Giza::DynamicIndex).to receive(:new) { dynamic_index }
-      allow(dynamic_index).to receive(:generate!) { generated }
       allow(Person).to receive(:sphinx_generated_indexes) { indexes }
-      expect(indexes).to receive(:merge).with(generated)
+      expect(indexes).to receive(:merge!).with(generated)
       Person.add_dynamic_sphinx_index({}, Proc.new { })
     end
 
@@ -125,6 +130,17 @@ describe Mongoid::Giza do
       allow(Person).to receive(:sphinx_generated_indexes) { double.as_null_object }
       allow(dynamic_index).to receive(:generate!) { double.as_null_object }
       expect(indexes).to receive(:<<).with(dynamic_index)
+      Person.add_dynamic_sphinx_index({}, Proc.new { })
+    end
+
+    it "should add the generated indexes to the configuration" do
+      each_generated = double("each generated")
+      indexes = double("indexes")
+      allow(Person).to receive(:sphinx_generated_indexes) { indexes }
+      allow(indexes).to receive(:merge!)
+      allow(Mongoid::Giza::DynamicIndex).to receive(:new) { dynamic_index }
+      allow(generated).to receive(:each).and_yield(:Person, each_generated)
+      expect(config).to receive(:add_index)
       Person.add_dynamic_sphinx_index({}, Proc.new { })
     end
   end

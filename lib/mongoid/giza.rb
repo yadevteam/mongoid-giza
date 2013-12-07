@@ -87,8 +87,10 @@ module Mongoid
       #   The block receives one argument that is the current object of the class for which the index will be generated
       def add_dynamic_sphinx_index(settings, block)
         dynamic_index = DynamicIndex.new(self, settings, block)
-        sphinx_generated_indexes.merge(dynamic_index.generate!)
         sphinx_dynamic_indexes << dynamic_index
+        generated = dynamic_index.generate!
+        sphinx_generated_indexes.merge!(generated)
+        generated.each { |name, index| @giza_configuration.add_index(index, true) }
       end
 
       # Adds an static index to the class
