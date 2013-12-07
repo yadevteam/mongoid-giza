@@ -17,7 +17,8 @@ module Mongoid
         @index = Riddle::Configuration::Index.new(:index, @source)
         @file = OpenStruct.new
         @file.output_path = "./sphinx.conf"
-        @index_names = []
+        @static_indexes = {}
+        @generated_indexes = {}
       end
 
       # Loads a YAML file with settings defined.
@@ -37,22 +38,48 @@ module Mongoid
         end
       end
 
-      # Adds an index to the configuration file
+      # Adds an index to the sphinx configuration,
+      # so this index can be rendered on the configuration file
+      #
+      # @param index [Mongoid::Giza::Index] the index that will be added to the configuration
+      # @param generated [TrueClass, FalseClass] determines if this index was generated from a {Mongoid::Giza::DynamicIndex}
+      def add_index(index, generated = false)
+        riddle_index = create_index(index)
+        if generated
+          position = register_index(riddle_index, @generated_indexes)
+        else
+          position = register_index(riddle_index, @static_indexes)
+        end
+        indices[position] = riddle_index
+      end
+
+      # Creates a new Riddle::Index based on the given {Mongoid::Giza::Index}
       #
       # @param index [Mongoid::Giza::Index] the index to generate the configuration from
-      def add_index(index)
-        if !@index_names.include? index.name
-          source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
-          riddle_index = Riddle::Configuration::Index.new(index.name, source)
-          apply_default_settings(@index, riddle_index)
-          apply_default_settings(@source, source)
-          apply_user_settings(index, riddle_index)
-          apply_user_settings(index, source)
-          riddle_index.path = File.join(riddle_index.path, index.name.to_s)
-          riddle_index.charset_type = "utf-8"
-          @indices << riddle_index
-          @index_names << index.name
-        end
+      #
+      # @return [Riddle::Configuration::Index] the created riddle index
+      def create_index(index)
+        source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
+        riddle_index = Riddle::Configuration::Index.new(index.name, source)
+        apply_default_settings(@index, riddle_index)
+        apply_default_settings(@source, source)
+        apply_user_settings(index, riddle_index)
+        apply_user_settings(index, source)
+        riddle_index.path = File.join(riddle_index.path, index.name.to_s)
+        riddle_index.charset_type = "utf-8"
+        riddle_index
+      end
+
+      # Adds the riddle index to it's respective collection
+      #
+      # @param index [Riddle::Configuration::Index] the index that will be registrated
+      # @param indexes [Hash] the collection which will hold this index
+      #
+      # @return [Integer] the position where this index should be inserted on the configuration indices array
+      def register_index(index, indexes)
+        position = indexes.has_key?(index.name) ?  indices.index(indexes[index.name]) : indices.length
+        indexes[index.name] = index
+        position
       end
 
       # Applies the settings defined on an object loaded from the configuration to a Riddle::Configuration::Index or Riddle::Configuration::XMLSource instance.

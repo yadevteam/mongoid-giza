@@ -62,6 +62,45 @@ describe Mongoid::Giza::Configuration do
   end
 
   describe "add_index" do
+    let(:indices) { double("indices") }
+
+    let(:index) { double("index") }
+
+    let(:riddle_index) { double("riddle index") }
+
+    let(:length) { double("length") }
+
+    before do
+      allow(@config).to receive(:indices) { indices }
+      allow(@config).to receive(:create_index) { riddle_index }
+      allow(@config).to receive(:register_index) { length }
+      allow(indices).to receive(:<<)
+      allow(indices).to receive(:[]=)
+      allow(index).to receive(:name)
+    end
+
+    it "should create a new riddle index" do
+      expect(@config).to receive(:create_index).with(index)
+      @config.add_index(index)
+    end
+
+    it "should add the index to the configuration indices" do
+      expect(indices).to receive(:[]=).with(length, riddle_index)
+      @config.add_index(index)
+    end
+
+    it "should register a static index on the static indexes hash" do
+      expect(@config).to receive(:register_index).with(riddle_index, @config.instance_variable_get("@static_indexes"))
+      @config.add_index(index)
+    end
+
+    it "should register a generated index on the generated indexes hash" do
+      expect(@config).to receive(:register_index).with(riddle_index, @config.instance_variable_get("@generated_indexes"))
+      @config.add_index(index)
+    end
+  end
+
+  describe "create_index" do
     let(:index) do
       index = double("index")
       allow(index).to receive(:name) { :Person }
@@ -81,15 +120,10 @@ describe Mongoid::Giza::Configuration do
       allow(@config).to receive(:apply_user_settings)
     end
 
-    it "should add an Riddle::Configuration::Index" do
-      allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
-      expect { @config.add_index(index) }.to change{@config.indices.length}.by(1)
-    end
-
     it "should create a xmlpipe2 source with the same name of the index" do
       expect(Riddle::Configuration::XMLSource).to receive(:new).with(index.name, :xmlpipe2) { source }
       allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
-      @config.add_index(index)
+      @config.create_index(index)
     end
 
     it "should set the path" do
@@ -98,33 +132,67 @@ describe Mongoid::Giza::Configuration do
       allow(riddle_index).to receive(:path=).with("/path/to/index")
       allow(riddle_index).to receive(:path) { "/path/to/index" }
       expect(riddle_index).to receive(:path=).with("/path/to/index/#{index.name}")
-      @config.add_index(index)
-    end
-
-    it "should not add the same index twice" do
-      allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
-      @config.add_index(index)
-      expect { @config.add_index(index) }.not_to change{@config.indices.length}.by(1)
+      @config.create_index(index)
     end
 
     it "should apply default settings to the index" do
       expect(@config).to receive(:apply_default_settings).with(@default_index, riddle_index)
-      @config.add_index(index)
+      @config.create_index(index)
     end
 
     it "should apply default settings to the source" do
       expect(@config).to receive(:apply_default_settings).with(@default_source, source)
-      @config.add_index(index)
+      @config.create_index(index)
     end
 
     it "should apply user defined settings to the index" do
       expect(@config).to receive(:apply_user_settings).with(index, riddle_index)
-      @config.add_index(index)
+      @config.create_index(index)
     end
 
     it "should apply user defined settings to the source" do
       expect(@config).to receive(:apply_user_settings).with(index, source)
-      @config.add_index(index)
+      @config.create_index(index)
+    end
+
+    it "should return the index" do
+      expect(@config.create_index(index)).to be(riddle_index)
+    end
+  end
+
+  describe "register_index" do
+    let(:indices) { double("indices") }
+
+    let(:length) { double("length") }
+
+    let(:index) { double("index") }
+
+    let(:indexes) { double("indexes") }
+
+    before do
+      allow(@config).to receive(:indices) { indices }
+      allow(indices).to receive(:length) { length }
+      allow(index).to receive(:name) { :index }
+      allow(indexes).to receive(:[]=)
+      allow(indexes).to receive(:has_key?)
+    end
+
+    it "should add the index to the given hash" do
+      expect(indexes).to receive(:[]=).with(:index, index)
+      @config.register_index(index, indexes)
+    end
+
+    it "should return the position to replace the index on the configuration indices" do
+      position = double("position")
+      allow(indexes).to receive(:has_key?).with(:index) { true }
+      allow(indexes).to receive(:[]).with(:index) { index }
+      allow(indices).to receive(:index).with(index) { position }
+      expect(@config.register_index(index, indexes)).to be(position)
+    end
+
+    it "should return the position to add the index on the configuration indices" do
+      allow(indexes).to receive(:has_key?).with(:index) { false }
+      expect(@config.register_index(index, indexes)).to be(length)
     end
   end
 
