@@ -70,6 +70,10 @@ describe Mongoid::Giza::Configuration do
 
     let(:length) { double("length") }
 
+    let(:static) { double("static") }
+
+    let(:generated) { double("generated") }
+
     before do
       allow(@config).to receive(:indices) { indices }
       allow(@config).to receive(:create_index) { riddle_index }
@@ -90,13 +94,15 @@ describe Mongoid::Giza::Configuration do
     end
 
     it "should register a static index on the static indexes hash" do
-      expect(@config).to receive(:register_index).with(riddle_index, @config.instance_variable_get("@static_indexes"))
+      @config.instance_variable_set("@static_indexes", static)
+      expect(@config).to receive(:register_index).with(riddle_index, static)
       @config.add_index(index)
     end
 
     it "should register a generated index on the generated indexes hash" do
-      expect(@config).to receive(:register_index).with(riddle_index, @config.instance_variable_get("@generated_indexes"))
-      @config.add_index(index)
+      @config.instance_variable_set("@generated_indexes", generated)
+      expect(@config).to receive(:register_index).with(riddle_index, generated)
+      @config.add_index(index, true)
     end
   end
 
