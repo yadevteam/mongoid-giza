@@ -46,9 +46,9 @@ module Mongoid
     included do
       Mongoid::Giza::GizaID.create(id: name.to_sym)
       @giza_configuration = Configuration.instance
-      @sphinx_static_indexes = {}
-      @sphinx_generated_indexes = {}
-      @sphinx_dynamic_indexes = []
+      @static_sphinx_indexes = {}
+      @generated_sphinx_indexes = {}
+      @dynamic_sphinx_indexes = []
     end
 
     # Retrives the sphinx compatible id of the object.
@@ -61,7 +61,7 @@ module Mongoid
     end
 
     module ClassMethods
-      attr_reader :sphinx_static_indexes, :sphinx_generated_indexes, :sphinx_dynamic_indexes
+      attr_reader :static_sphinx_indexes, :generated_sphinx_indexes, :dynamic_sphinx_indexes
 
       # Class method that defines a index relative to the current model's documents.
       # If an argument is given in the block then a dynamic index will be created.
@@ -87,7 +87,7 @@ module Mongoid
       #   The block receives one argument that is the current object of the class for which the index will be generated
       def add_dynamic_sphinx_index(settings, block)
         dynamic_index = DynamicIndex.new(self, settings, block)
-        sphinx_dynamic_indexes << dynamic_index
+        dynamic_sphinx_indexes << dynamic_index
         process_dynamic_sphinx_index(dynamic_index)
       end
 
@@ -98,7 +98,7 @@ module Mongoid
       def add_static_sphinx_index(settings, block)
         index = Index.new(self, settings)
         Docile.dsl_eval(index, &block)
-        sphinx_static_indexes[index.name] = index
+        static_sphinx_indexes[index.name] = index
         @giza_configuration.add_index(index)
       end
 
@@ -108,7 +108,7 @@ module Mongoid
       # @param dynamic_index [Mongoid::Giza::DynamicIndex] the dynamic index which will generate the static indexes from
       def process_dynamic_sphinx_index(dynamic_index)
         generated = dynamic_index.generate!
-        sphinx_generated_indexes.merge!(generated)
+        generated_sphinx_indexes.merge!(generated)
         generated.each { |name, index| @giza_configuration.add_index(index, true) }
       end
 
@@ -126,18 +126,10 @@ module Mongoid
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
       end
 
-      # Retrieves all the sphinx indexes defined on this class, static and dynamic
-      #
-      # @return [Array] an Array of indexes from the current class {Mongoid::Giza::Index}
-      def sphinx_indexes
-        sphinx_static_indexes.merge(sphinx_generated_indexes).values
-      end
-
-      # Retrieves all the names of sphinx indexes defined on this class, static and dynamic
-      #
-      # @return [Array] an Array of names of indexes from the current class {Mongoid::Giza::Index}
-      def sphinx_indexes_names
-        sphinx_static_indexes.merge(sphinx_generated_indexes).keys
+      # Regenerates all dynamic indexes of the class
+      def regenerate_dynamic_sphinx_indexes
+        generated_sphinx_indexes.clear
+        dynamic_sphinx_indexes.each { |dynamic_index| process_dynamic_sphinx_index(dynamic_index) }
       end
 
       # Execute the indexing routines of the indexes defined on the class.
@@ -149,6 +141,20 @@ module Mongoid
       def sphinx_indexer!(*names)
         indexes_names = names.length > 0 ? sphinx_indexes_names.select { |name| names.include? name } : sphinx_indexes_names
         Mongoid::Giza::Indexer.instance.index!(*indexes_names) if indexes_names.length > 0
+      end
+
+      # Retrieves all the sphinx indexes defined on this class, static and dynamic
+      #
+      # @return [Array] an Array of indexes from the current class {Mongoid::Giza::Index}
+      def sphinx_indexes
+        static_sphinx_indexes.merge(generated_sphinx_indexes).values
+      end
+
+      # Retrieves all the names of sphinx indexes defined on this class, static and dynamic
+      #
+      # @return [Array] an Array of names of indexes from the current class {Mongoid::Giza::Index}
+      def sphinx_indexes_names
+        static_sphinx_indexes.merge(generated_sphinx_indexes).keys
       end
     end
   end
