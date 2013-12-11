@@ -22,7 +22,7 @@ describe Mongoid::Giza::GizaID do
       Mongoid::Giza::GizaID.create(id: :Person)
     end
 
-    it "should return the next id for the given model" do
+    it "should return the next id for the given class" do
       expect(Mongoid::Giza::GizaID.next_id(:Person)).to eql(1)
       expect(Mongoid::Giza::GizaID.next_id(:Person)).to eql(2)
     end

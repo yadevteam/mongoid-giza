@@ -14,11 +14,11 @@ module Mongoid
 
         # Gets the next id in the sequence to assign to an object
         #
-        # @param model [Symbol] the name of the model which next id will be retrived for
+        # @param klass [Symbol] the name of the class which next id will be retrived for
         #
         # @return [Integer] the next id in the sequence
-        def next_id(model)
-          giza_id = where(id: model).find_and_modify({"$inc" => {seq: 1}}, new: true)
+        def next_id(klass)
+          giza_id = where(id: klass).find_and_modify({"$inc" => {seq: 1}}, new: true)
           giza_id.seq
         end
       end

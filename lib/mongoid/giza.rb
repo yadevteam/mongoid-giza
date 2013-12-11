@@ -63,9 +63,9 @@ module Mongoid
     module ClassMethods
       attr_reader :static_sphinx_indexes, :generated_sphinx_indexes, :dynamic_sphinx_indexes
 
-      # Class method that defines a index relative to the current model's documents.
+      # Class method that defines a index relative to the current class' objects.
       # If an argument is given in the block then a dynamic index will be created.
-      # Otherwise it will generate a static index.
+      # Otherwise it will create a static index.
       #
       # @param settings [Hash] optional settings for the index and it's source
       # @param block [Proc] a block that will be evaluated on an {Mongoid::Giza::Index}
