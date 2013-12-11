@@ -88,9 +88,7 @@ module Mongoid
       def add_dynamic_sphinx_index(settings, block)
         dynamic_index = DynamicIndex.new(self, settings, block)
         sphinx_dynamic_indexes << dynamic_index
-        generated = dynamic_index.generate!
-        sphinx_generated_indexes.merge!(generated)
-        generated.each { |name, index| @giza_configuration.add_index(index, true) }
+        process_dynamic_sphinx_index(dynamic_index)
       end
 
       # Adds an static index to the class
@@ -102,6 +100,16 @@ module Mongoid
         Docile.dsl_eval(index, &block)
         sphinx_static_indexes[index.name] = index
         @giza_configuration.add_index(index)
+      end
+
+      # Generates the indexes from the dynamic index and
+      # registers them on the class and on the configuration
+      #
+      # @param dynamic_index [Mongoid::Giza::DynamicIndex] the dynamic index which will generate the static indexes from
+      def process_dynamic_sphinx_index(dynamic_index)
+        generated = dynamic_index.generate!
+        sphinx_generated_indexes.merge!(generated)
+        generated.each { |name, index| @giza_configuration.add_index(index, true) }
       end
 
       # Class method that implements a search DSL using a {Mongoid::Giza::Search} object.
