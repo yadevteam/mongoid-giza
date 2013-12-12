@@ -11,6 +11,13 @@ module Mongoid
         @controller = Riddle::Controller.new(@configuration, @configuration.file.output_path)
       end
 
+      # Index everything, regenerating all dynamic indexes from all classes
+      def full_index
+        @configuration.clear_generated_indexes
+        giza_classes.each { |klass| klass.regenerate_dynamic_sphinx_indexes }
+        index!
+      end
+
       # Creates the sphinx configuration file then executes the indexer on it
       def index!(*indexes)
         @configuration.render

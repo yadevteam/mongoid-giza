@@ -29,6 +29,36 @@ describe Mongoid::Giza::Indexer do
     end
   end
 
+  describe "full_index" do
+    let(:klass) { double("class") }
+
+    before do
+      allow(@indexer).to receive(:index!)
+    end
+
+    it "should clear the generated indexes from the configuration" do
+      expect(config).to receive(:clear_generated_indexes)
+      allow(@indexer).to receive(:giza_classes) { [klass] }
+      allow(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      @indexer.full_index
+    end
+
+    it "should regenerate all dynamic indexes of the giza classes" do
+      allow(config).to receive(:clear_generated_indexes)
+      allow(@indexer).to receive(:giza_classes) { [klass] }
+      expect(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      @indexer.full_index
+    end
+
+    it "should execute the indexer" do
+      allow(config).to receive(:clear_generated_indexes)
+      allow(@indexer).to receive(:giza_classes) { [klass] }
+      allow(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      expect(@indexer).to receive(:index!).with(no_args)
+      @indexer.full_index
+    end
+  end
+
   describe "giza_classes" do
     before(:all) do
       class One
