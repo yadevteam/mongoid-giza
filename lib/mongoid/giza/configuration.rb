@@ -16,8 +16,7 @@ module Mongoid
         super
         @source = Riddle::Configuration::XMLSource.new(:source, :xmlpipe2)
         @index = Riddle::Configuration::Index.new(:index, @source)
-        @file = OpenStruct.new
-        @file.output_path = "./sphinx.conf"
+        @file = OpenStruct.new(output_path: "./sphinx.conf")
         @static_indexes = {}
         @generated_indexes = {}
       end
