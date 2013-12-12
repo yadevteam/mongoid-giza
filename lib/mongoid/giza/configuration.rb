@@ -111,6 +111,12 @@ module Mongoid
       def render
         File.open(@file.output_path, "w") { |file| file.write(super) }
       end
+
+      # Removes all Riddle::Index from the indices Array that where created from a generated {Mongoid::Giza::Index}
+      def clear_generated_indexes
+        @generated_indexes.each { |name, index| indices.delete(index) }
+        @generated_indexes =  {}
+      end
     end
   end
 end
