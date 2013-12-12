@@ -142,12 +142,12 @@ describe Mongoid::Giza::Configuration do
     end
 
     it "should apply default settings to the index" do
-      expect(@config).to receive(:apply_default_settings).with(@default_index, riddle_index)
+      expect(@config).to receive(:apply_default_settings).with(@default_index, riddle_index, index)
       @config.create_index(index)
     end
 
     it "should apply default settings to the source" do
-      expect(@config).to receive(:apply_default_settings).with(@default_source, source)
+      expect(@config).to receive(:apply_default_settings).with(@default_source, source, index)
       @config.create_index(index)
     end
 
@@ -206,6 +206,7 @@ describe Mongoid::Giza::Configuration do
     before do
       @default = double("default")
       @section = double("section")
+      @index = double("index")
       allow(@default).to receive(:class) do
         klass = double("class")
         allow(klass).to receive(:settings) { [:html_strip] }
@@ -217,21 +218,29 @@ describe Mongoid::Giza::Configuration do
       allow(@default).to receive(:html_strip) { 1 }
       allow(@section).to receive(:respond_to?).with("html_strip=") { true }
       expect(@section).to receive(:html_strip=).with(1)
-      @config.apply_default_settings(@default, @section)
+      @config.apply_default_settings(@default, @section, @index)
     end
 
     it "should not set nil values" do
       allow(@default).to receive(:html_strip) { nil }
       allow(@section).to receive(:respond_to?).with("html_strip=") { true }
       expect(@section).not_to receive(:html_strip=)
-      @config.apply_default_settings(@default, @section)
+      @config.apply_default_settings(@default, @section, @index)
     end
 
     it "should not try to apply settings without a setter" do
       allow(@default).to receive(:html_strip) { 1 }
       allow(@section).to receive(:respond_to?).with("html_strip=") { false }
       expect(@section).not_to receive(:html_strip=)
-      @config.apply_default_settings(@default, @section)
+      @config.apply_default_settings(@default, @section, @index)
+    end
+
+    it "should interpolate string values" do
+      allow(@default).to receive(:html_strip) { 1 }
+      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
+      allow(@section).to receive(:html_strip=)
+      expect(@config).to receive(:interpolate_string).with(1, @index)
+      @config.apply_default_settings(@default, @section, @index)
     end
   end
 
@@ -240,6 +249,7 @@ describe Mongoid::Giza::Configuration do
       @index = double("index")
       @section = double("section")
       allow(@index).to receive(:settings) { {html_strip: 1} }
+      allow(@section).to receive(:html_strip=)
     end
 
     it "should apply the the settings" do
@@ -252,6 +262,48 @@ describe Mongoid::Giza::Configuration do
       allow(@section).to receive(:respond_to?).with("html_strip=") { false }
       expect(@section).not_to receive(:html_strip=)
       @config.apply_user_settings(@index, @section)
+    end
+
+    it "should interpolate the value" do
+      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
+      expect(@config).to receive(:interpolate_string).with(1, @index)
+      @config.apply_user_settings(@index, @section)
+    end
+  end
+
+  describe "interpolate_string" do
+    let(:string) { double("string") }
+
+    let(:index) { double("index") }
+
+    let(:namespace) { double("namespace") }
+
+    let(:erb) { double("erb") }
+
+    let(:binding) { double("binding") }
+
+    let(:result) { double("result") }
+
+    before do
+      allow(string).to receive(:is_a?) { false }
+      allow(string).to receive(:is_a?).with(String) { true }
+      allow(ERB).to receive(:new).with(string) { erb }
+      allow(erb).to receive(:result) { result }
+    end
+
+    it "should ignore non string values" do
+      expect(@config.interpolate_string(1, index)).to eql(1)
+    end
+
+    it "should create the namespace" do
+      expect(OpenStruct).to receive(:new).with(index: index)
+      @config.interpolate_string(string, index)
+    end
+
+    it "should return the interpolation result" do
+      allow(namespace).to receive(:binding) { binding }
+      allow(erb).to receive(:result).with(binding) { result }
+      expect(@config.interpolate_string(string, index)).to be(result)
     end
   end
 

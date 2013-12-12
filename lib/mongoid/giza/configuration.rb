@@ -1,5 +1,6 @@
-require "yaml"
+require "erb"
 require "ostruct"
+require "yaml"
 
 module Mongoid
   module Giza
@@ -61,8 +62,8 @@ module Mongoid
       def create_index(index)
         source = Riddle::Configuration::XMLSource.new(index.name, :xmlpipe2)
         riddle_index = Riddle::Configuration::Index.new(index.name, source)
-        apply_default_settings(@index, riddle_index)
-        apply_default_settings(@source, source)
+        apply_default_settings(@index, riddle_index, index)
+        apply_default_settings(@source, source, index)
         apply_user_settings(index, riddle_index)
         apply_user_settings(index, source)
         riddle_index.path = File.join(riddle_index.path, index.name.to_s)
@@ -87,10 +88,10 @@ module Mongoid
       #
       # @param default [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that holds the global settings values
       # @param section [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that settings are being set
-      def apply_default_settings(default, section)
+      def apply_default_settings(default, section, index)
         default.class.settings.each do |setting|
           method = "#{setting}="
-          value = default.send("#{setting}")
+          value = interpolate_string(default.send("#{setting}"), index)
           section.send(method, value) if !value.nil? and section.respond_to?(method)
         end
       end
@@ -103,8 +104,22 @@ module Mongoid
       def apply_user_settings(index, section)
         index.settings.each do |setting, value|
           method = "#{setting}="
-          section.send(method, value) if section.respond_to?(method)
+          section.send(method, interpolate_string(value, index)) if section.respond_to?(method)
         end
+      end
+
+      # Interpolates a value if it's a String using ERB.
+      # Useful for defining dynamic settings.
+      # The ERB template may reference to the current {Mongoid::Giza::Index} and it's methods
+      #
+      # @param value [String] the ERB template that will be interpolated
+      # @param index [Mongoid::Giza::Index] the index that will be accessible from the template
+      #
+      # @return [Object] if value was a String and contains ERB syntax than it will beinterpolated and returned.
+      #   Otherwise it will return the original value
+      def interpolate_string(value, index)
+        namespace = OpenStruct.new(index: index)
+        value.is_a?(String) ? ERB.new(value).result(namespace.instance_eval { binding }) : value
       end
 
       # Renders the configuration to the output_path
