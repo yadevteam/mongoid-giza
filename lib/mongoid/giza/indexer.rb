@@ -16,6 +16,11 @@ module Mongoid
         @configuration.render
         @controller.index(*indexes, verbose: true)
       end
+
+      # @return [Array<Class>] all Mongoid models that include the {Mongoid::Giza} module
+      def giza_classes
+        Mongoid.models.select { |model| model.include?(Mongoid::Giza) }
+      end
     end
   end
 end
