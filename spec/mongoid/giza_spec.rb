@@ -26,8 +26,6 @@ describe Mongoid::Giza do
 
   let(:new_index) { allow(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index } }
 
-  let(:config_indexes) { allow(Mongoid::Giza::Instance).to receive(:indexes) { double("indexes").as_null_object } }
-
   let(:search) do
     search = double("search")
     allow(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132) { search }
@@ -58,13 +56,11 @@ describe Mongoid::Giza do
 
   describe "add_static_sphinx_index" do
     it "should create an index" do
-      config_indexes
       expect(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index }
       Person.add_static_sphinx_index({}, Proc.new { })
     end
 
     it "should call index methods" do
-      config_indexes
       expect(index).to receive(:field).with(:name)
       new_index
       Person.add_static_sphinx_index({}, Proc.new { field :name })
@@ -79,7 +75,6 @@ describe Mongoid::Giza do
     end
 
     it "should accept settings" do
-      config_indexes
       expect(Mongoid::Giza::Index).to receive(:new).with(Person, enable_star: 1) { index }
       Person.add_static_sphinx_index({enable_star: 1}, Proc.new { })
     end
