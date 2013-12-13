@@ -87,6 +87,13 @@ module Mongoid
         end
         @name
       end
+
+      # Generates a XML document according to the XMLPipe2 specification from Sphinx
+      #
+      # @param buffer [#<<] any IO object that supports appending content using <<
+      def generate_xmlpipe2(buffer)
+        Mongoid::Giza::XMLPipe2.new(self, buffer).generate!
+      end
     end
   end
 end
