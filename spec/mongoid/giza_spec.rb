@@ -210,12 +210,10 @@ describe Mongoid::Giza do
       static = double("static")
       generated = double("generated")
       merged = double("merged")
-      indexes = double("indexes")
       allow(Person).to receive(:static_sphinx_indexes) { static }
       allow(Person).to receive(:generated_sphinx_indexes) { generated }
       allow(static).to receive(:merge).with(generated) { merged }
-      allow(merged).to receive(:values) { indexes }
-      expect(Person.sphinx_indexes).to be(indexes)
+      expect(Person.sphinx_indexes).to be(merged)
     end
   end
 
