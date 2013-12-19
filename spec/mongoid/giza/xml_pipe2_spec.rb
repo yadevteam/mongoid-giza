@@ -34,14 +34,12 @@ describe Mongoid::Giza::XMLPipe2 do
 
   describe "generate_docset" do
     before do
-      person_class = double("Person")
       field = double("field")
       attribute = double("attribute")
       person = double("person")
-      allow(@index).to receive(:klass) { person_class }
       allow(@index).to receive(:fields) { [field] }
       allow(@index).to receive(:attributes) { [attribute] }
-      allow(person_class).to receive(:all) { [person] }
+      allow(@index).to receive(:criteria) { [person] }
       allow(person).to receive(:giza_id) { 1 }
       allow(xmlpipe2).to receive(:generate_doc_tags).with([field], person) do
         @buffer << "<name>Person One</name>"

@@ -36,6 +36,7 @@ module Mongoid
         @klass = klass
         @settings = settings
         @name = @klass.name.to_sym
+        @criteria = klass.all
         @fields = []
         @attributes = []
       end
@@ -86,6 +87,10 @@ module Mongoid
           @name = new_name.to_sym
         end
         @name
+      end
+
+      def criteria(new_criteria = nil)
+        @criteria = new_criteria || @criteria
       end
 
       # Generates a XML document according to the XMLPipe2 specification from Sphinx

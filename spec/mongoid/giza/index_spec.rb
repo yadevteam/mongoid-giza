@@ -4,6 +4,7 @@ describe Mongoid::Giza::Index do
   let(:klass) do
     klass = double("klass")
     allow(klass).to receive(:name) { "Klass" }
+    allow(klass).to receive(:all)
     klass
   end
 
@@ -139,6 +140,23 @@ describe Mongoid::Giza::Index do
       allow(Mongoid::Giza::XMLPipe2).to receive(:new) { xmlpipe2 }
       expect(xmlpipe2).to receive(:generate!)
       index.generate_xmlpipe2(buffer)
+    end
+  end
+
+  describe "criteria" do
+    let(:all) { double("all") }
+
+    let(:criteria) { double("criteria") }
+
+    it "should default to all" do
+      allow(klass).to receive(:all) { all }
+      expect(index.criteria).to be(all)
+    end
+
+    it "should accept a new criteria as a parameter" do
+      allow(klass).to receive(:where) { criteria }
+      index.criteria(klass.where(name: "one"))
+      expect(index.criteria).to be(criteria)
     end
   end
 end

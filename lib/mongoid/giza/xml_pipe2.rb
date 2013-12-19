@@ -40,7 +40,7 @@ module Mongoid
       # Generates the content part of the XML document.
       # Used internally by {#generate!} so you should never need to call it directly
       def generate_docset
-        @index.klass.all.each do |object|
+        @index.criteria.each do |object|
           @xml.sphinx :document, id: object.giza_id do
             generate_doc_tags(@index.fields, object)
             generate_doc_tags(@index.attributes, object)
