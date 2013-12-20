@@ -20,12 +20,41 @@ Or install it yourself as:
 
 :warning: **Before proceeding is extremely recommended to read the [Sphinx documentation](http://sphinxsearch.com/docs/current.html) if you are not yet familiar with it. Reading up to chapter 5 is enought to get you going.**
 
+## Configuration file
+
+A YAML configuration file is needed to configure the gem, the Sphinx searchd daemon, optionally the Sphinx indexer and set the default options for the sources and indexes.
+
+The minimum configuration file must have the sphinx.conf output path, the address and port of the searchd daemon, paths to its pid and log files.
+It's also a good idea to define a default path for very index.
+
+The `xmlpipe_command` is set to a default when using rails, otherwise you need to set it for each index or a default on the YAML file.
+String settings of the index and source accept ERB, and you have access to the Mongoid::Giza::Index from the erb
+
+The configuration file is automatically loaded when using Rails from `config/giza.yml`, otherwise you will need to call `Mongoid::Giza::Configuration.instance.load` to load it.
+
+**Example:** *(the `xmlpipe_command` used here is already the one used in rails automatically so it's not needed, just for illustration)
+
+```
+development:
+  file:
+    output_path: "/tmp/sphinx/sphinx.conf"
+  searchd:
+    address: "localhost"
+    port: 9312
+    pid_file: "/tmp/sphinx/searchd.pid"
+    log: "/tmp/sphinx/searchd.log"
+  index:
+    path: "/tmp/sphinx"
+  source:
+    xmlpipe_command: "rails r '<%= index.klass %>.sphinx_indexes[:<%= index.name %>].generate_xmlpipe2(STDOUT)'"
+```
+
 ### Setting up indexes on models
 
 Use a `sphinx_index` block to create a new index.
 
 The `sphinx_index` method may receive optional settings that will be set in this index's section or in its source section on the generated sphinx configuration file.
-These settings take precedence to the defaults defined in `giza.yml`.
+These settings take precedence to the defaults defined in the configuration file.
 
 A model may have more than one index, but they need to have different names.
 If two or more indexes have the same name the last one to be defined is the one which will exist.
