@@ -6,7 +6,7 @@ Mongoid layer for the Sphinx fulltext search server that supports block fields a
 
 Add this line to your application's Gemfile:
 
-    gem 'mongoid-giza'
+    gem "mongoid-giza"
 
 And then execute:
 
@@ -18,7 +18,130 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+:warning: **Before proceeding is extremely recommended to read the [Sphinx documentation](http://sphinxsearch.com/docs/current.html) if you are not yet familiar with it. Reading up to chapter 5 is enought to get you going.**
+
+### Setting up indexes on models
+
+Use a `sphinx_index` block to create a new index.
+
+The `sphinx_index` method may receive optional settings that will be set in this index's section or in its source section on the generated sphinx configuration file.
+These settings take precedence to the defaults defined in `giza.yml`.
+
+A model may have more than one index, but they need to have different names.
+If two or more indexes have the same name the last one to be defined is the one which will exist.
+
+An index name is the name of the class it's defined on unless overwritten by the `name` method inside the index definition block.
+
+Besides `name`, `field`, `attribute` and `criteria` are the methods avaible inside the index definition block.
+
+Both `field` and `attribute` take a name as first parameter that may match with a Mongoid field. In this case the value of the field will be used when indexing the objects.
+The `attribute` method may receive a second paramenter that defines the type of the attribute. If it is ommited, than the type of the Mongoid field will be used.
+
+At last, both methods may take an block with the object as parameter. The return of the block will be used as the value of the field or attribute when indexing.
+
+The `criteria` method receives a `Mongoid::Criteria` that will be used to select the objects that will be indexed.
+It's `Class.all` by default.
+
+**Example:** Creating a index on the person model
+
+```
+class Person
+  include Mongoid::Document
+  include Mongoid::Giza
+
+  field :name
+  field :age, type: Integer
+
+  sphinx_index(enable_star: 1) do
+    field :name
+    field :bio do |person|
+      "#{person.name.capitalize} was born #{person.age.years.days} ago"
+    end
+    attribute :age
+  end
+end
+```
+
+#### Dynamic Indexes
+
+Because of the schemaless nature of MongoDB, sometimes you may find problems mapping your mongo models to sphinx indexes.
+To circunvent this limitation Mongoid::Giza supports dynamic indexes.
+
+When you define a dynamic index, it will generate a regular index based on your definition for each object of the class.
+This allows the creation of different indexes for objects of the same model that have different dynamic fields.
+
+Although it's not necessary, dynamic indexes are better used together with a `criteria`,
+so it's possible to control which objects of the class will be indexed on each determined index.
+
+To create a dynamic index all that needs to be done is pass the object to the `sphin_index` block.
+
+**Example:** Creating a dynamic index on the person model.
+This dynamic index will generate one index for each job that is associated to a person.
+On each index only the people that have that job will be indexed.
+Finally each dynamic attribute of the job will be a field on its index.
+
+```
+class Job
+  include Mongoid::Document
+
+  field :name
+  # each job object has specific dynamic fields
+
+  has_many :people
+end
+
+class Person
+  include Mongoid::Document
+  include Mongoid::Giza
+
+  field :name
+  field :age, type: Integer
+
+  belongs_to :job
+
+  sphinx_index do |person|
+    name person.job.name
+    criteria Person.where(job: person.job)
+    person.job.attributes.except("name").each do |attr, val|
+      field attr.to_sym
+    end
+  end
+end
+```
+
+### Searching
+
+Use the `search` block on the class that have the indexes where the search should run.
+It returns a result array, where each position of the array is a [riddle result hash](http://rdoc.info/github/pat/riddle/Riddle/Client#query-instance_method), plus a key with the class name, that has the `Mongoid::Criteria` that selects the matching objects from the mongo database.
+
+Inside the `search` block use the `fulltext` method to perform a fulltext search.
+If multiple `fulltext` are called inside a `search` block, then each one will generate a separated query and will return a new position o the results array.
+
+To filter your search using the attributes defined on the index creation, use the `with` and `without` methods, that accept the name of the attribute and the value or range.
+
+To order the results, use the `order_by` method, that receives the *attribute* used for sorting and a Symbol, that can be either `:asc` or `:desc`.
+
+Every other [Riddle::Client](http://rdoc.info/github/pat/riddle/Riddle/Client) setter is avaible without the **=**, to maintain the DSL syntax consistent.
+
+**Example:** Searching on the person class
+
+```
+results = Person.search do
+  fulltext "john"
+  with :age 18..40
+  order_by :age :asc
+end
+
+results.first[:Person].each do |person|
+ puts "#{person.name} is #{person.age} years old"
+end
+```
+
+## TODO
+
+* Support delta indexing
+* Support RT indexes
+* Support distributed indexes
 
 ## Contributing
 
