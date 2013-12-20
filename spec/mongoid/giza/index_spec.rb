@@ -121,7 +121,7 @@ describe Mongoid::Giza::Index do
     end
 
     it "should define a new name when supplied" do
-      index.name("Index")
+      index.name(:Index)
       expect(index.name).to eql(:Index)
     end
   end

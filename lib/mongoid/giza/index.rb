@@ -83,10 +83,7 @@ module Mongoid
       #
       # @return [Symbol] The name of the index
       def name(new_name = nil)
-        if !new_name.nil?
-          @name = new_name.to_sym
-        end
-        @name
+        @name = new_name || @name.to_sym
       end
 
       def criteria(new_criteria = nil)
