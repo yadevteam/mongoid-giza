@@ -32,7 +32,7 @@ String settings of the index and source accept ERB, and you have access to the M
 
 The configuration file is automatically loaded when using Rails from `config/giza.yml`, otherwise you will need to call `Mongoid::Giza::Configuration.instance.load` to load it.
 
-**Example:** *(the `xmlpipe_command` used here is already the one used in rails automatically so it's not needed, just for illustration)
+**Example:** *(the `xmlpipe_command` used here is already the one used in rails automatically so it's not needed, just for illustration)*
 
 ```
 development:
