@@ -28,7 +28,7 @@ The minimum configuration file must have the sphinx.conf output path, the addres
 It's also a good idea to define a default path for very index.
 
 The `xmlpipe_command` is set to a default when using rails, otherwise you need to set it for each index or a default on the YAML file.
-String settings of the index and source accept ERB, and you have access to the Mongoid::Giza::Index from the erb
+String settings of the index and source accept ERB, and you have access to the `Mongoid::Giza::Index` from it
 
 The configuration file is automatically loaded when using Rails from `config/giza.yml`, otherwise you will need to call `Mongoid::Giza::Configuration.instance.load` to load it.
 
