@@ -20,7 +20,7 @@ Or install it yourself as:
 
 :warning: **Before proceeding is extremely recommended to read the [Sphinx documentation](http://sphinxsearch.com/docs/current.html) if you are not yet familiar with it. Reading up to chapter 5 is enought to get you going.**
 
-## Configuration file
+### Configuration file
 
 A YAML configuration file is needed to configure the gem, the Sphinx searchd daemon, optionally the Sphinx indexer and set the default options for the sources and indexes.
 
