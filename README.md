@@ -34,7 +34,7 @@ The configuration file is automatically loaded when using Rails from `config/giz
 
 **Example:** *(the `xmlpipe_command` used here is already the one used in rails automatically so it's not needed, just for illustration)*
 
-```
+```yaml
 development:
   file:
     output_path: "/tmp/sphinx/sphinx.conf"
@@ -73,7 +73,7 @@ It's `Class.all` by default.
 
 **Example:** Creating a index on the person model
 
-```
+```ruby
 class Person
   include Mongoid::Document
   include Mongoid::Giza
@@ -109,7 +109,7 @@ This dynamic index will generate one index for each job that is associated to a 
 On each index only the people that have that job will be indexed.
 Finally each dynamic attribute of the job will be a field on its index.
 
-```
+```ruby
 class Job
   include Mongoid::Document
 
@@ -166,7 +166,7 @@ Every other [Riddle::Client](http://rdoc.info/github/pat/riddle/Riddle/Client) s
 
 **Example:** Searching on the person class
 
-```
+```ruby
 results = Person.search do
   fulltext "john"
   with :age 18..40
