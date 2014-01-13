@@ -144,7 +144,7 @@ module Mongoid
 
       # Retrieves all the sphinx indexes defined on this class, static and dynamic
       #
-      # @return [Array] an Array of indexes from the current class {Mongoid::Giza::Index}
+      # @return [Hash] a Hash with indexes names as keys and the actual indexes as the values
       def sphinx_indexes
         static_sphinx_indexes.merge(generated_sphinx_indexes)
       end
