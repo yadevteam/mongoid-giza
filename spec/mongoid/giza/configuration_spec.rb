@@ -59,6 +59,27 @@ describe Mongoid::Giza::Configuration do
       file_open
       @config.load("giza.yml", "test")
     end
+
+    it "should interpolate the string with ERB" do
+      allow(file).to receive(:read) { "test:\n  searchd:\n    address: localhost" }
+      expect(@config).to receive(:interpolate_string).with("localhost", nil)
+      file_open
+      @config.load("giza.yml", "test")
+    end
+
+    it "should not interpolate index settings" do
+      allow(file).to receive(:read) { "test:\n  index:\n    path: home" }
+      expect(@config).not_to receive(:interpolate_string)
+      file_open
+      @config.load("giza.yml", "test")
+    end
+
+    it "should not interpolate source settings" do
+      allow(file).to receive(:read) { "test:\n  source:\n    xmlpipe_command: cmd" }
+      expect(@config).not_to receive(:interpolate_string)
+      file_open
+      @config.load("giza.yml", "test")
+    end
   end
 
   describe "add_index" do

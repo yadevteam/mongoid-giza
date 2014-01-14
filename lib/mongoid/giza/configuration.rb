@@ -32,6 +32,7 @@ module Mongoid
           if !section.nil?
             settings.each do |setting, value|
               method = "#{setting}="
+              value = interpolate_string(value, nil) if section != @index and section != @source
               section.send(method, value) if section.respond_to?(method)
             end
           end
@@ -117,7 +118,7 @@ module Mongoid
       # @return [Object] if value was a String and contains ERB syntax than it will beinterpolated and returned.
       #   Otherwise it will return the original value
       def interpolate_string(value, index)
-        namespace = OpenStruct.new(index: index)
+        namespace = index.nil? ? Object.new : OpenStruct.new(index: index)
         value.is_a?(String) ? ERB.new(value).result(namespace.instance_eval { binding }) : value
       end
 
