@@ -28,7 +28,7 @@ The minimum configuration file must have the sphinx.conf output path, the addres
 It's also a good idea to define a default path for very index.
 
 The `xmlpipe_command` is set to a default when using rails, otherwise you need to set it for each index or a default on the YAML file.
-String settings of the index and source accept ERB, and you have access to the `Mongoid::Giza::Index` from it
+String settings accept ERB, and you have access to the `Mongoid::Giza::Index` from index and source section settings.
 
 The configuration file is automatically loaded when using Rails from `config/giza.yml`, otherwise you will need to call `Mongoid::Giza::Configuration.instance.load` to load it.
 
@@ -140,14 +140,14 @@ end
 
 ### Indexing
 
-There are 3 ways to populate the Sphinx index: use the model class' `sphinx_indexer!` method, `Mongoid::Giza::Indexer.instance.index!` or `Mongoid::Giza::Indexer.instance.full_index`
+There are 3 ways to populate the Sphinx index: use the model class' `sphinx_indexer!` method, `Mongoid::Giza::Indexer.instance.index!` or `Mongoid::Giza::Indexer.instance.full_index!`
 
 * **sphinx_indexer!:** Will execute the indexer program only on the indexes of the class.
 Does not regenerate dynamic indexes.
 * **index!:** Will execute the indexer program on all indexes.
 Does not regenerate dynamic indexes.
-* **full_index:** Will regenerate dynamic indexes and execute the indexer program on all indexes.
- 
+* **full_index!:** Will regenerate dynamic indexes and execute the indexer program on all indexes.
+
 This gem does not execute none of those automatically to let the you define what is the best reindexing strategy for your software.
 
 ### Searching
