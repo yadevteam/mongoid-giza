@@ -20,7 +20,7 @@ Or install it yourself as:
 
 :warning: **Before proceeding is extremely recommended to read the [Sphinx documentation](http://sphinxsearch.com/docs/current.html) if you are not yet familiar with it. Reading up to chapter 5 is enought to get you going.**
 
-## Configuration file
+### Configuration file
 
 A YAML configuration file is needed to configure the gem, the Sphinx searchd daemon, optionally the Sphinx indexer and set the default options for the sources and indexes.
 
@@ -28,13 +28,13 @@ The minimum configuration file must have the sphinx.conf output path, the addres
 It's also a good idea to define a default path for very index.
 
 The `xmlpipe_command` is set to a default when using rails, otherwise you need to set it for each index or a default on the YAML file.
-String settings of the index and source accept ERB, and you have access to the Mongoid::Giza::Index from the erb
+String settings of the index and source accept ERB, and you have access to the `Mongoid::Giza::Index` from it
 
 The configuration file is automatically loaded when using Rails from `config/giza.yml`, otherwise you will need to call `Mongoid::Giza::Configuration.instance.load` to load it.
 
 **Example:** *(the `xmlpipe_command` used here is already the one used in rails automatically so it's not needed, just for illustration)*
 
-```
+```yaml
 development:
   file:
     output_path: "/tmp/sphinx/sphinx.conf"
@@ -73,7 +73,7 @@ It's `Class.all` by default.
 
 **Example:** Creating a index on the person model
 
-```
+```ruby
 class Person
   include Mongoid::Document
   include Mongoid::Giza
@@ -109,7 +109,7 @@ This dynamic index will generate one index for each job that is associated to a 
 On each index only the people that have that job will be indexed.
 Finally each dynamic attribute of the job will be a field on its index.
 
-```
+```ruby
 class Job
   include Mongoid::Document
 
@@ -138,6 +138,18 @@ class Person
 end
 ```
 
+### Indexing
+
+There are 3 ways to populate the Sphinx index: use the model class' `sphinx_indexer!` method, `Mongoid::Giza::Indexer.instance.index!` or `Mongoid::Giza::Indexer.instance.full_index`
+
+* **sphinx_indexer!:** Will execute the indexer program only on the indexes of the class.
+Does not regenerate dynamic indexes.
+* **index!:** Will execute the indexer program on all indexes.
+Does not regenerate dynamic indexes.
+* **full_index:** Will regenerate dynamic indexes and execute the indexer program on all indexes.
+ 
+This gem does not execute none of those automatically to let the you define what is the best reindexing strategy for your software.
+
 ### Searching
 
 Use the `search` block on the class that have the indexes where the search should run.
@@ -154,7 +166,7 @@ Every other [Riddle::Client](http://rdoc.info/github/pat/riddle/Riddle/Client) s
 
 **Example:** Searching on the person class
 
-```
+```ruby
 results = Person.search do
   fulltext "john"
   with :age 18..40
