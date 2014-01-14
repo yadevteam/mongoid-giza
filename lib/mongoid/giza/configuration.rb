@@ -31,9 +31,8 @@ module Mongoid
           section = instance_variable_get("@#{section_name}")
           if !section.nil?
             settings.each do |setting, value|
-              method = "#{setting}="
               value = interpolate_string(value, nil) if section != @index and section != @source
-              section.send(method, value) if section.respond_to?(method)
+              setter(section, setting, value)
             end
           end
         end
@@ -90,9 +89,8 @@ module Mongoid
       # @param section [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] the object that settings are being set
       def apply_default_settings(default, section, index)
         default.class.settings.each do |setting|
-          method = "#{setting}="
           value = interpolate_string(default.send("#{setting}"), index)
-          section.send(method, value) if !value.nil? and section.respond_to?(method)
+          setter(section, setting, value) if !value.nil?
         end
       end
 
@@ -103,9 +101,20 @@ module Mongoid
       # @param section [Riddle::Configuration::Index, Riddle::Configuration::XMLSource] where the settings will be applied
       def apply_user_settings(index, section)
         index.settings.each do |setting, value|
-          method = "#{setting}="
-          section.send(method, interpolate_string(value, index)) if section.respond_to?(method)
+          value = interpolate_string(value, index)
+          setter(section, setting, value)
         end
+      end
+
+      # Renders the configuration to the output_path
+      def render
+        File.open(@file.output_path, "w") { |file| file.write(super) }
+      end
+
+      # Removes all Riddle::Index from the indices Array that where created from a generated {Mongoid::Giza::Index}
+      def clear_generated_indexes
+        @generated_indexes.each { |name, index| indices.delete(index) }
+        @generated_indexes =  {}
       end
 
       # Interpolates a value if it's a String using ERB.
@@ -122,15 +131,15 @@ module Mongoid
         value.is_a?(String) ? ERB.new(value).result(namespace.instance_eval { binding }) : value
       end
 
-      # Renders the configuration to the output_path
-      def render
-        File.open(@file.output_path, "w") { |file| file.write(super) }
-      end
-
-      # Removes all Riddle::Index from the indices Array that where created from a generated {Mongoid::Giza::Index}
-      def clear_generated_indexes
-        @generated_indexes.each { |name, index| indices.delete(index) }
-        @generated_indexes =  {}
+      # Helper method to set a value to a setting from a section (i.e. indexer, source) if the section has this setting.
+      # If the setting is not avaiable on the section, nothing is done
+      #
+      # @param section [Riddle::Configuration::Section] a configuration section to define the setting
+      # @param setting [Symbol] the setting that will be defined on the section
+      # @param value [Object] the value of the setting
+      def setter(section, setting, value)
+        method = "#{setting}="
+        section.send(method, value) if section.respond_to?(method)
       end
     end
   end

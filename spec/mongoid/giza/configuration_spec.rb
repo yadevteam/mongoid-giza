@@ -237,29 +237,18 @@ describe Mongoid::Giza::Configuration do
 
     it "should apply the settings from default to section" do
       allow(@default).to receive(:html_strip) { 1 }
-      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
-      expect(@section).to receive(:html_strip=).with(1)
+      expect(@config).to receive(:setter).with(@section, :html_strip, 1)
       @config.apply_default_settings(@default, @section, @index)
     end
 
     it "should not set nil values" do
       allow(@default).to receive(:html_strip) { nil }
-      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
-      expect(@section).not_to receive(:html_strip=)
-      @config.apply_default_settings(@default, @section, @index)
-    end
-
-    it "should not try to apply settings without a setter" do
-      allow(@default).to receive(:html_strip) { 1 }
-      allow(@section).to receive(:respond_to?).with("html_strip=") { false }
-      expect(@section).not_to receive(:html_strip=)
+      expect(@config).not_to receive(:setter)
       @config.apply_default_settings(@default, @section, @index)
     end
 
     it "should interpolate string values" do
       allow(@default).to receive(:html_strip) { 1 }
-      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
-      allow(@section).to receive(:html_strip=)
       expect(@config).to receive(:interpolate_string).with(1, @index)
       @config.apply_default_settings(@default, @section, @index)
     end
@@ -274,19 +263,11 @@ describe Mongoid::Giza::Configuration do
     end
 
     it "should apply the the settings" do
-      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
-      expect(@section).to receive(:html_strip=).with(1)
-      @config.apply_user_settings(@index, @section)
-    end
-
-    it "should not try to apply settings without a setter" do
-      allow(@section).to receive(:respond_to?).with("html_strip=") { false }
-      expect(@section).not_to receive(:html_strip=)
+      expect(@config).to receive(:setter).with(@section, :html_strip, 1)
       @config.apply_user_settings(@index, @section)
     end
 
     it "should interpolate the value" do
-      allow(@section).to receive(:respond_to?).with("html_strip=") { true }
       expect(@config).to receive(:interpolate_string).with(1, @index)
       @config.apply_user_settings(@index, @section)
     end
@@ -356,6 +337,27 @@ describe Mongoid::Giza::Configuration do
       @config.instance_variable_set("@generated_indexes", {name: :index})
       @config.clear_generated_indexes
       expect(@config.instance_variable_get("@generated_indexes")).to eql({})
+    end
+  end
+
+  describe "setter" do
+    let(:section) { double("section")  }
+
+    let(:value) { double("value") }
+
+    before do
+      allow(section).to receive(:respond_to?) { true }
+    end
+
+    it "should use the attribute setter on the section" do
+      expect(section).to receive("setting=").with(value)
+      @config.setter(section, :setting, value)
+    end
+
+    it "should no set the value if the section does not respond to the attribute setter" do
+      allow(section).to receive(:respond_to?).with("setting=") { false }
+      expect(section).not_to receive("setting=")
+      @config.setter(section, :setting, value)
     end
   end
 end
