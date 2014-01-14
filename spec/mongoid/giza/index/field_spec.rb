@@ -9,7 +9,7 @@ describe Mongoid::Giza::Index::Field do
     it "should be set on creation" do
       name = "field"
       field = Mongoid::Giza::Index::Field.new(name)
-      expect(field.name).to eql(name)
+      expect(field.name).to eql(name.to_sym)
     end
   end
 

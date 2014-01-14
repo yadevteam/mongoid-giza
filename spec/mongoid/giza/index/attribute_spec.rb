@@ -9,7 +9,7 @@ describe Mongoid::Giza::Index::Attribute do
     it "should be set on creation" do
       name = "attribute"
       attribute = Mongoid::Giza::Index::Attribute.new(name, :uint)
-      expect(attribute.name).to eql(name)
+      expect(attribute.name).to eql(name.to_sym)
     end
   end
 
