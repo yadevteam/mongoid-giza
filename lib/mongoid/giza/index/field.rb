@@ -17,7 +17,7 @@ module Mongoid
         #   (see {http://sphinxsearch.com/docs/current.html#conf-xmlpipe-field-string})
         # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
         def initialize(name, attribute = false, &block)
-          @name = name.to_sym
+          @name = name.to_s.mb_chars.downcase.to_sym
           @attribute = attribute
           @block = block
         end

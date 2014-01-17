@@ -7,9 +7,35 @@ describe Mongoid::Giza::Index::Field do
     end
 
     it "should be set on creation" do
+      name = :field
+      field = Mongoid::Giza::Index::Field.new(name)
+      expect(field.name).to eql(name)
+    end
+
+    it "should be converted to symbol" do
       name = "field"
       field = Mongoid::Giza::Index::Field.new(name)
       expect(field.name).to eql(name.to_sym)
+    end
+
+    it "should be downcased" do
+      field = Mongoid::Giza::Index::Field.new("Field")
+      expect(field.name).to eql(:field)
+    end
+
+    it "should downcase unicode chars" do
+      field = Mongoid::Giza::Index::Field.new("ESPAÑOL")
+      expect(field.name).to eql(:español)
+    end
+
+    it "should downcase symbols" do
+      field = Mongoid::Giza::Index::Field.new(:Field)
+      expect(field.name).to eql(:field)
+    end
+
+    it "should downcase unicode symbols" do
+      field = Mongoid::Giza::Index::Field.new(:ESPAÑOL)
+      expect(field.name).to eql(:español)
     end
   end
 

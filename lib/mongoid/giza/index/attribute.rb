@@ -29,7 +29,7 @@ module Mongoid
             "attribute type not supported. " \
             "It must be one of the following: " \
             "#{Mongoid::Giza::Index::Attribute::TYPES.join(", ")}" unless Mongoid::Giza::Index::Attribute::TYPES.include? type
-          @name = name.to_sym
+          @name = name.to_s.mb_chars.downcase.to_sym
           @type = type
           @block = block
         end

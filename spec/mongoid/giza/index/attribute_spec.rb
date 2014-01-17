@@ -7,9 +7,35 @@ describe Mongoid::Giza::Index::Attribute do
     end
 
     it "should be set on creation" do
+      name = :attribute
+      attribute = Mongoid::Giza::Index::Attribute.new(name, :uint)
+      expect(attribute.name).to eql(name)
+    end
+
+    it "should be converted to symbol" do
       name = "attribute"
       attribute = Mongoid::Giza::Index::Attribute.new(name, :uint)
       expect(attribute.name).to eql(name.to_sym)
+    end
+
+    it "should be downcased" do
+      attribute = Mongoid::Giza::Index::Attribute.new("Attribute", :uint)
+      expect(attribute.name).to eql(:attribute)
+    end
+
+    it "should downcase unicode chars" do
+      attribute = Mongoid::Giza::Index::Attribute.new("ESPAÑOL", :uint)
+      expect(attribute.name).to eql(:español)
+    end
+
+    it "should downcase symbols" do
+      attribute = Mongoid::Giza::Index::Attribute.new(:Attribute, :uint)
+      expect(attribute.name).to eql(:attribute)
+    end
+
+    it "should downcase unicode symbols" do
+      attribute = Mongoid::Giza::Index::Attribute.new(:ESPAÑOL, :uint)
+      expect(attribute.name).to eql(:español)
     end
   end
 
