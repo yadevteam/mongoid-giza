@@ -48,8 +48,8 @@ module Mongoid
       # Otherwise the field value will be the value of the corresponding object field
       #
       # @param name [Symbol] the name of the field
-      # @param options [Hash] an optional hash of options.
-      #   Currently only the boolean option :attribute is avaiable (see {Mongoid::Giza::Index::Field#initialize})
+      # @param options [Hash] options for the field.
+      # @option options [TrueClass, FalseClass] :attribute whether the field will also be a attribute or not (see {Mongoid::Giza::Index::Field#initialize})
       # @param block [Proc] an optional block to be evaluated at the scope of the document on index creation
       def field(name, options = {}, &block)
         attribute = options[:attribute].nil? ? false : true
