@@ -117,6 +117,15 @@ module Mongoid
         @generated_indexes =  {}
       end
 
+      # Removes Riddle::Index's specifieds as params
+      #
+      # @param indexes [Array<String>]  names of indexes that should be removed
+      def remove_generated_indexes(*indexes)
+        indexes.each do |index|
+          indices.delete(@generated_indexes.delete(index))
+        end
+      end
+
       # Interpolates a value if it's a String using ERB.
       # Useful for defining dynamic settings.
       # The ERB template may reference to the current {Mongoid::Giza::Index} and it's methods
