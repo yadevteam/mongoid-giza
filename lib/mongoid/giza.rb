@@ -131,6 +131,11 @@ module Mongoid
         dynamic_sphinx_indexes.each { |dynamic_index| process_dynamic_sphinx_index(dynamic_index) }
       end
 
+      # Removes all generated indexes of the class from the configuration
+      def clear_generated_sphinx_indexes_configuration
+        @giza_configuration.remove_generated_indexes(generated_sphinx_indexes.keys)
+      end
+
       # Execute the indexing routines of the indexes defined on the class.
       # This means (re)create the sphinx configuration file and then execute the indexer program on it.
       # If no index names are supplied than all indexes defined on the class will be indexed.

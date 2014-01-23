@@ -279,4 +279,12 @@ describe Mongoid::Giza do
       Person.regenerate_dynamic_sphinx_indexes
     end
   end
+
+  describe "clear_generated_sphinx_indexes_configuration" do
+    it "should remove all generated indexes of this class from the configuration" do
+      allow(Person).to receive(:generated_sphinx_indexes) { {index1: :index, index2: :index} }
+      expect(config).to receive(:remove_generated_indexes).with([:index1, :index2])
+      Person.clear_generated_sphinx_indexes_configuration
+    end
+  end
 end
