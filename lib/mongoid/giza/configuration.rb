@@ -120,7 +120,7 @@ module Mongoid
       # Removes Riddle::Index's specifieds as params
       #
       # @param indexes [Array<String>]  names of indexes that should be removed
-      def remove_generated_indexes(*indexes)
+      def remove_generated_indexes(indexes)
         indexes.each do |index|
           indices.delete(@generated_indexes.delete(index))
         end

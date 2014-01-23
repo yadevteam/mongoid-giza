@@ -373,11 +373,11 @@ describe Mongoid::Giza::Configuration do
     it "should remove the indexes from the indices array" do
       allow(@config).to receive(:indices) { indices }
       expect(indices).to receive(:delete).with(:index)
-      @config.remove_generated_indexes(:name)
+      @config.remove_generated_indexes([:name])
     end
 
     it "should remove the index from the generated indexes collection" do
-      @config.remove_generated_indexes(:name)
+      @config.remove_generated_indexes([:name])
       expect(@config.instance_variable_get("@generated_indexes")).not_to include(name: :index)
     end
   end
