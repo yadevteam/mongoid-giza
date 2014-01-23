@@ -86,6 +86,11 @@ module Mongoid
         @name = new_name || @name.to_sym
       end
 
+      # Defines the Mongoid::Criteria that will be used to retrive objects when indexing.
+      # Use this to filter what objects from the class will be indexed.
+      # When an index is created the criteria is defined as class.all
+      #
+      #@param new_criteria [Mongoid::Criteria] the criteria to be used
       def criteria(new_criteria = nil)
         @criteria = new_criteria || @criteria
       end
