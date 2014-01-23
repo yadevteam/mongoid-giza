@@ -326,15 +326,17 @@ describe Mongoid::Giza::Configuration do
   describe "clear_generated_indexes" do
     let(:indices) { double("indices") }
 
-    it "should delete the generated riddle indexes" do
+    before do
       @config.instance_variable_set("@generated_indexes", {name: :index})
+    end
+
+    it "should delete the generated riddle indexes" do
       allow(@config).to receive(:indices) { indices }
       expect(indices).to receive(:delete).with(:index)
       @config.clear_generated_indexes
     end
 
     it "should clear the generated indexes collection" do
-      @config.instance_variable_set("@generated_indexes", {name: :index})
       @config.clear_generated_indexes
       expect(@config.instance_variable_get("@generated_indexes")).to eql({})
     end
