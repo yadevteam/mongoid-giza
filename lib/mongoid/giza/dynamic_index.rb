@@ -21,7 +21,7 @@ module Mongoid
       # The name of the index is unique so in case of a name collision,
       # the last index to be generated is the one that will persist
       #
-      # @return [Hash<Symbol, Mongoid::Giza::Index] an hash with every key being the index name
+      # @return [Hash<Symbol, Mongoid::Giza::Index>] an hash with every key being the index name
       #   and the value the index itself
       def generate!
         indexes = {}
