@@ -60,7 +60,7 @@ module Mongoid
     end
 
     module ClassMethods
-      attr_reader :static_sphinx_indexes, :generated_sphinx_indexes, :dynamic_sphinx_indexes
+      attr_reader :giza_configuration, :static_sphinx_indexes, :generated_sphinx_indexes, :dynamic_sphinx_indexes
 
       # Class method that defines a index relative to the current class' objects.
       # If an argument is given in the block then a dynamic index will be created.
