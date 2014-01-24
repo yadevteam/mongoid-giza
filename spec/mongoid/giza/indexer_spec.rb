@@ -12,14 +12,19 @@ describe Mongoid::Giza::Indexer do
   describe "index!" do
     it "should execute the sphinx indexer" do
       allow(config).to receive(:render)
-      expect(@controller).to receive(:index).with(verbose: true)
+      expect(@controller).to receive(:index).with(no_args())
       @indexer.index!
     end
 
     it "should accept an index list" do
       allow(config).to receive(:render)
-      expect(@controller).to receive(:index).with(:Person, :Person_2, verbose: true)
+      expect(@controller).to receive(:index).with(:Person, :Person_2)
       @indexer.index!(:Person, :Person_2)
+    end
+
+    it "should accept verbose option" do
+      expect(@controller).to receive(:index).with(verbose: true)
+      @indexer.index!(verbose: true)
     end
   end
 

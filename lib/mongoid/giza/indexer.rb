@@ -23,8 +23,10 @@ module Mongoid
       #
       # @param indexes [Array<Symbol>] name of the indexes that should be indexed.
       #   If not provided all indexes from the configuration file are indexed
+      # @param options [Hash] additional options to pass to Riddle::Controller#index
+      # @option options [TrueClass, FalseClass] :verbose shows the indexer output
       def index!(*indexes)
-        @controller.index(*indexes, verbose: true)
+        @controller.index(*indexes)
       end
 
       # @return [Array<Class>] all Mongoid models that include the {Mongoid::Giza} module
