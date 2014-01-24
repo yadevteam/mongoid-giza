@@ -11,13 +11,11 @@ describe Mongoid::Giza::Indexer do
 
   describe "index!" do
     it "should execute the sphinx indexer" do
-      allow(config).to receive(:render)
       expect(@controller).to receive(:index).with(no_args())
       @indexer.index!
     end
 
     it "should accept an index list" do
-      allow(config).to receive(:render)
       expect(@controller).to receive(:index).with(:Person, :Person_2)
       @indexer.index!(:Person, :Person_2)
     end
