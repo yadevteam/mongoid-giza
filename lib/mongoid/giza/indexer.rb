@@ -15,12 +15,15 @@ module Mongoid
       def full_index!
         @configuration.clear_generated_indexes
         giza_classes.each { |klass| klass.regenerate_dynamic_sphinx_indexes }
+        @configuration.render
         index!
       end
 
-      # Creates the sphinx configuration file then executes the indexer on it
+      # Executes the sphinx indexer
+      #
+      # @param indexes [Array<Symbol>] name of the indexes that should be indexed.
+      #   If not provided all indexes from the configuration file are indexed
       def index!(*indexes)
-        @configuration.render
         @controller.index(*indexes, verbose: true)
       end
 

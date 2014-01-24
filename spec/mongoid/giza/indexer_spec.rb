@@ -10,12 +10,6 @@ describe Mongoid::Giza::Indexer do
   let(:config) { Mongoid::Giza::Configuration.instance }
 
   describe "index!" do
-    it "should create the sphinx configuration file" do
-      allow(@controller).to receive(:index)
-      expect(config).to receive(:render)
-      @indexer.index!
-    end
-
     it "should execute the sphinx indexer" do
       allow(config).to receive(:render)
       expect(@controller).to receive(:index).with(verbose: true)
@@ -34,6 +28,7 @@ describe Mongoid::Giza::Indexer do
 
     before do
       allow(@indexer).to receive(:index!)
+      allow(config).to receive(:render)
     end
 
     it "should clear the generated indexes from the configuration" do
@@ -47,6 +42,14 @@ describe Mongoid::Giza::Indexer do
       allow(config).to receive(:clear_generated_indexes)
       allow(@indexer).to receive(:giza_classes) { [klass] }
       expect(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      @indexer.full_index!
+    end
+
+    it "should create the sphinx configuration file" do
+      allow(config).to receive(:clear_generated_indexes)
+      allow(@indexer).to receive(:giza_classes) { [klass] }
+      allow(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      expect(config).to receive(:render)
       @indexer.full_index!
     end
 
