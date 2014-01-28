@@ -83,7 +83,8 @@ module Mongoid
       #
       # @return [Symbol] The name of the index
       def name(new_name = nil)
-        @name = new_name || @name.to_sym
+        @name = new_name.to_sym if !new_name.nil?
+        @name
       end
 
       # Defines the Mongoid::Criteria that will be used to retrive objects when indexing.

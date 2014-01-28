@@ -124,6 +124,11 @@ describe Mongoid::Giza::Index do
       index.name(:Index)
       expect(index.name).to eql(:Index)
     end
+
+    it "should be converted to symbol" do
+      index.name("Index")
+      expect(index.name).to eql(:Index)
+    end
   end
 
   describe "generate_xmlpipe2" do
