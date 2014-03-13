@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0
+
+* Do not render the configuration file on `Mongoid::Giza::Indexer#index!`
+* Do not force the verbose indexing
+* Added `Mongoid::Giza::giza_configuration` accessor
+* Fix converting the index name to symbol
+* Added `Mongoid::Giza::DynamicIndex#generate_index` method to generate the dynamic index for a single object
+* Added `Mongoid::Giza#generate_dynamic_sphinx_indexes` method to generate all dynamic indexes for the object
+
 ## 0.3.0
 
 * Downcase all fields' and attributes' names
