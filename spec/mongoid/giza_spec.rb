@@ -287,4 +287,37 @@ describe Mongoid::Giza do
       Person.clear_generated_sphinx_indexes_configuration
     end
   end
+
+  describe "generate_dynamic_sphinx_indexes" do
+    let(:person) { Person.new }
+
+    let(:dynamic_index) { double("dynamic index") }
+
+    let(:dynamic_index2) { double("dynamic index 2") }
+
+    let(:index) { double("index") }
+
+    let(:index2) { double("index 2") }
+
+    before do
+      allow(Person).to receive(:dynamic_sphinx_indexes) { [dynamic_index, dynamic_index] }
+      allow(dynamic_index).to receive(:generate_index) { index }
+      allow(index).to receive(:name) { :name }
+    end
+
+    it "should generate all the dynamic indexes of the class for the object" do
+      expect(dynamic_index).to receive(:generate_index).with(person).twice { index }
+      person.generate_dynamic_sphinx_indexes
+    end
+
+    it "should merge the resulting indexes to the class' generated indexes" do
+      expect(Person.generated_sphinx_indexes).to receive(:merge!).with({name: index}).twice
+      person.generate_dynamic_sphinx_indexes
+    end
+
+    it "should add the indexes to the configuration" do
+      expect(config).to receive(:add_index).with(index, true).twice
+      person.generate_dynamic_sphinx_indexes
+    end
+  end
 end

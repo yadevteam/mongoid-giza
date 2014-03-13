@@ -59,6 +59,15 @@ module Mongoid
       self[:giza_id]
     end
 
+    # Generates all the dynamic indexes defined on the class for the object
+    def generate_dynamic_sphinx_indexes
+      self.class.dynamic_sphinx_indexes.each do |dynamic_index|
+        index = dynamic_index.generate_index(self)
+        self.class.generated_sphinx_indexes.merge!({index.name => index})
+        self.class.giza_configuration.add_index(index, true)
+      end
+    end
+
     module ClassMethods
       attr_reader :giza_configuration, :static_sphinx_indexes, :generated_sphinx_indexes, :dynamic_sphinx_indexes
 
