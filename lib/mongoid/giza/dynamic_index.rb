@@ -36,7 +36,6 @@ module Mongoid
         if object.is_a?(klass)
           index = Mongoid::Giza::Index.new(klass, settings)
           Docile.dsl_eval(index, object, &block)
-          index
         end
       end
     end

@@ -62,7 +62,7 @@ describe Mongoid::Giza::DynamicIndex do
     end
 
     it "should return an Index" do
-      allow(Docile).to receive(:dsl_eval)
+      allow(Docile).to receive(:dsl_eval) { index }
       expect(Mongoid::Giza::DynamicIndex.new(String, {}, Proc.new { }).generate_index("")).to be(index)
     end
   end
