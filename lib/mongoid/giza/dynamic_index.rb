@@ -26,11 +26,18 @@ module Mongoid
       def generate!
         indexes = {}
         klass.all.each do |object|
-          index = Mongoid::Giza::Index.new(klass, settings)
-          Docile.dsl_eval(index, object, &block)
-          indexes[index.name] = index
+          index = generate_index(object)
+          indexes[index.name] = index if !index.nil?
         end
         indexes
+      end
+
+      def generate_index(object)
+        if object.is_a?(klass)
+          index = Mongoid::Giza::Index.new(klass, settings)
+          Docile.dsl_eval(index, object, &block)
+          index
+        end
       end
     end
   end
