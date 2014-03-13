@@ -32,6 +32,13 @@ module Mongoid
         indexes
       end
 
+      # Generates the index for the object passed as parameter.
+      # It is only generated if the object's class is the class or a subclass of the index's class
+      #
+      # @param object [Mongoid::Document] the object which the index block wil be evaluated for
+      #
+      # @return [Mongoid::Giza::Index, NilClass] the resulting index from the evaluation
+      #   or nil if the object's class is not the index's class or a subclass of it
       def generate_index(object)
         if object.is_a?(klass)
           index = Mongoid::Giza::Index.new(klass, settings)
