@@ -144,9 +144,9 @@ There are 3 ways to populate the Sphinx index: use the model class' `sphinx_inde
 
 * **sphinx_indexer!:** Will execute the indexer program only on the indexes of the class.
 Does not regenerate dynamic indexes.
-* **index!:** Will execute the indexer program on all indexes.
+* **index!:** Will execute the indexer.
 Does not regenerate dynamic indexes.
-* **full_index!:** Will regenerate dynamic indexes and execute the indexer program on all indexes.
+* **full_index!:** Will regenerate dynamic indexes, render the configuration file and execute the indexer program on all indexes.
 
 This gem does not execute none of those automatically to let the you define what is the best reindexing strategy for your software.
 
