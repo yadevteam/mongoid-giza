@@ -107,7 +107,7 @@ module Mongoid
         index = Index.new(self, settings)
         Docile.dsl_eval(index, &block)
         static_sphinx_indexes[index.name] = index
-        @giza_configuration.add_index(index)
+        giza_configuration.add_index(index)
       end
 
       # Generates the indexes from the dynamic index and
@@ -117,7 +117,7 @@ module Mongoid
       def process_dynamic_sphinx_index(dynamic_index)
         generated = dynamic_index.generate!
         generated_sphinx_indexes.merge!(generated)
-        generated.each { |name, index| @giza_configuration.add_index(index, true) }
+        generated.each { |name, index| giza_configuration.add_index(index, true) }
       end
 
       # Class method that implements a search DSL using a {Mongoid::Giza::Search} object.
@@ -128,7 +128,7 @@ module Mongoid
       # @return [Array] an Array with Riddle result hashes containing an additional key with the name of the class.
       #   The value of this aditional key is a Mongoid::Criteria that return the actual objects of the match
       def search(&block)
-        search = Mongoid::Giza::Search.new(@giza_configuration.searchd.address, @giza_configuration.searchd.port, *sphinx_indexes_names)
+        search = Mongoid::Giza::Search.new(giza_configuration.searchd.address, giza_configuration.searchd.port, *sphinx_indexes_names)
         Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
@@ -142,7 +142,7 @@ module Mongoid
 
       # Removes all generated indexes of the class from the configuration
       def clear_generated_sphinx_indexes_configuration
-        @giza_configuration.remove_generated_indexes(generated_sphinx_indexes.keys)
+        giza_configuration.remove_generated_indexes(generated_sphinx_indexes.keys)
       end
 
       # Execute the indexing routines of the indexes defined on the class.
