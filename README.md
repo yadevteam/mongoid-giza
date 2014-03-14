@@ -46,7 +46,7 @@ development:
   index:
     path: "/tmp/sphinx"
   source:
-    xmlpipe_command: "rails r '<%= index.klass %>.sphinx_indexes[:<%= index.name %>].generate_xmlpipe2(STDOUT)'"
+    xmlpipe_command: "rails r '<%= index.klass %>.sphinx_indexes[:<%= index.name %>].xmlpipe2(STDOUT)'"
 ```
 
 ### Setting up indexes on models
@@ -137,6 +137,18 @@ class Person
   end
 end
 ```
+
+##### Manipulating Dynamic Indexes
+
+If your objects changed and this changes must be reflected on your dynamic indexes, call `Mongoid::Giza::regenerate_sphinx_indexes` to clear the existing ones and regenerate all again.
+
+If you need finer control, you may use `Mongoid::Giza#generate_sphinx_indexes` to generate all dynamic indexes for the object (which will replace any existing one with the same name), and `Mongoid::Giza::remove_generated_sphinx_indexes` with the name of the generated indexes which you want to remove.
+
+##### Difference Between Dynamic Index and Generated Index
+
+A dynamic index is just the skeleton that creates indexes from every object of the class.
+
+A generated index is the actual index that was dynamically created based on the object which the dynamic index used for evaluation.
 
 ### Indexing
 
