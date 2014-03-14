@@ -131,20 +131,20 @@ describe Mongoid::Giza::Index do
     end
   end
 
-  describe "generate_xmlpipe2" do
+  describe "xmlpipe2" do
     let(:xmlpipe2) { double("XMLPipe2") }
 
     let(:buffer) { double("buffer") }
 
     it "should create a new XMLPipe2 object" do
       expect(Mongoid::Giza::XMLPipe2).to receive(:new).with(index, buffer) { xmlpipe2.as_null_object }
-      index.generate_xmlpipe2(buffer)
+      index.xmlpipe2(buffer)
     end
 
     it "should generate the xml" do
       allow(Mongoid::Giza::XMLPipe2).to receive(:new) { xmlpipe2 }
       expect(xmlpipe2).to receive(:generate!)
-      index.generate_xmlpipe2(buffer)
+      index.xmlpipe2(buffer)
     end
   end
 
