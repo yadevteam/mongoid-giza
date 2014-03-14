@@ -21,12 +21,12 @@ module Mongoid
 
       # Executes the sphinx indexer
       #
-      # @param indexes [Array<Symbol>] name of the indexes that should be indexed.
+      # @param names [Array<Symbol>] name of the indexes that should be indexed.
       #   If not provided all indexes from the configuration file are indexed
       # @param options [Hash] additional options to pass to Riddle::Controller#index
       # @option options [TrueClass, FalseClass] :verbose shows the indexer output
-      def index!(*indexes)
-        @controller.index(*indexes)
+      def index!(*names)
+        @controller.index(*names)
       end
 
       # @return [Array<Class>] all Mongoid models that include the {Mongoid::Giza} module
