@@ -24,7 +24,7 @@ describe Mongoid::Giza::Search do
     end
 
     it "should accept a index list" do
-      indexes = Mongoid::Giza::Search.new("localhost", 9132, :index1, :index2).indexes
+      indexes = Mongoid::Giza::Search.new("localhost", 9132, [:index1, :index2]).indexes
       expect(indexes).to eql([:index1, :index2])
     end
   end

@@ -128,7 +128,7 @@ module Mongoid
       # @return [Array] an Array with Riddle result hashes containing an additional key with the name of the class.
       #   The value of this aditional key is a Mongoid::Criteria that return the actual objects of the match
       def search(&block)
-        search = Mongoid::Giza::Search.new(giza_configuration.searchd.address, giza_configuration.searchd.port, *sphinx_indexes_names)
+        search = Mongoid::Giza::Search.new(giza_configuration.searchd.address, giza_configuration.searchd.port, sphinx_indexes_names)
         Docile.dsl_eval(search, &block)
         results = search.run
         results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }

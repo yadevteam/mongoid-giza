@@ -10,11 +10,11 @@ module Mongoid
       #
       # @param host [String] the host address of sphinxd
       # @param port [Fixnum] the TCP port of sphinxd
-      # @param indexes [String] an optional string define the indexes that the search will run on.
-      #   Defaults to "*" which means all indexes
-      def initialize(host, port, *indexes)
+      # @param names [Array] an optional array defining the indexes that the search will run on.
+      #   Defaults to "[]" which means all indexes
+      def initialize(host, port, names = [])
         @client = Riddle::Client.new(host, port)
-        @indexes = indexes
+        @indexes = names
       end
 
       # Sets the search criteria on full-text fields
