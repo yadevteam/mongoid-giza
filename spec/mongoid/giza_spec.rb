@@ -326,17 +326,17 @@ describe Mongoid::Giza do
     end
   end
 
-  describe "remove_generated_indexes" do
+  describe "remove_generated_sphinx_indexes" do
     let(:index_name) { double("index name") }
 
     it "should remove the indexes from the generated indexes collection" do
       expect(Person.generated_sphinx_indexes).to receive(:delete).with(index_name).twice
-      Person.remove_generated_indexes(index_name, index_name)
+      Person.remove_generated_sphinx_indexes(index_name, index_name)
     end
 
     it "should remove the indexes from the configuration" do
       expect(config).to receive(:remove_generated_indexes).with([index_name, index_name])
-      Person.remove_generated_indexes(index_name, index_name)
+      Person.remove_generated_sphinx_indexes(index_name, index_name)
     end
   end
 end

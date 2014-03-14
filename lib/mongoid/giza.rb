@@ -144,7 +144,7 @@ module Mongoid
       # Removes the generated indexes.
       #
       # @param names [Array] a list of generated index names that should be removed
-      def remove_generated_indexes(*names)
+      def remove_generated_sphinx_indexes(*names)
         names.each { |name| generated_sphinx_indexes.delete(name) }
         giza_configuration.remove_generated_indexes(names)
       end
