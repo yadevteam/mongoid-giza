@@ -60,7 +60,7 @@ module Mongoid
     end
 
     # Generates all the dynamic indexes defined on the class for the object
-    def generate_dynamic_sphinx_indexes
+    def generate_sphinx_indexes
       self.class.dynamic_sphinx_indexes.each do |dynamic_index|
         index = dynamic_index.generate_index(self)
         self.class.generated_sphinx_indexes.merge!({index.name => index})
@@ -135,7 +135,7 @@ module Mongoid
       end
 
       # Regenerates all dynamic indexes of the class
-      def regenerate_dynamic_sphinx_indexes
+      def regenerate_sphinx_indexes
         giza_configuration.remove_generated_indexes(generated_sphinx_indexes.keys)
         generated_sphinx_indexes.clear
         dynamic_sphinx_indexes.each { |dynamic_index| process_dynamic_sphinx_index(dynamic_index) }

@@ -37,21 +37,21 @@ describe Mongoid::Giza::Indexer do
     it "should clear the generated indexes from the configuration" do
       expect(config).to receive(:clear_generated_indexes)
       allow(@indexer).to receive(:giza_classes) { [klass] }
-      allow(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      allow(klass).to receive(:regenerate_sphinx_indexes)
       @indexer.full_index!
     end
 
     it "should regenerate all dynamic indexes of the giza classes" do
       allow(config).to receive(:clear_generated_indexes)
       allow(@indexer).to receive(:giza_classes) { [klass] }
-      expect(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      expect(klass).to receive(:regenerate_sphinx_indexes)
       @indexer.full_index!
     end
 
     it "should create the sphinx configuration file" do
       allow(config).to receive(:clear_generated_indexes)
       allow(@indexer).to receive(:giza_classes) { [klass] }
-      allow(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      allow(klass).to receive(:regenerate_sphinx_indexes)
       expect(config).to receive(:render)
       @indexer.full_index!
     end
@@ -59,7 +59,7 @@ describe Mongoid::Giza::Indexer do
     it "should execute the indexer" do
       allow(config).to receive(:clear_generated_indexes)
       allow(@indexer).to receive(:giza_classes) { [klass] }
-      allow(klass).to receive(:regenerate_dynamic_sphinx_indexes)
+      allow(klass).to receive(:regenerate_sphinx_indexes)
       expect(@indexer).to receive(:index!).with(no_args)
       @indexer.full_index!
     end

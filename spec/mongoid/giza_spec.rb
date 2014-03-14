@@ -261,7 +261,7 @@ describe Mongoid::Giza do
     end
   end
 
-  describe "regenerate_dynamic_sphinx_indexes" do
+  describe "regenerate_sphinx_indexes" do
     let(:generated) { double("generated") }
 
     let(:dynamic) { double("dynamic") }
@@ -277,23 +277,23 @@ describe Mongoid::Giza do
 
     it "should clear the generated indexes configuration" do
       expect(config).to receive(:remove_generated_indexes).with(keys)
-      Person.regenerate_dynamic_sphinx_indexes
+      Person.regenerate_sphinx_indexes
     end
 
     it "should clear the generated indexes" do
       expect(generated).to receive(:clear).with(no_args)
-      Person.regenerate_dynamic_sphinx_indexes
+      Person.regenerate_sphinx_indexes
     end
 
     it "should process all dynamic indexes" do
       allow(Person).to receive(:dynamic_sphinx_indexes) { dynamic }
       allow(dynamic).to receive(:each).and_yield(:dynamic_index)
       expect(Person).to receive(:process_dynamic_sphinx_index).with(:dynamic_index)
-      Person.regenerate_dynamic_sphinx_indexes
+      Person.regenerate_sphinx_indexes
     end
   end
 
-  describe "generate_dynamic_sphinx_indexes" do
+  describe "generate_sphinx_indexes" do
     let(:person) { Person.new }
 
     let(:dynamic_index) { double("dynamic index") }
@@ -312,17 +312,17 @@ describe Mongoid::Giza do
 
     it "should generate all the dynamic indexes of the class for the object" do
       expect(dynamic_index).to receive(:generate_index).with(person).twice { index }
-      person.generate_dynamic_sphinx_indexes
+      person.generate_sphinx_indexes
     end
 
     it "should merge the resulting indexes to the class' generated indexes" do
       expect(Person.generated_sphinx_indexes).to receive(:merge!).with({name: index}).twice
-      person.generate_dynamic_sphinx_indexes
+      person.generate_sphinx_indexes
     end
 
     it "should add the indexes to the configuration" do
       expect(config).to receive(:add_index).with(index, true).twice
-      person.generate_dynamic_sphinx_indexes
+      person.generate_sphinx_indexes
     end
   end
 
