@@ -266,9 +266,22 @@ describe Mongoid::Giza do
 
     let(:dynamic) { double("dynamic") }
 
-    it "should clear the generated indexes" do
+    let(:keys) { double("keys") }
+
+    before do
       allow(Person).to receive(:generated_sphinx_indexes) { generated }
-      expect(generated).to receive(:clear)
+      allow(generated).to receive(:keys) { keys }
+      allow(generated).to receive(:clear)
+      allow(config).to receive(:remove_generated_indexes)
+    end
+
+    it "should clear the generated indexes configuration" do
+      expect(config).to receive(:remove_generated_indexes).with(keys)
+      Person.regenerate_dynamic_sphinx_indexes
+    end
+
+    it "should clear the generated indexes" do
+      expect(generated).to receive(:clear).with(no_args)
       Person.regenerate_dynamic_sphinx_indexes
     end
 
@@ -277,14 +290,6 @@ describe Mongoid::Giza do
       allow(dynamic).to receive(:each).and_yield(:dynamic_index)
       expect(Person).to receive(:process_dynamic_sphinx_index).with(:dynamic_index)
       Person.regenerate_dynamic_sphinx_indexes
-    end
-  end
-
-  describe "clear_generated_sphinx_indexes_configuration" do
-    it "should remove all generated indexes of this class from the configuration" do
-      allow(Person).to receive(:generated_sphinx_indexes) { {index1: :index, index2: :index} }
-      expect(config).to receive(:remove_generated_indexes).with([:index1, :index2])
-      Person.clear_generated_sphinx_indexes_configuration
     end
   end
 

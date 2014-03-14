@@ -136,13 +136,9 @@ module Mongoid
 
       # Regenerates all dynamic indexes of the class
       def regenerate_dynamic_sphinx_indexes
+        giza_configuration.remove_generated_indexes(generated_sphinx_indexes.keys)
         generated_sphinx_indexes.clear
         dynamic_sphinx_indexes.each { |dynamic_index| process_dynamic_sphinx_index(dynamic_index) }
-      end
-
-      # Removes all generated indexes of the class from the configuration
-      def clear_generated_sphinx_indexes_configuration
-        giza_configuration.remove_generated_indexes(generated_sphinx_indexes.keys)
       end
 
       # Execute the indexing routines of the indexes defined on the class.
