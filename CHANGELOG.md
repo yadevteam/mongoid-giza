@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0
+
+* Clear the generated indexes configuration when regenerating dynamic indexes
+* Removed `Mongoid::Giza::clear_generated_sphinx_indexes_configuration` method
+* Added `Mongoid::Giza::remove_generated_sphinx_indexes` method to remove selected generated indexes
+* Changed the indexes names parameter of `Mongoid::Giza::Search#initialize` from splat to array
+* Renamed `Mongoid::Giza#generate_dynamic_sphinx_indexes` to `Mongoid::Giza#generate_sphinx_indexes`
+* Renamed `Mongoid::Giza::regenerate_dynamic_sphinx_indexes` to `Mongoid::Giza::regenerate_sphinx_indexes`
+* Renamed `Mongoid::Giza::Index#generate_xmlpipe2` to `Mongoid::Giza::Index#xmlpipe2`
+
 ## 0.4.0
 
 * Do not render the configuration file on `Mongoid::Giza::Indexer#index!`
