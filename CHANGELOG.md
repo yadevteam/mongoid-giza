@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1
+
+* Create a sparse unique index on `giza_id` field
+
 ## 0.5.0
 
 * Clear the generated indexes configuration when regenerating dynamic indexes
