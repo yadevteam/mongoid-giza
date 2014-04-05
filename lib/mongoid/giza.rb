@@ -44,6 +44,7 @@ module Mongoid
 
     included do
       Mongoid::Giza::GizaID.create(id: name.to_sym)
+      index({giza_id: 1}, {sparse: true, unique: true})
       @giza_configuration = Configuration.instance
       @static_sphinx_indexes = {}
       @generated_sphinx_indexes = {}
