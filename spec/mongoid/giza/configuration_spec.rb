@@ -318,7 +318,7 @@ describe Mongoid::Giza::Configuration do
       allow(@config.searchd).to receive(:render) { "searchd" }
       allow(index).to receive(:render) { "source\nindex" }
       expect(File).to receive(:open).with(@config.file.output_path, "w").and_yield(file)
-      expect(file).to receive(:write).with("indexer\nsearchd\nsource\nindex")
+      expect(file).to receive(:write).with("\nindexer\nsearchd\nsource\nindex")
       @config.render
     end
   end
