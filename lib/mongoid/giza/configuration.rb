@@ -66,7 +66,6 @@ module Mongoid
         apply_user_settings(index, riddle_index)
         apply_user_settings(index, source)
         riddle_index.path = File.join(riddle_index.path, index.name.to_s)
-        riddle_index.charset_type = "utf-8"
         riddle_index
       end
 
