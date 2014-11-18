@@ -7,7 +7,7 @@ module Mongoid
 
         # Defines the array of currently supported Sphix attribute types
         TYPES = [
-          :uint, :bool, :bigint, :timestamp, :str2ordinal,
+          :int, :bool, :bigint, :timestamp, :str2ordinal,
           :float, :multi, :string, :json, :str2wordcount
         ]
 

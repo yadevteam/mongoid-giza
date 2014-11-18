@@ -16,19 +16,19 @@ describe Mongoid::Giza::XMLPipe2 do
       allow(@index).to receive(:attributes) { [@attribute] }
       allow(@field).to receive(:name) { :name }
       allow(@attribute).to receive(:name) { :age }
-      allow(@attribute).to receive(:type) { :uint }
+      allow(@attribute).to receive(:type) { :int }
     end
 
     it "should generate the schema of the docset" do
       allow(@field).to receive(:attribute) { false }
       xmlpipe2.generate_schema
-      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name"/><sphinx:attr name="age" type="uint"/></sphinx:schema>')
+      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name"/><sphinx:attr name="age" type="int"/></sphinx:schema>')
     end
 
     it "should generate a field attribute" do
       allow(@field).to receive(:attribute) { true }
       xmlpipe2.generate_schema
-      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name" attr="string"/><sphinx:attr name="age" type="uint"/></sphinx:schema>')
+      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name" attr="string"/><sphinx:attr name="age" type="int"/></sphinx:schema>')
     end
   end
 
@@ -81,12 +81,12 @@ describe Mongoid::Giza::XMLPipe2 do
     it "should generate a xml file of the index" do
       result = '<?xml version="1.0" encoding="utf-8"?>'
       result << '<sphinx:docset><sphinx:schema>'
-      result << '<sphinx:field name="name"/><sphinx:attr name="age" type="uint"/>'
+      result << '<sphinx:field name="name"/><sphinx:attr name="age" type="int"/>'
       result << '</sphinx:schema>'
       result << '<sphinx:document id="1"><name>Person One</name><age>25</age></sphinx:document>'
       result << '</sphinx:docset>'
       expect(xmlpipe2).to receive(:generate_schema) do
-        @buffer << '<sphinx:schema><sphinx:field name="name"/><sphinx:attr name="age" type="uint"/></sphinx:schema>'
+        @buffer << '<sphinx:schema><sphinx:field name="name"/><sphinx:attr name="age" type="int"/></sphinx:schema>'
       end
       expect(xmlpipe2).to receive(:generate_docset) do
         @buffer << '<sphinx:document id="1"><name>Person One</name><age>25</age></sphinx:document>'

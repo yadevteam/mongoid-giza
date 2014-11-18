@@ -63,7 +63,7 @@ describe Mongoid::Giza::Index do
   describe "attribute" do
     let(:name) { "attribute" }
 
-    let(:type) { :uint }
+    let(:type) { :int }
 
     it "should require a name" do
       expect { index.attribute }.to raise_error(ArgumentError)
