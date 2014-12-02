@@ -63,7 +63,7 @@ module Mongoid
     def generate_sphinx_indexes
       self.class.dynamic_sphinx_indexes.each do |dynamic_index|
         index = dynamic_index.generate_index(self)
-        self.class.generated_sphinx_indexes.merge!({index.name => index})
+        self.class.generated_sphinx_indexes.merge!(index.name => index)
         self.class.giza_configuration.add_index(index, true)
       end
     end
