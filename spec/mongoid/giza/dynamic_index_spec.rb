@@ -51,7 +51,8 @@ describe Mongoid::Giza::DynamicIndex do
     end
 
     it "should check if the object is from the index's class" do
-      expect(Mongoid::Giza::DynamicIndex.new(String, {}, Proc.new { }).generate_index(Array.new)).to eql(nil)
+      expect(Mongoid::Giza::DynamicIndex.new(String, {}, -> {})
+          .generate_index([])).to eql(nil)
     end
 
     it "should execute the index dsl on the parameter" do
@@ -63,7 +64,8 @@ describe Mongoid::Giza::DynamicIndex do
 
     it "should return an Index" do
       allow(Docile).to receive(:dsl_eval) { index }
-      expect(Mongoid::Giza::DynamicIndex.new(String, {}, Proc.new { }).generate_index("")).to be(index)
+      expect(Mongoid::Giza::DynamicIndex.new(String, {}, -> {})
+        .generate_index("")).to be(index)
     end
   end
 end

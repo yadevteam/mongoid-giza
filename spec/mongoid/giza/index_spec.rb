@@ -85,7 +85,8 @@ describe Mongoid::Giza::Index do
         end
         fields
       end
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP[type])
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new)
+        .with(name, Mongoid::Giza::Index::TYPES_MAP[type])
       index.attribute(name)
     end
 
@@ -95,7 +96,8 @@ describe Mongoid::Giza::Index do
         allow(fields).to receive(:[]).with(name) { nil }
         fields
       end
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new)
+        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
       index.attribute(name)
     end
 
@@ -109,7 +111,8 @@ describe Mongoid::Giza::Index do
         end
         fields
       end
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new)
+        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
       index.attribute(name)
     end
   end
@@ -137,7 +140,9 @@ describe Mongoid::Giza::Index do
     let(:buffer) { double("buffer") }
 
     it "should create a new XMLPipe2 object" do
-      expect(Mongoid::Giza::XMLPipe2).to receive(:new).with(index, buffer) { xmlpipe2.as_null_object }
+      expect(Mongoid::Giza::XMLPipe2).to receive(:new).with(index, buffer) do
+        xmlpipe2.as_null_object
+      end
       index.xmlpipe2(buffer)
     end
 

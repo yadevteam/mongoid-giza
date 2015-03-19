@@ -5,7 +5,8 @@ require "spec_helper"
 describe Mongoid::Giza::Index::Attribute do
   describe "name" do
     it "should be mandatory" do
-      expect { Mongoid::Giza::Index::Attribute.new }.to raise_error(ArgumentError)
+      expect { Mongoid::Giza::Index::Attribute.new }
+        .to raise_error(ArgumentError)
     end
 
     it "should be set on creation" do
@@ -43,7 +44,8 @@ describe Mongoid::Giza::Index::Attribute do
 
   describe "type" do
     it "should be mandatory" do
-      expect { Mongoid::Giza::Index::Attribute.new("attribute") }.to raise_error(ArgumentError)
+      expect { Mongoid::Giza::Index::Attribute.new("attribute") }
+        .to raise_error(ArgumentError)
     end
 
     it "should be set on creation" do
@@ -53,7 +55,8 @@ describe Mongoid::Giza::Index::Attribute do
     end
 
     it "should be a valid type" do
-      expect { Mongoid::Giza::Index::Attribute.new("attribute", :type) }.to raise_error(TypeError)
+      expect { Mongoid::Giza::Index::Attribute.new("attribute", :type) }
+        .to raise_error(TypeError)
     end
   end
 

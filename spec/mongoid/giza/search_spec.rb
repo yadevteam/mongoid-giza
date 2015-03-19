@@ -24,7 +24,8 @@ describe Mongoid::Giza::Search do
     end
 
     it "should accept a index list" do
-      indexes = Mongoid::Giza::Search.new("localhost", 9132, [:index1, :index2]).indexes
+      indexes = Mongoid::Giza::Search.new("localhost", 9132, [:index1, :index2])
+                .indexes
       expect(indexes).to eql([:index1, :index2])
     end
   end
@@ -45,7 +46,9 @@ describe Mongoid::Giza::Search do
 
   describe "with" do
     it "should add a filter to the search" do
-      expect(Riddle::Client::Filter).to receive(:new).with("attr", 1, false) { filter }
+      expect(Riddle::Client::Filter).to receive(:new).with("attr", 1, false) do
+        filter
+      end
       expect(filters).to receive(:<<).with(filter)
       client
       search.with(:attr, 1)
@@ -54,7 +57,9 @@ describe Mongoid::Giza::Search do
 
   describe "without" do
     it "should add a filter to the search" do
-      expect(Riddle::Client::Filter).to receive(:new).with("attr", 1, true) { filter }
+      expect(Riddle::Client::Filter).to receive(:new).with("attr", 1, true) do
+        filter
+      end
       expect(filters).to receive(:<<).with(filter)
       client
       search.without(:attr, 1)
@@ -92,7 +97,8 @@ describe Mongoid::Giza::Search do
       search.offset(1)
     end
 
-    it "should raise an error when the equivalent riddle's method does not exists" do
+    it "should raise an error when the equivalent riddle's method does not " \
+      "exists" do
       allow(client).to receive(:respond_to?).with("idontexist=") { false }
       expect { search.idontexist }.to raise_error(NoMethodError)
     end

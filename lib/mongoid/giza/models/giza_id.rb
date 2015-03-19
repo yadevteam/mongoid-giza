@@ -1,6 +1,5 @@
 module Mongoid
   module Giza
-
     # MongoDB counter collection to generate ids compatible with sphinx
     class GizaID
       include Mongoid::Document
@@ -11,10 +10,10 @@ module Mongoid
       attr_accessible :id
 
       class << self
-
         # Gets the next id in the sequence to assign to an object
         #
-        # @param klass [Symbol] the name of the class which next id will be retrived for
+        # @param klass [Symbol] the name of the class which next id will be
+        #   retrived for
         #
         # @return [Integer] the next id in the sequence
         def next_id(klass)

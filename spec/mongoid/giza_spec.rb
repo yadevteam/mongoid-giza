@@ -24,15 +24,20 @@ describe Mongoid::Giza do
     index
   end
 
-  let(:new_index) { allow(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index } }
+  let(:new_index) do
+    allow(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index }
+  end
 
   let(:search) do
     search = double("search")
-    allow(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, []) { search }
+    allow(Mongoid::Giza::Search).to receive(:new)
+      .with("localhost", 9132, []) { search }
     search
   end
 
-  let(:search_run) { allow(search).to receive(:run) { double("results").as_null_object } }
+  let(:search_run) do
+    allow(search).to receive(:run) { double("results").as_null_object }
+  end
 
   let(:search_indexes) { allow(search).to receive(:indexes=) }
 
@@ -41,15 +46,17 @@ describe Mongoid::Giza do
   describe "sphinx_index" do
     context "static index" do
       it "should add the index" do
-        expect(Person).to receive(:add_static_sphinx_index).with({}, kind_of(Proc))
-        Person.sphinx_index { }
+        expect(Person).to receive(:add_static_sphinx_index)
+          .with({}, kind_of(Proc))
+        Person.sphinx_index {}
       end
     end
 
     context "dynamic index" do
       it "should add the index to the dynamic index list" do
-        expect(Person).to receive(:add_dynamic_sphinx_index).with({}, kind_of(Proc))
-        Person.sphinx_index { |person| }
+        expect(Person).to receive(:add_dynamic_sphinx_index)
+          .with({}, kind_of(Proc))
+        Person.sphinx_index { |person| person }
       end
     end
   end
@@ -75,8 +82,9 @@ describe Mongoid::Giza do
     end
 
     it "should accept settings" do
-      expect(Mongoid::Giza::Index).to receive(:new).with(Person, enable_star: 1) { index }
-      Person.add_static_sphinx_index({enable_star: 1}, Proc.new { })
+      expect(Mongoid::Giza::Index).to receive(:new)
+        .with(Person, enable_star: 1) { index }
+      Person.add_static_sphinx_index({enable_star: 1}, -> {})
     end
 
     it "should add the index to the configuration" do
@@ -94,15 +102,19 @@ describe Mongoid::Giza do
     end
 
     it "should create a dynamic index" do
-      allow(Person).to receive(:generated_sphinx_indexes) { double.as_null_object }
-      expect(Mongoid::Giza::DynamicIndex).to receive(:new).with(Person, {}, kind_of(Proc)) { double.as_null_object }
-      Person.add_dynamic_sphinx_index({}, Proc.new { })
+      allow(Person).to receive(:generated_sphinx_indexes) do
+        double.as_null_object
+      end
+      expect(Mongoid::Giza::DynamicIndex).to receive(:new)
+        .with(Person, {}, kind_of(Proc)) { double.as_null_object }
+      Person.add_dynamic_sphinx_index({}, -> {})
     end
 
     it "should generate the indexes" do
       allow(Mongoid::Giza::DynamicIndex).to receive(:new) { dynamic_index }
-      expect(Person).to receive(:process_dynamic_sphinx_index).with(dynamic_index)
-      Person.add_dynamic_sphinx_index({}, Proc.new { })
+      expect(Person).to receive(:process_dynamic_sphinx_index)
+        .with(dynamic_index)
+      Person.add_dynamic_sphinx_index({}, -> {})
     end
   end
 
@@ -115,7 +127,9 @@ describe Mongoid::Giza do
 
     before do
       allow(generated).to receive(:each)
-      allow(Person).to receive(:generated_sphinx_indexes) { generated_sphinx_indexes }
+      allow(Person).to receive(:generated_sphinx_indexes) do
+        generated_sphinx_indexes
+      end
       allow(generated_sphinx_indexes).to receive(:merge!)
     end
 
@@ -140,13 +154,18 @@ describe Mongoid::Giza do
 
   describe "search" do
     before do
-      allow(Mongoid::Giza::Configuration.instance.searchd).to receive(:address) { "localhost" }
-      allow(Mongoid::Giza::Configuration.instance.searchd).to receive(:port) { 9132 }
+      allow(Mongoid::Giza::Configuration.instance.searchd)
+        .to receive(:address) { "localhost" }
+      allow(Mongoid::Giza::Configuration.instance.searchd)
+        .to receive(:port) { 9132 }
     end
 
     it "should create a search" do
-      expect(Mongoid::Giza::Search).to receive(:new).with("localhost", 9132, [:Person, :Person_2]) { double("search").as_null_object }
-      Person.sphinx_index { }
+      expect(Mongoid::Giza::Search).to receive(:new)
+        .with("localhost", 9132, [:Person, :Person_2]) do
+          double("search").as_null_object
+        end
+      Person.sphinx_index {}
       Person.sphinx_index { name :Person_2 }
       Person.search {  }
     end
@@ -206,7 +225,8 @@ describe Mongoid::Giza do
   end
 
   describe "sphinx_indexes" do
-    it "should return an collection containg static indexes and generated indexes" do
+    it "should return an collection containg static indexes and generated " \
+      "indexes" do
       static = double("static")
       generated = double("generated")
       merged = double("merged")
@@ -240,7 +260,8 @@ describe Mongoid::Giza do
       Person.sphinx_indexer!
     end
 
-    it "should not execute if the supplied names do not match any index name of the current class" do
+    it "should not execute if the supplied names do not match any index name " \
+      "of the current class" do
       expect(indexer).not_to receive(:index!)
       Person.sphinx_index { }
       Person.sphinx_indexer!(:Person_2)
@@ -288,7 +309,8 @@ describe Mongoid::Giza do
     it "should process all dynamic indexes" do
       allow(Person).to receive(:dynamic_sphinx_indexes) { dynamic }
       allow(dynamic).to receive(:each).and_yield(:dynamic_index)
-      expect(Person).to receive(:process_dynamic_sphinx_index).with(:dynamic_index)
+      expect(Person).to receive(:process_dynamic_sphinx_index)
+        .with(:dynamic_index)
       Person.regenerate_sphinx_indexes
     end
   end
@@ -305,18 +327,21 @@ describe Mongoid::Giza do
     let(:index2) { double("index 2") }
 
     before do
-      allow(Person).to receive(:dynamic_sphinx_indexes) { [dynamic_index, dynamic_index] }
+      allow(Person)
+        .to receive(:dynamic_sphinx_indexes) { [dynamic_index, dynamic_index] }
       allow(dynamic_index).to receive(:generate_index) { index }
       allow(index).to receive(:name) { :name }
     end
 
     it "should generate all the dynamic indexes of the class for the object" do
-      expect(dynamic_index).to receive(:generate_index).with(person).twice { index }
+      expect(dynamic_index).to receive(:generate_index).with(person)
+        .twice { index }
       person.generate_sphinx_indexes
     end
 
     it "should merge the resulting indexes to the class' generated indexes" do
-      expect(Person.generated_sphinx_indexes).to receive(:merge!).with({name: index}).twice
+      expect(Person.generated_sphinx_indexes).to receive(:merge!)
+        .with(name: index).twice
       person.generate_sphinx_indexes
     end
 
@@ -330,12 +355,14 @@ describe Mongoid::Giza do
     let(:index_name) { double("index name") }
 
     it "should remove the indexes from the generated indexes collection" do
-      expect(Person.generated_sphinx_indexes).to receive(:delete).with(index_name).twice
+      expect(Person.generated_sphinx_indexes).to receive(:delete)
+        .with(index_name).twice
       Person.remove_generated_sphinx_indexes(index_name, index_name)
     end
 
     it "should remove the indexes from the configuration" do
-      expect(config).to receive(:remove_generated_indexes).with([index_name, index_name])
+      expect(config).to receive(:remove_generated_indexes)
+        .with([index_name, index_name])
       Person.remove_generated_sphinx_indexes(index_name, index_name)
     end
   end

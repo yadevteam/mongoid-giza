@@ -4,8 +4,10 @@ describe Mongoid::Giza::Configuration do
   before do
     @default_source = double("default_source")
     @default_index = double("default_index")
-    allow(Riddle::Configuration::XMLSource).to receive(:new).with(:source, :xmlpipe2) { @default_source }
-    allow(Riddle::Configuration::Index).to receive(:new).with(:index, @default_source) { @default_index }
+    allow(Riddle::Configuration::XMLSource).to receive(:new)
+      .with(:source, :xmlpipe2) { @default_source }
+    allow(Riddle::Configuration::Index).to receive(:new)
+      .with(:index, @default_source) { @default_index }
     @config = Mongoid::Giza::Configuration.send(:new)
   end
 
@@ -14,7 +16,8 @@ describe Mongoid::Giza::Configuration do
       expect(@config.index).to be(@default_index)
     end
 
-    it "should create a Riddle::Configuration::XMLSource for default settings" do
+    it "should create a Riddle::Configuration::XMLSource for default " \
+      "settings" do
       expect(@config.source).to be(@default_source)
     end
 
@@ -35,33 +38,44 @@ describe Mongoid::Giza::Configuration do
     let(:file_open) { allow(File).to receive(:open).with("giza.yml") { file } }
 
     it "should load the configuration file" do
-      expect(file).to receive(:read) { "test:\n  searchd:\n    address: localhost" }
+      expect(file).to receive(:read) do
+        "test:\n  searchd:\n    address: localhost"
+      end
       expect(File).to receive(:open).with("giza.yml") { file }
       @config.load("giza.yml", "test")
     end
 
     it "should set settings" do
-      allow(file).to receive(:read) { "test:\n  searchd:\n    address: localhost" }
+      allow(file).to receive(:read) do
+        "test:\n  searchd:\n    address: localhost"
+      end
       file_open
       @config.load("giza.yml", "test")
       expect(@config.searchd.address).to eql("localhost")
     end
 
     it "should ignore non-existent sections" do
-      allow(file).to receive(:read) { "test:\n  miss_section:\n    address: localhost" }
+      allow(file).to receive(:read) do
+        "test:\n  miss_section:\n    address: localhost"
+      end
       file_open
       expect { @config.load("giza.yml", "test") }.not_to raise_error
     end
 
     it "should ignore non-existent settings" do
-      allow(file).to receive(:read) { "test:\n  searchd:\n    miss_setting: false" }
-      expect(@config.searchd).not_to receive(:method_missing).with(:miss_setting=, false)
+      allow(file).to receive(:read) do
+        "test:\n  searchd:\n    miss_setting: false"
+      end
+      expect(@config.searchd).not_to receive(:method_missing)
+        .with(:miss_setting=, false)
       file_open
       @config.load("giza.yml", "test")
     end
 
     it "should interpolate the string with ERB" do
-      allow(file).to receive(:read) { "test:\n  searchd:\n    address: localhost" }
+      allow(file).to receive(:read) do
+        "test:\n  searchd:\n    address: localhost"
+      end
       expect(@config).to receive(:interpolate_string).with("localhost", nil)
       file_open
       @config.load("giza.yml", "test")
@@ -75,7 +89,9 @@ describe Mongoid::Giza::Configuration do
     end
 
     it "should not interpolate source settings" do
-      allow(file).to receive(:read) { "test:\n  source:\n    xmlpipe_command: cmd" }
+      allow(file).to receive(:read) do
+        "test:\n  source:\n    xmlpipe_command: cmd"
+      end
       expect(@config).not_to receive(:interpolate_string)
       file_open
       @config.load("giza.yml", "test")
@@ -142,14 +158,18 @@ describe Mongoid::Giza::Configuration do
     before do
       allow(Riddle::Configuration::Index).to receive(:settings) { [] }
       allow(Riddle::Configuration::XMLSource).to receive(:new) { source }
-      allow(Riddle::Configuration::Index).to receive(:new).with(index.name, source) { riddle_index }
+      allow(Riddle::Configuration::Index).to receive(:new)
+        .with(index.name, source) { riddle_index }
       allow(@config).to receive(:apply_default_settings)
       allow(@config).to receive(:apply_user_settings)
     end
 
     it "should create a xmlpipe2 source with the same name of the index" do
-      expect(Riddle::Configuration::XMLSource).to receive(:new).with(index.name, :xmlpipe2) { source }
-      allow(Riddle::Configuration::Index).to receive(:new) { double("riddle_index").as_null_object }
+      expect(Riddle::Configuration::XMLSource).to receive(:new)
+        .with(index.name, :xmlpipe2) { source }
+      allow(Riddle::Configuration::Index).to receive(:new) do
+        double("riddle_index").as_null_object
+      end
       @config.create_index(index)
     end
 
@@ -158,17 +178,20 @@ describe Mongoid::Giza::Configuration do
       allow(@default_index).to receive(:path) { "/path/to/index" }
       allow(riddle_index).to receive(:path=).with("/path/to/index")
       allow(riddle_index).to receive(:path) { "/path/to/index" }
-      expect(riddle_index).to receive(:path=).with("/path/to/index/#{index.name}")
+      expect(riddle_index).to receive(:path=)
+        .with("/path/to/index/#{index.name}")
       @config.create_index(index)
     end
 
     it "should apply default settings to the index" do
-      expect(@config).to receive(:apply_default_settings).with(@default_index, riddle_index, index)
+      expect(@config).to receive(:apply_default_settings)
+        .with(@default_index, riddle_index, index)
       @config.create_index(index)
     end
 
     it "should apply default settings to the source" do
-      expect(@config).to receive(:apply_default_settings).with(@default_source, source, index)
+      expect(@config).to receive(:apply_default_settings)
+        .with(@default_source, source, index)
       @config.create_index(index)
     end
 
@@ -317,7 +340,8 @@ describe Mongoid::Giza::Configuration do
       allow(@config.indexer).to receive(:render) { "indexer" }
       allow(@config.searchd).to receive(:render) { "searchd" }
       allow(index).to receive(:render) { "source\nindex" }
-      expect(File).to receive(:open).with(@config.file.output_path, "w").and_yield(file)
+      expect(File).to receive(:open).with(@config.file.output_path, "w")
+        .and_yield(file)
       expect(file).to receive(:write).with("\nindexer\nsearchd\nsource\nindex")
       @config.render
     end
@@ -356,7 +380,8 @@ describe Mongoid::Giza::Configuration do
       @config.setter(section, :setting, value)
     end
 
-    it "should no set the value if the section does not respond to the attribute setter" do
+    it "should no set the value if the section does not respond to the " \
+      "attribute setter" do
       allow(section).to receive(:respond_to?).with("setting=") { false }
       expect(section).not_to receive("setting=")
       @config.setter(section, :setting, value)
@@ -367,7 +392,8 @@ describe Mongoid::Giza::Configuration do
     let(:indices) { double("indices")  }
 
     before do
-      @config.instance_variable_set("@generated_indexes", {name: :index, two: :index2})
+      @config.instance_variable_set("@generated_indexes", name: :index,
+                                                          two: :index2)
     end
 
     it "should remove the indexes from the indices array" do
@@ -378,7 +404,8 @@ describe Mongoid::Giza::Configuration do
 
     it "should remove the index from the generated indexes collection" do
       @config.remove_generated_indexes([:name])
-      expect(@config.instance_variable_get("@generated_indexes")).not_to include(name: :index)
+      expect(@config.instance_variable_get("@generated_indexes"))
+        .not_to include(name: :index)
     end
   end
 end

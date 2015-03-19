@@ -22,13 +22,15 @@ describe Mongoid::Giza::XMLPipe2 do
     it "should generate the schema of the docset" do
       allow(@field).to receive(:attribute) { false }
       xmlpipe2.generate_schema
-      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name"/><sphinx:attr name="age" type="int"/></sphinx:schema>')
+      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name"/>' \
+        '<sphinx:attr name="age" type="int"/></sphinx:schema>')
     end
 
     it "should generate a field attribute" do
       allow(@field).to receive(:attribute) { true }
       xmlpipe2.generate_schema
-      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name" attr="string"/><sphinx:attr name="age" type="int"/></sphinx:schema>')
+      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name" '\
+        'attr="string"/><sphinx:attr name="age" type="int"/></sphinx:schema>')
     end
   end
 
@@ -40,19 +42,19 @@ describe Mongoid::Giza::XMLPipe2 do
       allow(@index).to receive(:fields) { [field] }
       allow(@index).to receive(:attributes) { [attribute] }
       allow(@index).to receive(:criteria) { [person] }
-      allow(person).to receive(:giza_id) { 1 }
+      allow(person).to receive(:_giza_id) { 1 }
       allow(xmlpipe2).to receive(:generate_doc_tags).with([field], person) do
         @buffer << "<name>Person One</name>"
       end
-      allow(xmlpipe2).to receive(:generate_doc_tags).with([attribute], person) do
-        @buffer << "<age>25</age>"
-      end
+      allow(xmlpipe2).to receive(:generate_doc_tags)
+        .with([attribute], person) { @buffer << "<age>25</age>" }
     end
 
     context "static fields and attributes" do
       it "should generate the document entries" do
         xmlpipe2.generate_docset
-        expect(@buffer).to eql('<sphinx:document id="1"><name>Person One</name><age>25</age></sphinx:document>')
+        expect(@buffer).to eql('<sphinx:document id="1"><name>Person One' \
+          "</name><age>25</age></sphinx:document>")
       end
     end
   end
@@ -80,16 +82,20 @@ describe Mongoid::Giza::XMLPipe2 do
   describe "generate!" do
     it "should generate a xml file of the index" do
       result = '<?xml version="1.0" encoding="utf-8"?>'
-      result << '<sphinx:docset><sphinx:schema>'
-      result << '<sphinx:field name="name"/><sphinx:attr name="age" type="int"/>'
-      result << '</sphinx:schema>'
-      result << '<sphinx:document id="1"><name>Person One</name><age>25</age></sphinx:document>'
-      result << '</sphinx:docset>'
+      result << "<sphinx:docset><sphinx:schema>"
+      result <<
+        '<sphinx:field name="name"/><sphinx:attr name="age" type="int"/>'
+      result << "</sphinx:schema>"
+      result << '<sphinx:document id="1"><name>Person One</name><age>25</age>' \
+        "</sphinx:document>"
+      result << "</sphinx:docset>"
       expect(xmlpipe2).to receive(:generate_schema) do
-        @buffer << '<sphinx:schema><sphinx:field name="name"/><sphinx:attr name="age" type="int"/></sphinx:schema>'
+        @buffer << '<sphinx:schema><sphinx:field name="name"/><sphinx:attr ' \
+          'name="age" type="int"/></sphinx:schema>'
       end
       expect(xmlpipe2).to receive(:generate_docset) do
-        @buffer << '<sphinx:document id="1"><name>Person One</name><age>25</age></sphinx:document>'
+        @buffer << '<sphinx:document id="1"><name>Person One</name>' \
+          "<age>25</age></sphinx:document>"
       end
       xmlpipe2.generate!
       expect(@buffer).to eql(result)
