@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "mongoid-rspec", ">= 1.9"
   spec.add_development_dependency "yard", ">= 0.8.7"
   spec.add_development_dependency "database_cleaner", ">= 1.2.0"
+  spec.add_development_dependency "rubocop", ">= 0.29.0"
 
   spec.add_runtime_dependency "mongoid", ">= 3.1"
   spec.add_runtime_dependency "riddle", ">= 1.5"
