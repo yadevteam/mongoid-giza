@@ -181,14 +181,14 @@ describe Mongoid::Giza do
     it "should run the query" do
       search_run
       search_indexes
-      Person.search { }
+      Person.search {}
     end
 
     it "should return an array of results" do
       search_indexes
       allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
       allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
-      expect(Person.search { }).to be_a_kind_of(Array)
+      expect(Person.search {}).to be_a_kind_of(Array)
     end
 
     it "should return a Mongoid::Criteria with on each search results" do
