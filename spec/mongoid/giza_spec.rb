@@ -195,33 +195,7 @@ describe Mongoid::Giza do
       search_indexes
       allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
       expect(Person).to receive(:in).twice { Mongoid::Criteria.new(Person) }
-      Person.search { }
-    end
-  end
-
-  describe "giza_id" do
-    let(:person) { Person.new }
-
-    it "should use a previously created giza id" do
-      person[:giza_id] = 1
-      expect(person.giza_id).to eql(1)
-    end
-
-    it "should create a new giza id when needed" do
-      allow(Mongoid::Giza::GizaID).to receive(:next_id).with(:Person) { 1 }
-      expect(person.giza_id).to eql(1)
-    end
-
-    it "should save the object when the id is created" do
-      allow(Mongoid::Giza::GizaID).to receive(:next_id).with(:Person) { 1 }
-      expect(person).to receive(:set).with(:giza_id, 1)
-      person.giza_id
-    end
-
-    it "should not save the object when the id is reused" do
-      person[:giza_id] = 1
-      expect(person).not_to receive(:set)
-      person.giza_id
+      Person.search {}
     end
   end
 
