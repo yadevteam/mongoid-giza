@@ -15,12 +15,14 @@ describe Mongoid::Giza::XMLPipe2 do
       allow(@index).to receive(:fields) { [@field] }
       allow(@index).to receive(:attributes) { [@attribute] }
       allow(@field).to receive(:name) { :name }
+      allow(@field).to receive(:attribute) { false }
       allow(@attribute).to receive(:name) { :age }
       allow(@attribute).to receive(:type) { :int }
+      allow(@attribute).to receive(:default)
+      allow(@attribute).to receive(:bits)
     end
 
     it "should generate the schema of the docset" do
-      allow(@field).to receive(:attribute) { false }
       xmlpipe2.generate_schema
       expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name"/>' \
         '<sphinx:attr name="age" type="int"/></sphinx:schema>')
@@ -31,6 +33,20 @@ describe Mongoid::Giza::XMLPipe2 do
       xmlpipe2.generate_schema
       expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name" '\
         'attr="string"/><sphinx:attr name="age" type="int"/></sphinx:schema>')
+    end
+
+    it "should include default attribute if present" do
+      allow(@attribute).to receive(:default) { 1 }
+      xmlpipe2.generate_schema
+      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name"/>' \
+        '<sphinx:attr name="age" type="int" default="1"/></sphinx:schema>')
+    end
+
+    it "should include bits attribute if present" do
+      allow(@attribute).to receive(:bits) { 16 }
+      xmlpipe2.generate_schema
+      expect(@buffer).to eql('<sphinx:schema><sphinx:field name="name"/>' \
+        '<sphinx:attr name="age" type="int" bits="16"/></sphinx:schema>')
     end
   end
 

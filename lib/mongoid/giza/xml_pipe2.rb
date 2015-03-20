@@ -35,14 +35,31 @@ module Mongoid
       def generate_schema
         @xml.sphinx :schema do |schema|
           @index.fields.each do |field|
-            attrs = {name: field.name}
-            attrs[:attr] = :string if field.attribute
-            schema.sphinx :field, attrs
+            schema.sphinx :field, field_attrs(field)
           end
           @index.attributes.each do |attribute|
-            schema.sphinx :attr, name: attribute.name, type: attribute.type
+            schema.sphinx :attr, attribute_attrs(attribute)
           end
         end
+      end
+
+      # Returns a Hash of the field's attributes
+      #
+      # @return [Hash] The field's attributes
+      def field_attrs(field)
+        attrs = {name: field.name}
+        attrs[:attr] = :string if field.attribute
+        attrs
+      end
+
+      # Returns a Hash of the attribute's attributes
+      #
+      # @return [Hash] The attribute's attributes
+      def attribute_attrs(attribute)
+        attrs = {name: attribute.name, type: attribute.type}
+        attrs[:default] = attribute.default if attribute.default
+        attrs[:bits] = attribute.bits if attribute.bits
+        attrs
       end
 
       # Generates the content part of the XML document.

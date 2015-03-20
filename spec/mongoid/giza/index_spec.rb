@@ -65,12 +65,15 @@ describe Mongoid::Giza::Index do
 
     let(:type) { :int }
 
+    let(:options) { {default: 1} }
+
     it "should require a name" do
       expect { index.attribute }.to raise_error(ArgumentError)
     end
 
     it "should accept a type" do
-      expect(Mongoid::Giza::Index::Attribute).to receive(:new).with(name, type)
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new)
+        .with(name, type, {})
       index.attribute(name, type)
     end
 
@@ -86,7 +89,7 @@ describe Mongoid::Giza::Index do
         fields
       end
       expect(Mongoid::Giza::Index::Attribute).to receive(:new)
-        .with(name, Mongoid::Giza::Index::TYPES_MAP[type])
+        .with(name, Mongoid::Giza::Index::TYPES_MAP[type], {})
       index.attribute(name)
     end
 
@@ -97,7 +100,7 @@ describe Mongoid::Giza::Index do
         fields
       end
       expect(Mongoid::Giza::Index::Attribute).to receive(:new)
-        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
+        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, {})
       index.attribute(name)
     end
 
@@ -112,8 +115,14 @@ describe Mongoid::Giza::Index do
         fields
       end
       expect(Mongoid::Giza::Index::Attribute).to receive(:new)
-        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first)
+        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, {})
       index.attribute(name)
+    end
+
+    it "should accept options" do
+      expect(Mongoid::Giza::Index::Attribute).to receive(:new)
+        .with(name, type, options)
+      index.attribute(name, type, options)
     end
   end
 

@@ -9,7 +9,7 @@ module Mongoid
           :float, :multi, :string, :json, :str2wordcount
         ]
 
-        attr_accessor :name, :type, :block
+        attr_accessor :name, :type, :default, :bits, :block
 
         # Creates a new attribute with name, type and an optional block
         #
@@ -27,7 +27,7 @@ module Mongoid
         #
         # @raise [TypeError] if the type is not valid. (see
         #   {Mongoid::Giza::Index::Attribute::TYPES})
-        def initialize(name, type, &block)
+        def initialize(name, type, options = {}, &block)
           fail TypeError,
                "Attribute type not supported. " \
                "It must be one of the following: " \
@@ -35,6 +35,8 @@ module Mongoid
           @name = name.to_s.mb_chars.downcase.to_sym
           @type = type
           @block = block
+          @default = options[:default]
+          @bits = options[:bits] if type == :int
         end
       end
     end

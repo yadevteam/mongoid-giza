@@ -76,7 +76,7 @@ module Mongoid
       # @param type [Symbol] an optional attribute type
       # @param block [Proc] an optional block to be evaluated at the scope of
       #   the document on index creation
-      def attribute(name, type = nil, &block)
+      def attribute(name, type = nil, options = {}, &block)
         unless type
           field = @klass.fields[name.to_s]
           if field
@@ -85,7 +85,7 @@ module Mongoid
             type = TYPES_MAP.values.first
           end
         end
-        @attributes << Attribute.new(name, type, &block)
+        @attributes << Attribute.new(name, type, options, &block)
       end
 
       # Retrieves and optionally sets the index name

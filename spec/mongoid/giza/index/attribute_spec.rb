@@ -64,4 +64,38 @@ describe Mongoid::Giza::Index::Attribute do
     attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int) {}
     expect(attribute.block).to be_a(Proc)
   end
+
+  describe "options" do
+    describe "default" do
+      it "should accept default option" do
+        attribute = Mongoid::Giza::Index::Attribute.new("attribute",
+                                                        :int, default: 1)
+        expect(attribute.default).to be 1
+      end
+
+      it "should be nil if not set" do
+        attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int)
+        expect(attribute.default).to be nil
+      end
+    end
+
+    describe "bits" do
+      it "should accept bits option" do
+        attribute = Mongoid::Giza::Index::Attribute.new("attribute",
+                                                        :int, bits: 16)
+        expect(attribute.bits).to be 16
+      end
+
+      it "should ignore if it's not an int attribute" do
+        attribute = Mongoid::Giza::Index::Attribute.new("attribute",
+                                                        :bool, bits: 16)
+        expect(attribute.bits).to be nil
+      end
+
+      it "should be nil if not set" do
+        attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int)
+        expect(attribute.bits).to be nil
+      end
+    end
+  end
 end
