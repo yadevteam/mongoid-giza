@@ -7,7 +7,8 @@ module Mongoid
       # Creates the Indexer instance
       def initialize
         @configuration = Mongoid::Giza::Configuration.instance
-        @controller = Riddle::Controller.new(@configuration, @configuration.file.output_path)
+        @controller = Riddle::Controller.new(@configuration,
+                                             @configuration.file.output_path)
       end
 
       # Index everything, regenerating all dynamic indexes from all classes
