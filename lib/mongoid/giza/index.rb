@@ -77,10 +77,13 @@ module Mongoid
       # @param block [Proc] an optional block to be evaluated at the scope of
       #   the document on index creation
       def attribute(name, type = nil, &block)
-        if type.nil?
+        unless type
           field = @klass.fields[name.to_s]
-          type = field.nil? ? Mongoid::Giza::Index::TYPES_MAP.values.first :
-            Mongoid::Giza::Index::TYPES_MAP[field.type] || Mongoid::Giza::Index::TYPES_MAP.values.first
+          if field
+            type = TYPES_MAP[field.type] || TYPES_MAP.values.first
+          else
+            type = TYPES_MAP.values.first
+          end
         end
         @attributes << Mongoid::Giza::Index::Attribute.new(name, type, &block)
       end
@@ -91,7 +94,7 @@ module Mongoid
       #
       # @return [Symbol] The name of the index
       def name(new_name = nil)
-        @name = new_name.to_sym if !new_name.nil?
+        @name = new_name.to_sym if new_name
         @name
       end
 

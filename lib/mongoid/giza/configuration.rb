@@ -48,11 +48,8 @@ module Mongoid
       #   generated from a {Mongoid::Giza::DynamicIndex}
       def add_index(index, generated = false)
         riddle_index = create_index(index)
-        if generated
-          position = register_index(riddle_index, @generated_indexes)
-        else
-          position = register_index(riddle_index, @static_indexes)
-        end
+        indexes = generated ? @generated_indexes : @static_indexes
+        position = register_index(riddle_index, indexes)
         indices[position] = riddle_index
       end
 
@@ -79,11 +76,11 @@ module Mongoid
       #   be registrated
       # @param indexes [Hash] the collection which will hold this index
       #
-      # @return [Integer] the position where this index should be inserted on the configuration indices array
-      def register_index(index, indexes)
-        position = indexes.has_key?(index.name) ?  indices.index(indexes[index.name]) : indices.length
-        indexes[index.name] = index
-        position
+      # @return [Integer] the position where this index should be inserted on
+      #   the configuration indices array
+      def register_index(riddle_index, indexes)
+        indexes[riddle_index.name] = riddle_index
+        indices.index(riddle_index) || indices.length
       end
 
       # Applies the settings defined on an object loaded from the configuration
@@ -101,7 +98,7 @@ module Mongoid
       def apply_default_settings(default, section, index)
         default.class.settings.each do |setting|
           value = interpolate_string(default.send("#{setting}"), index)
-          setter(section, setting, value) if !value.nil?
+          setter(section, setting, value) unless value.nil?
         end
       end
 
@@ -157,7 +154,11 @@ module Mongoid
       #   Otherwise it will return the original value
       def interpolate_string(value, index)
         namespace = index.nil? ? Object.new : OpenStruct.new(index: index)
-        value.is_a?(String) ? ERB.new(value).result(namespace.instance_eval { binding }) : value
+        if value.is_a?(String)
+          return ERB.new(value).result(namespace.instance_eval { binding })
+        else
+          return value
+        end
       end
 
       # Helper method to set a value to a setting from a section (i.e. indexer,

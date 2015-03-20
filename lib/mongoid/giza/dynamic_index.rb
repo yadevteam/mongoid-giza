@@ -31,7 +31,7 @@ module Mongoid
         indexes = {}
         klass.all.each do |object|
           index = generate_index(object)
-          indexes[index.name] = index if !index.nil?
+          indexes[index.name] = index if index
         end
         indexes
       end

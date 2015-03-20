@@ -180,8 +180,13 @@ module Mongoid
       # @param names [Array] a list of index names of this class that will be
       #   indexed
       def sphinx_indexer!(*names)
-        indexes_names = names.length > 0 ? sphinx_indexes_names.select { |name| names.include? name } : sphinx_indexes_names
-        Mongoid::Giza::Indexer.instance.index!(*indexes_names) if indexes_names.length > 0
+        if names.length > 0
+          indexes_names =
+            sphinx_indexes_names.select { |name| names.include?(name) }
+        else
+          indexes_names = sphinx_indexes_names
+        end
+        Indexer.instance.index!(*indexes_names) if indexes_names.length > 0
       end
 
       # Retrieves all the sphinx indexes defined on this class, static and

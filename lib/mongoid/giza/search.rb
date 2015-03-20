@@ -88,7 +88,7 @@ module Mongoid
       #
       # @raise [NoMethodError] if the method is also missing on Riddle::Client
       def method_missing(method, *args)
-        super if !respond_to?(method)
+        super unless respond_to?(method)
         @client.send "#{method}=", *args
       end
     end

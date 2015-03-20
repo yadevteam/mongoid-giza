@@ -13,7 +13,7 @@ module Mongoid
       # Index everything, regenerating all dynamic indexes from all classes
       def full_index!
         @configuration.clear_generated_indexes
-        giza_classes.each { |klass| klass.regenerate_sphinx_indexes }
+        giza_classes.each(&:regenerate_sphinx_indexes)
         @configuration.render
         index!
       end
