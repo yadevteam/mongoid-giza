@@ -146,8 +146,7 @@ module Mongoid
                             giza_configuration.searchd.port,
                             sphinx_indexes_names)
         Docile.dsl_eval(search, &block)
-        results = search.run
-        results.each { |result| result[name.to_sym] = self.in(giza_id: result[:matches].map { |match| match[:doc] }) }
+        map_to_mongoid(search)
       end
 
       # Regenerates all dynamic indexes of the class
@@ -205,6 +204,15 @@ module Mongoid
       #   {Mongoid::Giza::Index}
       def sphinx_indexes_names
         static_sphinx_indexes.merge(generated_sphinx_indexes).keys
+      end
+
+      private
+
+      def map_to_mongoid(search)
+        search.run.each do |result|
+          result[name.to_sym] =
+            self.in(_giza_id: result[:matches].map { |match| match[:doc] })
+        end
       end
     end
   end
