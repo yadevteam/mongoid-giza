@@ -67,15 +67,18 @@ describe Mongoid::Giza::Indexer do
 
   describe "giza_classes" do
     before(:all) do
+      # :nodoc:
       class One
         include Mongoid::Document
         include Mongoid::Giza
       end
 
+      # :nodoc:
       class Two
         include Mongoid::Document
       end
 
+      # :nodoc:
       class Three
         include Mongoid::Document
         include Mongoid::Giza

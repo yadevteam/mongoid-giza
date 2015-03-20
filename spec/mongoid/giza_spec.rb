@@ -5,6 +5,7 @@ describe Mongoid::Giza do
     allow(Mongoid::Giza::GizaID).to receive(:create).with(id: :Person)
     allow(Mongoid::Giza::Configuration.instance).to receive(:add_index)
 
+    # :nodoc:
     class Person
       include Mongoid::Document
       include Mongoid::Giza

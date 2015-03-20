@@ -69,6 +69,7 @@ module Mongoid
       end
     end
 
+    # :nodoc:
     module ClassMethods
       attr_reader :giza_configuration, :static_sphinx_indexes,
                   :generated_sphinx_indexes, :dynamic_sphinx_indexes

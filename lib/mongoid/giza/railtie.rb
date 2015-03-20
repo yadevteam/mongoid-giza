@@ -2,6 +2,7 @@ require "rails"
 
 module Mongoid
   module Giza
+    # :nodoc:
     class Railtie < Rails::Railtie
       configuration = Mongoid::Giza::Configuration.instance
 
