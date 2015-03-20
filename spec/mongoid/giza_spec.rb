@@ -1,9 +1,13 @@
 require "spec_helper"
 
 describe Mongoid::Giza do
-  before do
-    allow(Mongoid::Giza::Configuration.instance).to receive(:add_index)
+  let(:index) { double("index") }
 
+  let(:search) { double("search") }
+
+  let(:config) { Mongoid::Giza::Configuration.instance }
+
+  before do
     # :nodoc:
     class Person
       include Mongoid::Document
@@ -13,36 +17,17 @@ describe Mongoid::Giza do
       field :name, type: String
       field :age, type: Integer
     end
+
+    allow(Mongoid::Giza::Configuration.instance).to receive(:add_index)
+    allow(Mongoid::Giza::Search).to receive(:new)
+      .with("localhost", 9132, []) { search }
+    allow(search).to receive(:run) { double("results").as_null_object }
+    allow(search).to receive(:indexes=)
   end
 
   after do
     Object.send(:remove_const, :Person)
   end
-
-  let(:index) do
-    index = double("index")
-    allow(index).to receive(:name) { :Person }
-    index
-  end
-
-  let(:new_index) do
-    allow(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index }
-  end
-
-  let(:search) do
-    search = double("search")
-    allow(Mongoid::Giza::Search).to receive(:new)
-      .with("localhost", 9132, []) { search }
-    search
-  end
-
-  let(:search_run) do
-    allow(search).to receive(:run) { double("results").as_null_object }
-  end
-
-  let(:search_indexes) { allow(search).to receive(:indexes=) }
-
-  let(:config) { Mongoid::Giza::Configuration.instance }
 
   describe "sphinx_index" do
     context "static index" do
@@ -63,6 +48,11 @@ describe Mongoid::Giza do
   end
 
   describe "add_static_sphinx_index" do
+    before do
+      allow(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index }
+      allow(index).to receive(:name) { :Person }
+    end
+
     it "should create an index" do
       expect(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index }
       Person.add_static_sphinx_index({}, -> {})
@@ -70,7 +60,6 @@ describe Mongoid::Giza do
 
     it "should call index methods" do
       expect(index).to receive(:field).with(:name)
-      new_index
       Person.add_static_sphinx_index({}, -> { field :name })
     end
 
@@ -78,7 +67,6 @@ describe Mongoid::Giza do
       sphinx_indexes = double("sphinx_indexes")
       expect(sphinx_indexes).to receive(:[]=).with(index.name, index)
       allow(Person).to receive(:static_sphinx_indexes) { sphinx_indexes }
-      new_index
       Person.add_static_sphinx_index({}, -> {})
     end
 
@@ -90,7 +78,6 @@ describe Mongoid::Giza do
 
     it "should add the index to the configuration" do
       expect(config).to receive(:add_index).with(index)
-      new_index
       Person.add_static_sphinx_index({}, -> {})
     end
   end
@@ -172,27 +159,21 @@ describe Mongoid::Giza do
     end
 
     it "should call search methods" do
-      search_run
-      search_indexes
       expect(search).to receive(:fulltext).with("query")
       Person.search { fulltext "query" }
     end
 
     it "should run the query" do
-      search_run
-      search_indexes
       Person.search {}
     end
 
     it "should return an array of results" do
-      search_indexes
       allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
       allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
       expect(Person.search {}).to be_a_kind_of(Array)
     end
 
     it "should return a Mongoid::Criteria with on each search results" do
-      search_indexes
       allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
       expect(Person).to receive(:in).twice { Mongoid::Criteria.new(Person) }
       Person.search {}
