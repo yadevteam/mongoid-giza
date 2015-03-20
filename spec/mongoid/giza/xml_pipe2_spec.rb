@@ -75,7 +75,7 @@ describe Mongoid::Giza::XMLPipe2 do
 
     it "should generate all tags for the given fields or attributes" do
       xmlpipe2.generate_doc_tags(@fields, @person)
-      expect(@buffer).to eql('<name>PERSON ONE</name><bio>About me</bio>')
+      expect(@buffer).to eql("<name>PERSON ONE</name><bio>About me</bio>")
     end
   end
 
