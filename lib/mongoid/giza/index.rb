@@ -18,8 +18,8 @@ module Mongoid
         Array => :multi,
         Range => :multi,
         Hash => :json,
-        Moped::BSON::ObjectId => :string,
-        ActiveSupport::TimeWithZone => :timestamp,
+        BSON::ObjectId => :string,
+        ActiveSupport::TimeWithZone => :timestamp
       }
 
       attr_accessor :klass, :settings, :fields, :attributes

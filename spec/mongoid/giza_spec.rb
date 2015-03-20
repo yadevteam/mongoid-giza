@@ -2,12 +2,12 @@ require "spec_helper"
 
 describe Mongoid::Giza do
   before do
-    allow(Mongoid::Giza::GizaID).to receive(:create).with(id: :Person)
     allow(Mongoid::Giza::Configuration.instance).to receive(:add_index)
 
     # :nodoc:
     class Person
       include Mongoid::Document
+      include Mongoid::Attributes::Dynamic
       include Mongoid::Giza
 
       field :name, type: String

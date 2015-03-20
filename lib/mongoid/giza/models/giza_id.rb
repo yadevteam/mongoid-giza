@@ -7,8 +7,6 @@ module Mongoid
       field :_id, type: Symbol
       field :seq, type: Integer, default: 0
 
-      attr_accessible :id
-
       class << self
         # Gets the next id in the sequence to assign to an object
         #
