@@ -18,7 +18,7 @@ module Mongoid
         #   be stored as an string attribute
         # @param block [Proc] an optional block to be evaluated at the scope of
         #   the document on index creation
-        def initialize(name, attribute = false, &block)
+        def initialize(name, attribute = nil, &block)
           @name = name.to_s.mb_chars.downcase.to_sym
           @attribute = attribute
           @block = block

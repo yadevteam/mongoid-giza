@@ -57,7 +57,7 @@ module Mongoid
       # @param block [Proc] an optional block to be evaluated at the scope of
       #   the document on index creation
       def field(name, options = {}, &block)
-        attribute = options[:attribute].nil? ? false : true
+        attribute = options[:attribute]
         @fields << Field.new(name, attribute, &block)
       end
 

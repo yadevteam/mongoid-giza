@@ -15,7 +15,7 @@ describe Mongoid::Giza::XMLPipe2 do
       allow(@index).to receive(:fields) { [@field] }
       allow(@index).to receive(:attributes) { [@attribute] }
       allow(@field).to receive(:name) { :name }
-      allow(@field).to receive(:attribute) { false }
+      allow(@field).to receive(:attribute)
       allow(@attribute).to receive(:name) { :age }
       allow(@attribute).to receive(:type) { :int }
       allow(@attribute).to receive(:default)

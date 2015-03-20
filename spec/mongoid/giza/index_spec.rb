@@ -44,7 +44,7 @@ describe Mongoid::Giza::Index do
     end
 
     it "should create a new Field" do
-      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, false)
+      expect(Mongoid::Giza::Index::Field).to receive(:new).with(name, nil)
       index.field(name)
     end
 
