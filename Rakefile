@@ -3,9 +3,17 @@ Bundler.setup
 
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
+require "rubocop/rake_task"
 
-RSpec::Core::RakeTask.new("spec") do |spec|
+RuboCop::RakeTask.new(:rubocop)
+
+RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = "spec/**/*_spec.rb"
 end
 
-task default: :spec
+task :build do
+  Rake::Task[:rubocop].invoke
+  Rake::Task[:spec].invoke
+end
+
+task default: :build
