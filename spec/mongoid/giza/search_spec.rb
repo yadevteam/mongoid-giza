@@ -86,19 +86,33 @@ describe Mongoid::Giza::Search do
   end
 
   describe "riddle methods mapping" do
-    it "should respond to method from riddle" do
-      allow(client).to receive(:respond_to?).with("offset=") { true }
-      expect(search.respond_to?(:offset)).to eql(true)
+    context "with no argument" do
+      it "should respond to method from riddle" do
+        allow(client).to receive(:respond_to?).with(:offset) { true }
+        expect(client).to receive(:"offset").with(no_args)
+        search.offset
+      end
     end
 
-    it "should call the equivalent method from riddle" do
-      allow(client).to receive(:respond_to?).with("offset=") { true }
-      expect(client).to receive(:offset=).with(1)
-      search.offset(1)
+    context "with one argument" do
+      it "should respond to method from riddle" do
+        allow(client).to receive(:respond_to?).with("offset=") { true }
+        expect(client).to receive(:"offset=").with(1)
+        search.offset(1)
+      end
+    end
+
+    context "with multiple arguments" do
+      it "should respond to method from riddle" do
+        allow(client).to receive(:respond_to?).with(:offset) { true }
+        expect(client).to receive(:"offset").with(1, 2)
+        search.offset(1, 2)
+      end
     end
 
     it "should raise an error when the equivalent riddle's method does not " \
       "exists" do
+      allow(client).to receive(:respond_to?).with(:idontexist) { false }
       allow(client).to receive(:respond_to?).with("idontexist=") { false }
       expect { search.idontexist }.to raise_error(NoMethodError)
     end

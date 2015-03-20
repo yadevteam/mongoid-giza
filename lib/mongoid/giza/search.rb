@@ -73,7 +73,9 @@ module Mongoid
       # @return [TrueClass, FalseClass] true if either Riddle::Client or
       #   Mongoid::Giza::Search respond to the method
       def respond_to?(method)
-        @client.respond_to?("#{method}=") || super
+        @client.respond_to?(method) ||
+          @client.respond_to?("#{method}=") ||
+          super
       end
 
       # Dynamically dispatches the method call to Riddle::Client if the method
@@ -88,8 +90,14 @@ module Mongoid
       #
       # @raise [NoMethodError] if the method is also missing on Riddle::Client
       def method_missing(method, *args)
-        super unless respond_to?(method)
-        @client.send "#{method}=", *args
+        if args.length == 1
+          method_writer = "#{method}="
+          super unless respond_to?(method_writer)
+          @client.send method_writer, *args
+        else
+          super unless respond_to?(method)
+          @client.send method, *args
+        end
       end
     end
   end
