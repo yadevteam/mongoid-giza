@@ -65,13 +65,13 @@ describe Mongoid::Giza do
   describe "add_static_sphinx_index" do
     it "should create an index" do
       expect(Mongoid::Giza::Index).to receive(:new).with(Person, {}) { index }
-      Person.add_static_sphinx_index({}, Proc.new { })
+      Person.add_static_sphinx_index({}, -> {})
     end
 
     it "should call index methods" do
       expect(index).to receive(:field).with(:name)
       new_index
-      Person.add_static_sphinx_index({}, Proc.new { field :name })
+      Person.add_static_sphinx_index({}, -> { field :name })
     end
 
     it "should register the index on the class" do
@@ -79,7 +79,7 @@ describe Mongoid::Giza do
       expect(sphinx_indexes).to receive(:[]=).with(index.name, index)
       allow(Person).to receive(:static_sphinx_indexes) { sphinx_indexes }
       new_index
-      Person.add_static_sphinx_index({}, Proc.new { })
+      Person.add_static_sphinx_index({}, -> {})
     end
 
     it "should accept settings" do
@@ -91,7 +91,7 @@ describe Mongoid::Giza do
     it "should add the index to the configuration" do
       expect(config).to receive(:add_index).with(index)
       new_index
-      Person.add_static_sphinx_index({}, Proc.new { })
+      Person.add_static_sphinx_index({}, -> {})
     end
   end
 

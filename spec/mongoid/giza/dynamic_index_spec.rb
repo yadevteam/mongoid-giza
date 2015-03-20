@@ -3,7 +3,7 @@ require "spec_helper"
 describe Mongoid::Giza::DynamicIndex do
   describe "initialize" do
     it "should accept the class,  settings and a proc" do
-      dynamic_index = Mongoid::Giza::DynamicIndex.new(Object, {}, Proc.new { })
+      dynamic_index = Mongoid::Giza::DynamicIndex.new(Object, {}, -> {})
       expect(dynamic_index.klass).to be(Object)
       expect(dynamic_index.settings).to eql({})
       expect(dynamic_index.block).to be_a_kind_of(Proc)
@@ -11,7 +11,7 @@ describe Mongoid::Giza::DynamicIndex do
   end
 
   describe "generate!" do
-    let(:dynamic_index) { Mongoid::Giza::DynamicIndex.new(Object, {}, Proc.new { }) }
+    let(:dynamic_index) { Mongoid::Giza::DynamicIndex.new(Object, {}, -> {}) }
 
     let(:index) { double("index") }
 
@@ -57,7 +57,7 @@ describe Mongoid::Giza::DynamicIndex do
 
     it "should execute the index dsl on the parameter" do
       object = Object.new
-      block = Proc.new { }
+      block = proc {}
       expect(Docile).to receive(:dsl_eval).with(index, object, &block)
       Mongoid::Giza::DynamicIndex.new(Object, {}, block).generate_index(object)
     end

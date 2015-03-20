@@ -67,7 +67,7 @@ describe Mongoid::Giza::XMLPipe2 do
       @person = {name: "Person One", bio: "About me"}
       allow(name).to receive(:name) { :name }
       allow(name).to receive(:block) do
-        Proc.new { |document| document[:name].upcase }
+        proc { |document| document[:name].upcase }
       end
       allow(bio).to receive(:name) { :bio }
       allow(bio).to receive(:block) { nil }
