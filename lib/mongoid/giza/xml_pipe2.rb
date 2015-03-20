@@ -99,6 +99,7 @@ module Mongoid
       #   [Mongoid::Giza::Index::Field, Mongoid::Giza::Index::Attribute] field
       #   or attribute to process content
       # @param object [Object] object being indexed
+      #
       # @return the processed object attribute value
       def process_value(content, object)
         if content.is_a?(Index::Attribute) && content.type == :timestamp
