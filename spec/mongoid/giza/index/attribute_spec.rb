@@ -11,33 +11,33 @@ describe Mongoid::Giza::Index::Attribute do
 
     it "should be set on creation" do
       name = :attribute
-      attribute = Mongoid::Giza::Index::Attribute.new(name, :int)
+      attribute = Mongoid::Giza::Index::Attribute.new(name, :uint)
       expect(attribute.name).to eql(name)
     end
 
     it "should be converted to symbol" do
       name = "attribute"
-      attribute = Mongoid::Giza::Index::Attribute.new(name, :int)
+      attribute = Mongoid::Giza::Index::Attribute.new(name, :uint)
       expect(attribute.name).to eql(name.to_sym)
     end
 
     it "should be downcased" do
-      attribute = Mongoid::Giza::Index::Attribute.new("Attribute", :int)
+      attribute = Mongoid::Giza::Index::Attribute.new("Attribute", :uint)
       expect(attribute.name).to eql(:attribute)
     end
 
     it "should downcase unicode chars" do
-      attribute = Mongoid::Giza::Index::Attribute.new("ESPAÑOL", :int)
+      attribute = Mongoid::Giza::Index::Attribute.new("ESPAÑOL", :uint)
       expect(attribute.name).to eql(:español)
     end
 
     it "should downcase symbols" do
-      attribute = Mongoid::Giza::Index::Attribute.new(:Attribute, :int)
+      attribute = Mongoid::Giza::Index::Attribute.new(:Attribute, :uint)
       expect(attribute.name).to eql(:attribute)
     end
 
     it "should downcase unicode symbols" do
-      attribute = Mongoid::Giza::Index::Attribute.new(:ESPAÑOL, :int)
+      attribute = Mongoid::Giza::Index::Attribute.new(:ESPAÑOL, :uint)
       expect(attribute.name).to eql(:español)
     end
   end
@@ -49,7 +49,7 @@ describe Mongoid::Giza::Index::Attribute do
     end
 
     it "should be set on creation" do
-      type = :int
+      type = :uint
       attribute = Mongoid::Giza::Index::Attribute.new("attribute", type)
       expect(attribute.type).to eql(type)
     end
@@ -61,7 +61,7 @@ describe Mongoid::Giza::Index::Attribute do
   end
 
   it "should accept a block" do
-    attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int) {}
+    attribute = Mongoid::Giza::Index::Attribute.new("attribute", :uint) {}
     expect(attribute.block).to be_a(Proc)
   end
 
@@ -69,12 +69,12 @@ describe Mongoid::Giza::Index::Attribute do
     describe "default" do
       it "should accept default option" do
         attribute = Mongoid::Giza::Index::Attribute.new("attribute",
-                                                        :int, default: 1)
+                                                        :uint, default: 1)
         expect(attribute.default).to be 1
       end
 
       it "should be nil if not set" do
-        attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int)
+        attribute = Mongoid::Giza::Index::Attribute.new("attribute", :uint)
         expect(attribute.default).to be nil
       end
     end
@@ -82,7 +82,7 @@ describe Mongoid::Giza::Index::Attribute do
     describe "bits" do
       it "should accept bits option" do
         attribute = Mongoid::Giza::Index::Attribute.new("attribute",
-                                                        :int, bits: 16)
+                                                        :uint, bits: 16)
         expect(attribute.bits).to be 16
       end
 
@@ -93,7 +93,7 @@ describe Mongoid::Giza::Index::Attribute do
       end
 
       it "should be nil if not set" do
-        attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int)
+        attribute = Mongoid::Giza::Index::Attribute.new("attribute", :uint)
         expect(attribute.bits).to be nil
       end
     end

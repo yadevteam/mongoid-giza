@@ -5,8 +5,8 @@ module Mongoid
       class Attribute
         # Defines the array of currently supported Sphix attribute types
         TYPES = [
-          :int, :bool, :bigint, :timestamp, :str2ordinal,
-          :float, :multi, :string, :json, :str2wordcount
+          :uint, :bool, :bigint, :timestamp, :float,
+          :multi, :multi_64, :string, :json
         ]
 
         attr_accessor :name, :type, :default, :bits, :block
@@ -36,7 +36,7 @@ module Mongoid
           @type = type
           @block = block
           @default = options[:default]
-          @bits = options[:bits] if type == :int
+          @bits = options[:bits] if type == :uint
         end
       end
     end
