@@ -15,7 +15,7 @@ module Mongoid
         Time => :timestamp,
         BigDecimal => :float,
         Float => :float,
-        Array => :multi,
+        Array => :json,
         Range => :multi,
         Hash => :json,
         BSON::ObjectId => :string,
