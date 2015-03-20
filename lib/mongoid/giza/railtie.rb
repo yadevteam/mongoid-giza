@@ -12,8 +12,8 @@ module Mongoid
           "rails r '<%= index.klass %>.sphinx_indexes[:<%= index.name %>]" \
           ".xmlpipe2(STDOUT)'"
         # Loads the configuration file
-        file = Rails.root.join("config", "giza.yml")
-        configuration.load(file, Rails.env) if file.file?
+        giza_yml = Rails.root.join("config", "giza.yml")
+        configuration.load(giza_yml, Rails.env) if giza_yml.file?
       end
     end
   end
