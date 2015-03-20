@@ -131,7 +131,7 @@ module Mongoid
       # @param block [Proc] a block that will be evaluated on a
       #   {Mongoid::Giza::Search}
       #
-      # @return [Array] an Array with Riddle result hashes containing an
+      # @return [Hash] a Riddle result Hash containing an
       #   additional key with the name of the class.
       #   The value of this aditional key is a Mongoid::Criteria that return the
       #   actual objects of the match
@@ -140,7 +140,7 @@ module Mongoid
                             giza_configuration.searchd.port,
                             sphinx_indexes_names)
         Docile.dsl_eval(search, &block)
-        map_to_mongoid(search)
+        map_to_mongoid(search.run)
       end
 
       # Regenerates all dynamic indexes of the class
@@ -202,11 +202,16 @@ module Mongoid
 
       private
 
-      def map_to_mongoid(search)
-        search.run.each do |result|
-          result[name.to_sym] =
-            self.in(_giza_id: result[:matches].map { |match| match[:doc] })
-        end
+      # Creates the Mongoid::Criteria that return the objects matched by the
+      #   sphinx search
+      #
+      # @param result [Hash] the query result created by Riddle
+      # @return [Hash] the result hash with the Mongoid::Criteria on the indexed
+      #   class' name key
+      def map_to_mongoid(result)
+        result[name.to_sym] =
+          self.in(_giza_id: result[:matches].map { |match| match[:doc] })
+        result
       end
     end
   end

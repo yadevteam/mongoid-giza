@@ -141,6 +141,8 @@ describe Mongoid::Giza do
   end
 
   describe "search" do
+    let(:mapped_results) { double("mapped results") }
+
     before do
       allow(Mongoid::Giza::Configuration.instance.searchd)
         .to receive(:address) { "localhost" }
@@ -164,18 +166,12 @@ describe Mongoid::Giza do
     end
 
     it "should run the query" do
+      expect(search).to receive(:run)
       Person.search {}
     end
 
-    it "should return an array of results" do
-      allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
-      allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
-      expect(Person.search {}).to be_a_kind_of(Array)
-    end
-
-    it "should return a Mongoid::Criteria with on each search results" do
-      allow(search).to receive(:run) { [{matches: []}, {matches: []}] }
-      expect(Person).to receive(:in).twice { Mongoid::Criteria.new(Person) }
+    it "should retur map_to_mongoid" do
+      expect(Person).to receive(:map_to_mongoid) { mapped_results }
       Person.search {}
     end
   end
@@ -320,6 +316,19 @@ describe Mongoid::Giza do
       expect(config).to receive(:remove_generated_indexes)
         .with([index_name, index_name])
       Person.remove_generated_sphinx_indexes(index_name, index_name)
+    end
+  end
+
+  describe "map_to_mongoid" do
+    it "should return an result hash" do
+      allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
+      expect(Person.send(:map_to_mongoid, matches: [])).to be_a_kind_of(Hash)
+    end
+
+    it "should add an entry with the Mongoid::Criteria Hash" do
+      allow(Person).to receive(:in) { Mongoid::Criteria.new(Person) }
+      result = Person.send(:map_to_mongoid, matches: [])
+      expect(result).to include(:Person)
     end
   end
 end

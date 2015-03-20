@@ -1,21 +1,18 @@
 require "spec_helper"
 
 describe Mongoid::Giza::Search do
-  let(:client) do
-    client = double("client")
-    allow(Riddle::Client).to receive(:new).with("localhost", 9132) { client }
-    client
-  end
+  let(:client) { double("client") }
 
   let(:search) { Mongoid::Giza::Search.new("localhost", 9132) }
 
-  let(:filters) do
-    filters = double("filters")
-    allow(client).to receive(:filters) { filters }
-    filters
-  end
+  let(:filters) { double("filters") }
 
   let(:filter) { double("filter") }
+
+  before do
+    allow(Riddle::Client).to receive(:new).with("localhost", 9132) { client }
+    allow(client).to receive(:filters) { filters }
+  end
 
   describe "initialize" do
     it "should create a new client with the given host and port" do
@@ -31,16 +28,9 @@ describe Mongoid::Giza::Search do
   end
 
   describe "fulltext" do
-    it "should append a query on the specified indexes" do
-      expect(client).to receive(:append_query).with("query", "index1 index2")
-      allow(search).to receive(:indexes) { [:index1, :index2] }
+    it "should define the query string" do
       search.fulltext("query")
-    end
-
-    it "should search all indexes by default" do
-      expect(client).to receive(:append_query).with("query", "*")
-      allow(search).to receive(:indexes) { [] }
-      search.fulltext("query")
+      expect(search.query_string).to eql("query")
     end
   end
 
@@ -74,14 +64,26 @@ describe Mongoid::Giza::Search do
   end
 
   describe "run" do
-    it "should run the query" do
-      expect(client).to receive(:run) { [1, 2] }
+    let(:result) { double("result") }
+
+    before do
+      search.fulltext("query")
+    end
+
+    it "should execute the query" do
+      allow(search).to receive(:indexes) { [:index1, :index2] }
+      expect(client).to receive(:query).with("query", "index1 index2")
       search.run
     end
 
-    it "should return the result array" do
-      expect(client).to receive(:run) { [1, 2] }
-      expect(search.run).to eql([1, 2])
+    it "should search all indexes by default" do
+      expect(client).to receive(:query).with("query", "*")
+      search.run
+    end
+
+    it "should return the result of the query" do
+      allow(client).to receive(:query).with("query", "*") { result }
+      expect(search.run).to be result
     end
   end
 

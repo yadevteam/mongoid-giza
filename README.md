@@ -168,7 +168,6 @@ Use the `search` block on the class that have the indexes where the search shoul
 It returns a result array, where each position of the array is a [riddle result hash](http://rdoc.info/github/pat/riddle/Riddle/Client#query-instance_method), plus a key with the class name, that has the `Mongoid::Criteria` that selects the matching objects from the mongo database.
 
 Inside the `search` block use the `fulltext` method to perform a fulltext search.
-If multiple `fulltext` are called inside a `search` block, then each one will generate a separated query and will return a new position o the results array.
 
 To filter your search using the attributes defined on the index creation, use the `with` and `without` methods, that accept the name of the attribute and the value or range.
 
@@ -179,13 +178,13 @@ Every other [Riddle::Client](http://rdoc.info/github/pat/riddle/Riddle/Client) s
 **Example:** Searching on the person class
 
 ```ruby
-results = Person.search do
+result = Person.search do
   fulltext "john"
   with :age 18..40
   order_by :age :asc
 end
 
-results.first[:Person].each do |person|
+result[:Person].each do |person|
  puts "#{person.name} is #{person.age} years old"
 end
 ```

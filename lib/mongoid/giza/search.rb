@@ -2,8 +2,10 @@ module Mongoid
   module Giza
     # Executes queries on Sphinx
     class Search
-      attr_accessor :indexes
+      attr_accessor :indexes, :query_string
       attr_reader :client
+
+      alias_method :fulltext, :query_string=
 
       # Creates a new search
       #
@@ -15,16 +17,6 @@ module Mongoid
       def initialize(host, port, names = [])
         @client = Riddle::Client.new(host, port)
         @indexes = names
-      end
-
-      # Sets the search criteria on full-text fields
-      #
-      # @param query [String] a sphinx query string based on the current
-      #   {http://sphinxsearch.com/docs/current.html#matching-modes
-      #   matching mode}
-      def fulltext(query)
-        index = indexes.length > 0 ? indexes.join(" ") : "*"
-        @client.append_query(query, index)
       end
 
       # Sets a filter based on an attribute.
@@ -58,11 +50,12 @@ module Mongoid
         @client.sort_by = "#{attribute} #{order.to_s.upcase}"
       end
 
-      # Executes the configured queries
+      # Executes the configured query
       #
       # @return [Array] an Array of Hashes as specified by Riddle::Response
       def run
-        @client.run
+        index = indexes.length > 0 ? indexes.join(" ") : "*"
+        @client.query(query_string, index)
       end
 
       # Checks for methods on Riddle::Client
