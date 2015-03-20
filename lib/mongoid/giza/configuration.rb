@@ -129,7 +129,7 @@ module Mongoid
       # Removes all Riddle::Index from the indices Array that were created from
       #   a generated {Mongoid::Giza::Index}
       def clear_generated_indexes
-        @generated_indexes.each { |name, index| indices.delete(index) }
+        @generated_indexes.each { |_, index| indices.delete(index) }
         @generated_indexes =  {}
       end
 

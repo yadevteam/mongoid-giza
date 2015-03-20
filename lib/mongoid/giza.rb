@@ -126,7 +126,7 @@ module Mongoid
       def process_dynamic_sphinx_index(dynamic_index)
         generated = dynamic_index.generate!
         generated_sphinx_indexes.merge!(generated)
-        generated.each { |name, index| giza_configuration.add_index(index, true) }
+        generated.each { |_, index| giza_configuration.add_index(index, true) }
       end
 
       # Class method that implements a search DSL using a
