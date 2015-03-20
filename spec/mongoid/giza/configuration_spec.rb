@@ -339,7 +339,7 @@ describe Mongoid::Giza::Configuration do
     let(:indices) { double("indices") }
 
     before do
-      @config.instance_variable_set("@generated_indexes", {name: :index})
+      @config.instance_variable_set("@generated_indexes", name: :index)
     end
 
     it "should delete the generated riddle indexes" do
