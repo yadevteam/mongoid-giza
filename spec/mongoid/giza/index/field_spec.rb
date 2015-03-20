@@ -47,7 +47,7 @@ describe Mongoid::Giza::Index::Field do
   end
 
   it "should accept a block" do
-    field = Mongoid::Giza::Index::Field.new("field") { }
+    field = Mongoid::Giza::Index::Field.new("field") {}
     expect(field.block).to be_a(Proc)
   end
 end

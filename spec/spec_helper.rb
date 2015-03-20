@@ -15,7 +15,7 @@ MONGOID_CONFIG = {
   sessions: {
     default: {
       database: "mongoid_giza_test",
-      hosts: [ "localhost:27017" ]
+      hosts: ["localhost:27017"]
     }
   }
 }

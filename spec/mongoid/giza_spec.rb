@@ -168,7 +168,7 @@ describe Mongoid::Giza do
         end
       Person.sphinx_index {}
       Person.sphinx_index { name :Person_2 }
-      Person.search {  }
+      Person.search {}
     end
 
     it "should call search methods" do
@@ -243,14 +243,14 @@ describe Mongoid::Giza do
 
     it "should execute the index with all indexes from this class" do
       expect(indexer).to receive(:index!).with(:Person, :Person_2)
-      Person.sphinx_index { }
+      Person.sphinx_index {}
       Person.sphinx_index { name :Person_2 }
       Person.sphinx_indexer!
     end
 
     it "should accept a list of indexes names" do
       expect(indexer).to receive(:index!).with(:Person, :Person_3)
-      Person.sphinx_index { }
+      Person.sphinx_index {}
       Person.sphinx_index { name :Person_2 }
       Person.sphinx_index { name :Person_3 }
       Person.sphinx_indexer!(:Person, :Person_3)
@@ -264,7 +264,7 @@ describe Mongoid::Giza do
     it "should not execute if the supplied names do not match any index name " \
       "of the current class" do
       expect(indexer).not_to receive(:index!)
-      Person.sphinx_index { }
+      Person.sphinx_index {}
       Person.sphinx_indexer!(:Person_2)
     end
   end

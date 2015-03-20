@@ -61,7 +61,7 @@ describe Mongoid::Giza::Index::Attribute do
   end
 
   it "should accept a block" do
-    attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int) { }
+    attribute = Mongoid::Giza::Index::Attribute.new("attribute", :int) {}
     expect(attribute.block).to be_a(Proc)
   end
 end
