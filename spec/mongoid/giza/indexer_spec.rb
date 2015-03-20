@@ -11,7 +11,7 @@ describe Mongoid::Giza::Indexer do
 
   describe "index!" do
     it "should execute the sphinx indexer" do
-      expect(@controller).to receive(:index).with(no_args())
+      expect(@controller).to receive(:index).with(no_args)
       @indexer.index!
     end
 
