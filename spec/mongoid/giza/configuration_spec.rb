@@ -211,38 +211,26 @@ describe Mongoid::Giza::Configuration do
   end
 
   describe "register_index" do
-    let(:indices) { double("indices") }
-
-    let(:length) { double("length") }
-
-    let(:index) { double("index") }
-
-    let(:indexes) { double("indexes") }
-
-    before do
-      allow(@config).to receive(:indices) { indices }
-      allow(indices).to receive(:length) { length }
-      allow(index).to receive(:name) { :index }
-      allow(indexes).to receive(:[]=)
-      allow(indexes).to receive(:has_key?)
+    let(:riddle_index) do
+      instance_double("Riddle::Configuration::Index", name: "name")
     end
+
+    let(:indexes) { {} }
 
     it "should add the index to the given hash" do
-      expect(indexes).to receive(:[]=).with(:index, index)
-      @config.register_index(index, indexes)
+      @config.register_index(riddle_index, indexes)
+      expect(indexes).to include riddle_index.name => riddle_index
     end
 
-    it "should return the position to replace the index on the configuration indices" do
-      position = double("position")
-      allow(indexes).to receive(:has_key?).with(:index) { true }
-      allow(indexes).to receive(:[]).with(:index) { index }
-      allow(indices).to receive(:index).with(index) { position }
-      expect(@config.register_index(index, indexes)).to be(position)
+    it "should return the position of the index in the indices array" do
+      @config.indices.push(riddle_index)
+      position = @config.register_index(riddle_index, indexes)
+      expect(position).to eql 0
     end
 
-    it "should return the position to add the index on the configuration indices" do
-      allow(indexes).to receive(:has_key?).with(:index) { false }
-      expect(@config.register_index(index, indexes)).to be(length)
+    it "should return the indices array length if it's not on the array" do
+      position = @config.register_index(riddle_index, indexes)
+      expect(position).to eql @config.indices.length
     end
   end
 
