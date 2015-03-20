@@ -2,6 +2,7 @@ require "builder"
 
 module Mongoid
   module Giza
+    # Represents the xmlpipe2 data source
     class XMLPipe2
       # Creates a new XMLPipe2 object based on the specified index and that will
       #   write to the specified buffer.
