@@ -58,7 +58,7 @@ module Mongoid
       #   the document on index creation
       def field(name, options = {}, &block)
         attribute = options[:attribute].nil? ? false : true
-        @fields << Mongoid::Giza::Index::Field.new(name, attribute, &block)
+        @fields << Field.new(name, attribute, &block)
       end
 
       # Adds an attribute to the index with the corresponding name.
@@ -85,7 +85,7 @@ module Mongoid
             type = TYPES_MAP.values.first
           end
         end
-        @attributes << Mongoid::Giza::Index::Attribute.new(name, type, &block)
+        @attributes << Attribute.new(name, type, &block)
       end
 
       # Retrieves and optionally sets the index name
