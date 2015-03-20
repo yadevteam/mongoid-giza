@@ -74,7 +74,7 @@ module Mongoid
         end
       end
 
-      # Generates the tags with the content to be indexed of every field or
+      # Generates the tags with the content to be indexed of every field and
       #   attribute.
       # Used internally by {#generate_docset} so you should never need to call
       #   it directly
@@ -84,11 +84,27 @@ module Mongoid
       # @param object [Object] the object being indexed
       def generate_doc_tags(contents, object)
         contents.each do |content|
-          if content.block.nil?
-            @xml.tag! content.name, object[content.name]
-          else
+          if content.block
             @xml.tag! content.name, content.block.call(object)
+          else
+            @xml.tag! content.name, process_value(content, object)
           end
+        end
+      end
+
+      # Process values
+      # * Converts Date, Time and DateTime objects to unix time
+      #
+      # @param content
+      #   [Mongoid::Giza::Index::Field, Mongoid::Giza::Index::Attribute] field
+      #   or attribute to process content
+      # @param object [Object] object being indexed
+      # @return the processed object attribute value
+      def process_value(content, object)
+        if content.is_a?(Index::Attribute) && content.type == :timestamp
+          return object[content.name].to_time.to_i
+        else
+          return object[content.name]
         end
       end
     end

@@ -117,4 +117,25 @@ describe Mongoid::Giza::XMLPipe2 do
       expect(@buffer).to eql(result)
     end
   end
+
+  describe "process_value" do
+    let(:time_attr) { Mongoid::Giza::Index::Attribute.new(:at, :timestamp) }
+
+    let(:attribute) { Mongoid::Giza::Index::Attribute.new(:age, :uint) }
+
+    let(:object) { {at: @now, age: 50} }
+
+    before do
+      @now = Time.new(1)
+    end
+
+    it "should convert timestamp attributes to unix time" do
+      value = xmlpipe2.process_value(time_attr, object)
+      expect(Time.at(value)).to eq(@now)
+    end
+
+    it "should return other values as is" do
+      expect(xmlpipe2.process_value(attribute, object)).to be 50
+    end
+  end
 end
