@@ -93,18 +93,18 @@ describe Mongoid::Giza::Index do
       index.attribute(name)
     end
 
-    it "should default to the first type when the field is not found" do
+    it "should default to string when the field is not found" do
       allow(klass).to receive(:fields) do
         fields = double("fields")
         allow(fields).to receive(:[]).with(name) { nil }
         fields
       end
       expect(Mongoid::Giza::Index::Attribute).to receive(:new)
-        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, {})
+        .with(name, :string, {})
       index.attribute(name)
     end
 
-    it "should default to the first type when the type is not mapped" do
+    it "should default to string when the type is not mapped" do
       allow(klass).to receive(:fields) do
         fields = double("fields")
         allow(fields).to receive(:[]).with(name) do
@@ -115,7 +115,7 @@ describe Mongoid::Giza::Index do
         fields
       end
       expect(Mongoid::Giza::Index::Attribute).to receive(:new)
-        .with(name, Mongoid::Giza::Index::TYPES_MAP.values.first, {})
+        .with(name, :string, {})
       index.attribute(name)
     end
 

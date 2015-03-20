@@ -80,9 +80,9 @@ module Mongoid
         unless type
           field = @klass.fields[name.to_s]
           if field
-            type = TYPES_MAP[field.type] || TYPES_MAP.values.first
+            type = TYPES_MAP[field.type] || :string
           else
-            type = TYPES_MAP.values.first
+            type = :string
           end
         end
         @attributes << Attribute.new(name, type, options, &block)
