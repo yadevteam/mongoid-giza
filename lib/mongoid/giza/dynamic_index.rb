@@ -47,10 +47,9 @@ module Mongoid
       #   evaluation or nil if the object's class is not the index's class or a
       #   subclass of it
       def generate_index(object)
-        if object.is_a?(klass)
-          index = Mongoid::Giza::Index.new(klass, settings)
-          Docile.dsl_eval(index, object, &block)
-        end
+        return unless object.is_a?(klass)
+        index = Mongoid::Giza::Index.new(klass, settings)
+        Docile.dsl_eval(index, object, &block)
       end
     end
   end

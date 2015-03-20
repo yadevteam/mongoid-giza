@@ -29,11 +29,12 @@ module Mongoid
       def load(path, env)
         YAML.load(File.open(path).read)[env].each do |section_name, settings|
           section = instance_variable_get("@#{section_name}")
-          if !section.nil?
-            settings.each do |setting, value|
-              value = interpolate_string(value, nil) if section != @index and section != @source
-              setter(section, setting, value)
+          next unless section
+          settings.each do |setting, value|
+            unless section == @index || section == @source
+              value = interpolate_string(value, nil)
             end
+            setter(section, setting, value)
           end
         end
       end

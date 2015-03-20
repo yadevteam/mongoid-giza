@@ -83,12 +83,11 @@ module Mongoid
       # @param block [Proc] a block that will be evaluated on an
       #   {Mongoid::Giza::Index}
       def sphinx_index(settings = {}, &block)
-        if block_given?
-          if block.arity > 0
-            add_dynamic_sphinx_index(settings, block)
-          else
-            add_static_sphinx_index(settings, block)
-          end
+        return unless block_given?
+        if block.arity > 0
+          add_dynamic_sphinx_index(settings, block)
+        else
+          add_static_sphinx_index(settings, block)
         end
       end
 
