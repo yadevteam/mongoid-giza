@@ -28,10 +28,10 @@ module Mongoid
         # @raise [TypeError] if the type is not valid. (see
         #   {Mongoid::Giza::Index::Attribute::TYPES})
         def initialize(name, type, &block)
-          raise TypeError,
-            "attribute type not supported. " \
-            "It must be one of the following: " \
-            "#{Mongoid::Giza::Index::Attribute::TYPES.join(", ")}" unless Mongoid::Giza::Index::Attribute::TYPES.include? type
+          fail TypeError,
+               "Attribute type not supported. " \
+               "It must be one of the following: " \
+               "#{TYPES.join(', ')}" unless TYPES.include? type
           @name = name.to_s.mb_chars.downcase.to_sym
           @type = type
           @block = block
