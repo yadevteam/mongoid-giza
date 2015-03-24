@@ -7,7 +7,7 @@ require "mongoid/giza/index"
 require "mongoid/giza/index/field"
 require "mongoid/giza/index/attribute"
 require "mongoid/giza/indexer"
-require "mongoid/giza/models/giza_id"
+require "mongoid/giza/models/id"
 require "mongoid/giza/railtie" if defined?(Rails)
 require "mongoid/giza/search"
 require "mongoid/giza/version"
@@ -44,9 +44,9 @@ module Mongoid
     extend ActiveSupport::Concern
 
     included do
-      GizaID.create(id: name.to_sym)
+      ID.create(id: name.to_sym)
       field :_giza_id, type: Integer,
-                       default: -> { GizaID.next(self.class.name.to_sym) }
+                       default: -> { ID.next(self.class.name.to_sym) }
       index({_giza_id: 1}, sparse: true, unique: true)
       @giza_configuration = Configuration.instance
       @static_sphinx_indexes = {}

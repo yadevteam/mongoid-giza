@@ -1,8 +1,8 @@
 require "spec_helper"
 
-describe Mongoid::Giza::GizaID do
+describe Mongoid::Giza::ID do
   describe "instance" do
-    let(:giza_id) { Mongoid::Giza::GizaID.new(id: :Person) }
+    let(:giza_id) { Mongoid::Giza::ID.new(id: :Person) }
 
     it "should be valid" do
       expect(giza_id).to be_valid
@@ -19,12 +19,12 @@ describe Mongoid::Giza::GizaID do
 
   describe "next" do
     before do
-      Mongoid::Giza::GizaID.create(id: :Person)
+      Mongoid::Giza::ID.create(id: :Person)
     end
 
     it "should return the next id for the given class" do
-      expect(Mongoid::Giza::GizaID.next(:Person)).to eql(1)
-      expect(Mongoid::Giza::GizaID.next(:Person)).to eql(2)
+      expect(Mongoid::Giza::ID.next(:Person)).to eql(1)
+      expect(Mongoid::Giza::ID.next(:Person)).to eql(2)
     end
   end
 end

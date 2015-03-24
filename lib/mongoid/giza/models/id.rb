@@ -1,7 +1,7 @@
 module Mongoid
   module Giza
     # MongoDB counter collection to generate ids compatible with sphinx
-    class GizaID
+    class ID
       include Mongoid::Document
 
       field :_id, type: Symbol
