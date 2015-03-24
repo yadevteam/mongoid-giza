@@ -44,7 +44,7 @@ module Mongoid
     extend ActiveSupport::Concern
 
     included do
-      ID.create(id: name.to_sym)
+      ID.create(id: name.to_sym) unless ID.where(id: name.to_sym).count == 1
       field :_giza_id, type: Integer,
                        default: -> { ID.next(self.class.name.to_sym) }
       index({_giza_id: 1}, sparse: true, unique: true)
