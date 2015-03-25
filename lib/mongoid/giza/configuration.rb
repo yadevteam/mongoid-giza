@@ -79,8 +79,9 @@ module Mongoid
       # @return [Integer] the position where this index should be inserted on
       #   the configuration indices array
       def register_index(riddle_index, indexes)
+        position = indices.index(indexes[riddle_index.name]) || indices.length
         indexes[riddle_index.name] = riddle_index
-        indices.index(riddle_index) || indices.length
+        position
       end
 
       # Applies the settings defined on an object loaded from the configuration

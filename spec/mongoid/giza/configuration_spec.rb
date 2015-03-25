@@ -215,7 +215,11 @@ describe Mongoid::Giza::Configuration do
       instance_double("Riddle::Configuration::Index", name: "name")
     end
 
-    let(:indexes) { {} }
+    let(:riddle_index_copy) do
+      instance_double("Riddle::Configuration::Index", name: "name")
+    end
+
+    let(:indexes) { {riddle_index.name => riddle_index} }
 
     it "should add the index to the given hash" do
       @config.register_index(riddle_index, indexes)
@@ -224,7 +228,7 @@ describe Mongoid::Giza::Configuration do
 
     it "should return the position of the index in the indices array" do
       @config.indices.push(riddle_index)
-      position = @config.register_index(riddle_index, indexes)
+      position = @config.register_index(riddle_index_copy, indexes)
       expect(position).to eql 0
     end
 
