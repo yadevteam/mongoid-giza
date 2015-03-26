@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0
+
+* Mongoid 4 or higher is now required
+* Removed charset_type option, since it has been removed from spinx since 2.2.2-beta. You can still define it in your confuguration if you're using an older sphinx version
+* Renamed `Mongoid::Giza::GizaID` to `Mongoid::Giza::ID`
+* Renamed `Mongoid::Giza::ID::next_id to Mongoid::Giza::ID::next`
+* Renamed `giza_id` to `_giza_id`. Now it's a regular field instead of being dynamically assigned when needed
+* Support for `default` and `bits` for attributes
+* Removed *str2ordinal* and *str2wordcount* attribute types
+* Automatically convert Date, Time and DateTime attributes to unix time
+* Only support **ONE** fulltext query by *search block*. Instead of returning an Array o result Hashes now it only returns a result Hash
+
 ## 0.5.1
 
 * Create a sparse unique index on `giza_id` field
