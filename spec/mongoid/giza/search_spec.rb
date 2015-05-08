@@ -91,7 +91,7 @@ describe Mongoid::Giza::Search do
     context "with no argument" do
       it "should respond to method from riddle" do
         allow(client).to receive(:respond_to?).with(:offset) { true }
-        expect(client).to receive(:"offset").with(no_args)
+        expect(client).to receive(:offset).with(no_args)
         search.offset
       end
     end
@@ -107,7 +107,7 @@ describe Mongoid::Giza::Search do
     context "with multiple arguments" do
       it "should respond to method from riddle" do
         allow(client).to receive(:respond_to?).with(:offset) { true }
-        expect(client).to receive(:"offset").with(1, 2)
+        expect(client).to receive(:offset).with(1, 2)
         search.offset(1, 2)
       end
     end
