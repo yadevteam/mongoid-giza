@@ -5,7 +5,8 @@ module Mongoid
       class Field
         include Common
 
-        attr_accessor :name, :attribute, :block
+        attr_accessor :attribute, :block
+        attr_reader :name
 
         # Creates a full-text field with a name and an optional block
         #

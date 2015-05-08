@@ -11,7 +11,8 @@ module Mongoid
           :multi, :multi_64, :string, :json
         ]
 
-        attr_accessor :name, :type, :default, :bits, :block
+        attr_accessor :default, :bits, :block
+        attr_reader :name, :type
 
         # Creates a new attribute with name, type and an optional block
         #
