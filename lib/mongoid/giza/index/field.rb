@@ -3,6 +3,8 @@ module Mongoid
     class Index
       # Represents a Sphinx indexed field
       class Field
+        include Common
+
         attr_accessor :name, :attribute, :block
 
         # Creates a full-text field with a name and an optional block
@@ -19,7 +21,7 @@ module Mongoid
         # @param block [Proc] an optional block to be evaluated at the scope of
         #   the document on index creation
         def initialize(name, attribute = nil, &block)
-          @name = name.to_s.mb_chars.downcase.to_sym
+          @name = normalize(name)
           @attribute = attribute
           @block = block
         end

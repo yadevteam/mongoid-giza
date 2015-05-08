@@ -3,6 +3,8 @@ module Mongoid
     class Index
       # Represents a Sphinx index attribute
       class Attribute
+        include Common
+
         # Defines the array of currently supported Sphix attribute types
         TYPES = [
           :uint, :bool, :bigint, :timestamp, :float,
@@ -32,7 +34,7 @@ module Mongoid
                "Attribute type not supported. " \
                "It must be one of the following: " \
                "#{TYPES.join(', ')}" unless TYPES.include? type
-          @name = name.to_s.mb_chars.downcase.to_sym
+          @name = normalize(name)
           @type = type
           @block = block
           @default = options[:default]
