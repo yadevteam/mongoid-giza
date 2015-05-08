@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1
+
+* Only allow alphabetical characters on fields' and attributes' names (replaces everything else with **-**)
+* Fields' name and attributes' name and type are read-only
+
 ## 0.6.0
 
 * Mongoid 4 or higher is now required
