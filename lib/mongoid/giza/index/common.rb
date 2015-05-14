@@ -11,7 +11,7 @@ module Mongoid
         #
         # @return [Symbol] the normalized symbol
         def normalize(s)
-          s.to_s.gsub(/[^[:alpha:]]/, "-").mb_chars.downcase.to_sym
+          s.to_s.gsub(/[^[:alpha:]_-]/, "-").mb_chars.downcase.to_sym
         end
       end
     end
