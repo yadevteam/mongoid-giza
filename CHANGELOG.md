@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+* Allow underscore on fields' and attributes' names
+
 ## 0.6.1
 
 * Only allow alphabetical characters on fields' and attributes' names (replaces everything else with **-**)
