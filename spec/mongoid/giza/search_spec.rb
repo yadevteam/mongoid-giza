@@ -59,7 +59,12 @@ describe Mongoid::Giza::Search do
   describe "order_by" do
     it "should set the search order" do
       expect(client).to receive(:sort_by=).with("attr ASC")
-      search.order_by(:attr, :asc)
+      search.order_by(attr: :asc)
+    end
+
+    it "should accept a multiple ordering" do
+      expect(client).to receive(:sort_by=).with("attr1 ASC, attr2 DESC")
+      search.order_by(attr1: :asc, attr2: :desc)
     end
   end
 

@@ -43,11 +43,12 @@ module Mongoid
 
       # Sets the order in which the results will be returned
       #
-      # @param attribute [Symbol] the attribute used for sorting
-      # @param order [Symbol] the order of the sorting. Valid values are :asc
-      #   and :desc
-      def order_by(attribute, order)
-        @client.sort_by = "#{attribute} #{order.to_s.upcase}"
+      # @param ordering [Hash] a hash with attribute names as keys and order
+      #   as values (i.e.: attr1: :desc, attr2: :asc)
+      def order_by(ordering)
+        @client.sort_by = ordering.map do |attribute, order|
+          "#{attribute} #{order.to_s.upcase}"
+        end.join(", ")
       end
 
       # Executes the configured query
