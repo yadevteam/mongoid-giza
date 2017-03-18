@@ -9,7 +9,7 @@ module Mongoid
         TYPES = [
           :uint, :bool, :bigint, :timestamp, :float,
           :multi, :multi_64, :string, :json
-        ]
+        ].freeze
 
         attr_accessor :default, :bits, :block
         attr_reader :name, :type
@@ -31,10 +31,11 @@ module Mongoid
         # @raise [TypeError] if the type is not valid. (see
         #   {Mongoid::Giza::Index::Attribute::TYPES})
         def initialize(name, type, options = {}, &block)
-          fail TypeError,
-               "Attribute type not supported. " \
-               "It must be one of the following: " \
-               "#{TYPES.join(', ')}" unless TYPES.include? type
+          unless TYPES.include? type
+            raise TypeError,
+                  "Attribute type not supported. It must be one of the " \
+                  "following: #{TYPES.join(', ')}"
+          end
           @name = normalize(name)
           @type = type
           @block = block

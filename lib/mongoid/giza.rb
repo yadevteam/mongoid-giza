@@ -59,7 +59,7 @@ module Mongoid
     def generate_sphinx_indexes
       self.class.dynamic_sphinx_indexes.each do |dynamic_index|
         index = dynamic_index.generate_index(self)
-        self.class.generated_sphinx_indexes.merge!(index.name => index)
+        self.class.generated_sphinx_indexes[index.name] = index
         self.class.giza_configuration.add_index(index, true)
       end
     end
@@ -79,7 +79,7 @@ module Mongoid
       #   {Mongoid::Giza::Index}
       def sphinx_index(settings = {}, &block)
         return unless block_given?
-        if block.arity > 0
+        if block.arity.positive?
           add_dynamic_sphinx_index(settings, block)
         else
           add_static_sphinx_index(settings, block)
@@ -174,13 +174,13 @@ module Mongoid
       # @param names [Array] a list of index names of this class that will be
       #   indexed
       def sphinx_indexer!(*names)
-        if names.length > 0
+        if !names.empty?
           indexes_names =
             sphinx_indexes_names.select { |name| names.include?(name) }
         else
           indexes_names = sphinx_indexes_names
         end
-        Indexer.instance.index!(*indexes_names) if indexes_names.length > 0
+        Indexer.instance.index!(*indexes_names) unless indexes_names.empty?
       end
 
       # Retrieves all the sphinx indexes defined on this class, static and

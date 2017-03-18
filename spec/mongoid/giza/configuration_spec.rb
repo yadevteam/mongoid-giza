@@ -359,7 +359,7 @@ describe Mongoid::Giza::Configuration do
   end
 
   describe "setter" do
-    let(:section) { double("section")  }
+    let(:section) { double("section") }
 
     let(:value) { double("value") }
 
@@ -381,7 +381,7 @@ describe Mongoid::Giza::Configuration do
   end
 
   describe "remove_generated_indexes" do
-    let(:indices) { double("indices")  }
+    let(:indices) { double("indices") }
 
     before do
       @config.instance_variable_set("@generated_indexes", name: :index,

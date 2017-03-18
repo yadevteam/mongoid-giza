@@ -27,8 +27,8 @@ module Mongoid
       #   defined
       # @param env [String] environment whoose settings will be loaded
       def load(path, env)
-        YAML.load(File.open(path).read)[env].each do |section_name, settings|
-          section = instance_variable_get("@#{section_name}")
+        YAML.safe_load(File.open(path).read)[env].each do |section, settings|
+          section = instance_variable_get("@#{section}")
           next unless section
           settings.each do |setting, value|
             unless section == @index || section == @source
@@ -98,7 +98,7 @@ module Mongoid
       #   set
       def apply_default_settings(default, section, index)
         default.class.settings.each do |setting|
-          value = interpolate_string(default.send("#{setting}"), index)
+          value = interpolate_string(default.send(setting.to_s), index)
           setter(section, setting, value) unless value.nil?
         end
       end
@@ -128,7 +128,7 @@ module Mongoid
       #   a generated {Mongoid::Giza::Index}
       def clear_generated_indexes
         @generated_indexes.each { |_, index| indices.delete(index) }
-        @generated_indexes =  {}
+        @generated_indexes = {}
       end
 
       # Removes Riddle::Index's specifieds as params
@@ -157,9 +157,8 @@ module Mongoid
         namespace = index.nil? ? Object.new : OpenStruct.new(index: index)
         if value.is_a?(String)
           return ERB.new(value).result(namespace.instance_eval { binding })
-        else
-          return value
         end
+        value
       end
 
       # Helper method to set a value to a setting from a section (i.e. indexer,

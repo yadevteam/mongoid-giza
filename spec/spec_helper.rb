@@ -18,7 +18,7 @@ MONGOID_CONFIG = {
       hosts: ["localhost:27017"]
     }
   }
-}
+}.freeze
 
 Mongoid.configure do |config|
   config.load_configuration(MONGOID_CONFIG)

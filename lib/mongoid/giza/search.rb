@@ -5,7 +5,7 @@ module Mongoid
       attr_accessor :indexes, :query_string
       attr_reader :client
 
-      alias_method :fulltext, :query_string=
+      alias fulltext query_string=
 
       # Creates a new search
       #
@@ -92,6 +92,12 @@ module Mongoid
           super unless respond_to?(method)
           @client.send method, *args
         end
+      end
+
+      def respond_to_missing?(method, include_private = false)
+        @client.respond_to?(method) ||
+          @client.respond_to?("#{method}=") ||
+          super
       end
     end
   end

@@ -20,7 +20,7 @@ module Mongoid
         Hash => :json,
         BSON::ObjectId => :string,
         ActiveSupport::TimeWithZone => :timestamp
-      }
+      }.freeze
 
       attr_accessor :klass, :settings, :fields, :attributes
 
@@ -79,11 +79,11 @@ module Mongoid
       def attribute(name, type = nil, options = {}, &block)
         unless type
           field = @klass.fields[name.to_s]
-          if field
-            type = TYPES_MAP[field.type] || :string
-          else
-            type = :string
-          end
+          type = if field
+                   TYPES_MAP[field.type] || :string
+                 else
+                   :string
+                 end
         end
         @attributes << Attribute.new(name, type, options, &block)
       end

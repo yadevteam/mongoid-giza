@@ -287,7 +287,7 @@ describe Mongoid::Giza do
 
     it "should generate all the dynamic indexes of the class for the object" do
       expect(dynamic_index).to receive(:generate_index).with(person)
-        .twice { index }
+                                                       .twice { index }
       person.generate_sphinx_indexes
     end
 

@@ -104,9 +104,8 @@ module Mongoid
       def process_value(content, object)
         if content.is_a?(Index::Attribute) && content.type == :timestamp
           return object[content.name].to_time.to_i
-        else
-          return object[content.name]
         end
+        object[content.name]
       end
     end
   end
