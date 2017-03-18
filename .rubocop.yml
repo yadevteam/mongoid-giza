@@ -1,10 +1,16 @@
-Style/SpaceInsideHashLiteralBraces:
-  EnforcedStyle: no_space
+Metrics/BlockLength:
+  Exclude:
+    - "**/*_spec.rb"
 
 Style/Encoding:
   Enabled: true
   EnforcedStyle: when_needed
 
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
-
