@@ -292,9 +292,8 @@ describe Mongoid::Giza do
     end
 
     it "should merge the resulting indexes to the class' generated indexes" do
-      expect(Person.generated_sphinx_indexes).to receive(:merge!)
-        .with(name: index).twice
       person.generate_sphinx_indexes
+      expect(Person.generated_sphinx_indexes[:name]).to be(index)
     end
 
     it "should add the indexes to the configuration" do
