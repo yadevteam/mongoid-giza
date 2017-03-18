@@ -55,7 +55,7 @@ module Mongoid
       #
       # @return [Array] an Array of Hashes as specified by Riddle::Response
       def run
-        index = indexes.length > 0 ? indexes.join(" ") : "*"
+        index = !indexes.empty? ? indexes.join(" ") : "*"
         @client.query(query_string, index)
       end
 
