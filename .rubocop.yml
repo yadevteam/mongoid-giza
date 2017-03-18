@@ -1,6 +1,10 @@
+AllCops:
+  TargetRubyVersion: 2.0
+
 Metrics/BlockLength:
   Exclude:
     - "**/*_spec.rb"
+    - "mongoid-giza.gemspec"
 
 Style/Encoding:
   Enabled: true
