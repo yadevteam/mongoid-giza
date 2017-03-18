@@ -181,7 +181,7 @@ Every other [Riddle::Client](http://rdoc.info/github/pat/riddle/Riddle/Client) s
 result = Person.search do
   fulltext "john"
   with :age 18..40
-  order_by :age :asc
+  order_by age: :asc, :@id => :desc
 end
 
 result[:Person].each do |person|
