@@ -27,7 +27,7 @@ module Mongoid
       #   defined
       # @param env [String] environment whoose settings will be loaded
       def load(path, env)
-        YAML.safe_load(File.open(path).read)[env].each do |section, settings|
+        yaml_safe_load(File.open(path).read)[env].each do |section, settings|
           section = instance_variable_get("@#{section}")
           next unless section
           settings.each do |setting, value|
@@ -172,6 +172,16 @@ module Mongoid
       def setter(section, setting, value)
         method = "#{setting}="
         section.send(method, value) if section.respond_to?(method)
+      end
+
+      private
+
+      def yaml_safe_load(yaml_code)
+        if YAML.respond_to?(:safe_load)
+          YAML.safe_load(yaml_code)
+        else
+          YAML.load(yaml_code) # rubocop:disable Security/YAMLLoad
+        end
       end
     end
   end
