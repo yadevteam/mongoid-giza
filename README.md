@@ -190,6 +190,15 @@ result[:Person].each do |person|
 end
 ```
 
+#### Sorting MongoDB results
+
+MongoDB doesn't return the documents on the "arbitrary" order defined by Sphinx. To maintain the Sphinx ordering you can do:
+
+```ruby
+giza_ids = result[:matches].map { |match| match[:doc] }
+people = result[:Person].sort_by { |person| giza_ids.index(person._giza_id) }
+```
+
 ## TODO
 
 * Support delta indexing
