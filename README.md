@@ -180,7 +180,8 @@ Every other [Riddle::Client](http://rdoc.info/github/pat/riddle/Riddle/Client) s
 ```ruby
 result = Person.search do
   fulltext "john"
-  with :age 18..40
+  with :age, 18..40
+  sort_mode :extended
   order_by age: :asc, :@id => :desc
 end
 
