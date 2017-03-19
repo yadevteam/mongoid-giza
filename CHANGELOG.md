@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.0
+
+#### Mongoid::Giza now requires Ruby >= 2.0
+
+### Breaking changes
+
+* `Mongoid::Giza::Search#order_by` now accepts multiple ordering as a `Hash` (i.e.: `order_by age: :asc, :@id => :desc`)
+
+### Fixes
+
+* Defined **Mongoid < 5.0** and **ActiveSupport < 5.0** as greater versions are not yet supported
+* Use `YAML#safe_load` when available **(Ruby >= 2.1)**
+
 ## 0.6.2
 
 * Allow underscore on fields' and attributes' names
